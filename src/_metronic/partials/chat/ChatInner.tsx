@@ -6,8 +6,8 @@ import {toAbsoluteUrl, defaultMessages, defaultUserInfos, UserInfoModel} from '.
 import socket from '../../../config'
 import {getMessagesByUserID} from '../../../API/api-endpoint'
 import {Dropdown1} from '../content/dropdown/Dropdown1'
-import {DateTimeFormatter, TimeFormatter, sortData} from '../../../utils/Utils'
-import {io} from 'socket.io-client'
+import {DateTimeFormatter, GetIDFromURL, TimeFormatter, sortData} from '../../../utils/Utils'
+import {useLocation} from 'react-router-dom'
 
 type Props = {
   isDrawer?: boolean
@@ -16,7 +16,8 @@ type Props = {
 const ChatInner = (props: any) => {
   const {isDrawer = false, receiverUserDetails} = props
 
-  const currentUserId = parseInt(localStorage.getItem('userId') || '1')
+  let location = useLocation()
+  const currentUserId = parseInt(localStorage.getItem('userId') || '1') //GetIDFromURL(location)
 
   const [message, setMessage] = useState<string>('')
   const [messageList, setMessageList] = useState<any>([])
@@ -46,39 +47,43 @@ const ChatInner = (props: any) => {
     //console.log('new message REceived inside useEffect', socket)
     socket.on('chat_message', (newMessage) => {
       //console.log('new message Received', newMessage)
-      const new_message = {
-        chatId: receiverUserDetails.chatId,
-        chatRoomId: receiverUserDetails.chatRoomId,
-        senderId: receiverUserDetails.userId,
-        receiverId: currentUserId,
-        giftId: null,
-        videoCallId: null,
-        message: newMessage,
-        type: 'text',
-        isRead: false,
-        deletedBySender: false,
-        deletedByReceiver: false,
-        status: true,
-        createdBy: currentUserId,
-        updatedBy: currentUserId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        videoCallDetail: null,
-      }
-      let messages = JSON.parse(localStorage.getItem('messageList') || '')
+      // const new_message = {
+      //   chatId: receiverUserDetails.chatId,
+      //   chatRoomId: receiverUserDetails.chatRoomId,
+      //   senderId: currentUserId,
+      //   receiverId: receiverUserDetails.userId,
+      //   giftId: null,
+      //   videoCallId: null,
+      //   message: newMessage,
+      //   type: 'text',
+      //   isRead: false,
+      //   deletedBySender: false,
+      //   deletedByReceiver: false,
+      //   status: true,
+      //   createdBy: currentUserId,
+      //   updatedBy: currentUserId,
+      //   createdAt: new Date(),
+      //   updatedAt: new Date(),
+      //   videoCallDetail: null,
+      // }
+      let messages = JSON.parse(sessionStorage.getItem('messageList') || '')
       const oldMessage = [...messages]
-      oldMessage.push(new_message)
-      localStorage.setItem('messageList', JSON.stringify(oldMessage))
+      oldMessage.push(newMessage)
+      sessionStorage.setItem('messageList', JSON.stringify(oldMessage))
       setMessageList(oldMessage)
     })
+
+    // Clean up the WebSocket connection when the component unmounts
+    return () => {
+      socket.close()
+    }
   }, [socket])
 
   const sendMessage = () => {
-    console.log('in sendmessage')
     socket.emit('chat_message', {
       message: message,
-      senderId: receiverUserDetails.userId,
-      receiverId: currentUserId,
+      senderId: currentUserId,
+      receiverId: receiverUserDetails.userId,
       type: 'text',
       chatRoomId: receiverUserDetails.chatRoomId,
       chatId: receiverUserDetails.chatId,
@@ -105,23 +110,23 @@ const ChatInner = (props: any) => {
     //   updatedAt: new Date(),
     //   videoCallDetail: null,
     // }
-    // let messages = JSON.parse(localStorage.getItem('messageList') || '')
+    // let messages = JSON.parse(sessionStorage.getItem('messageList') || '')
     // const oldMessage = [...messages]
     // oldMessage.push(newMessage)
-    // localStorage.setItem('messageList', JSON.stringify(oldMessage))
+    // sessionStorage.setItem('messageList', JSON.stringify(oldMessage))
     // setMessageList(oldMessage)
   }
 
-  // const onEnterPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-  //   if (e.keyCode === 13 && e.shiftKey === false) {
-  //     e.preventDefault()
-  //     //sendMessage()
-  //   }
-  // }
+  const onEnterPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.keyCode === 13 && e.shiftKey === false) {
+      e.preventDefault()
+      //sendMessage()
+    }
+  }
 
   const getchatList = async () => {
-    let result = await getMessagesByUserID(currentUserId, page, pageSize)
-    localStorage.setItem('messageList', JSON.stringify(result.data))
+    let result = await getMessagesByUserID(receiverUserDetails.userId, page, pageSize)
+    sessionStorage.setItem('messageList', JSON.stringify(result.data))
     setMessageList(result.data)
   }
 
@@ -197,7 +202,7 @@ const ChatInner = (props: any) => {
             })
             .map((message: any, index: any) => {
               //const userInfo = userInfos[message.user]
-              const userType = currentUserId !== message.receiverId
+              const userType = currentUserId === message.senderId
               const dateNum = DateTimeFormatter(message.updatedAt)
               const state = userType ? 'info' : 'primary'
               const templateAttr = {}

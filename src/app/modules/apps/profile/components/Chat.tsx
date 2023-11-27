@@ -34,50 +34,11 @@ const Chat: FC = () => {
     setPageSize(page_size_number)
   }
 
-  // useEffect(() => {
-  //   console.log('inside useEffect')
-  //   function onConnect(data: any) {
-  //     console.log('connected', data)
-  //   }
-
-  //   function onDisconnect() {
-  //     console.log('disconnected')
-  //   }
-
-  //   function onGetRoom(data: any) {
-  //     console.log('onGetRoom', data)
-  //   }
-
-  //   socket.emit('connection', onConnect)
-  //   socket.emit('user_connected', 2)
-  //   //socket.emit('disconnect', onDisconnect)
-  //   socket.on('get_room', onGetRoom)
-
-  //   // return () => {
-  //   //   socket.off('connection', onConnect)
-  //   //   socket.off('disconnect', onDisconnect)
-  //   //   socket.off('get_room', onGetRoom)
-  //   // }
-  // }, [])
-
   const getRoom = (memberDetails: any) => {
-    console.log(memberDetails)
-    setReceiverUserDetails(memberDetails)
-    // message, senderId, receiverId, type, chatRoomId, chatId
-    //socket.emit('user_connected', 2)
-
-    // socket.emit('chat_message', {
-    //   message: '1128',
-    //   senderId: memberDetails.userId,
-    //   receiverId: userID,
-    //   type: 'text',
-    //   chatRoomId: memberDetails.chatRoomId,
-    //   chatId: memberDetails.chatId,
-    // })
-
-    // socket.on('chat_message', (message) => {
-    //   console.log('message', message)
-    // })
+    setReceiverUserDetails(undefined)
+    setTimeout(() => {
+      setReceiverUserDetails(memberDetails)
+    }, 500)
   }
 
   return (

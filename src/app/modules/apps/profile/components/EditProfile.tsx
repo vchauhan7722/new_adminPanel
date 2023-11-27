@@ -18,6 +18,7 @@ import '../../../../../_metronic/assets/css/react-phone-number-input.css'
 import PhoneInput from 'react-phone-input-2'
 import {DateTimeFormatter} from '../../../../../utils/Utils'
 import moment from 'moment'
+import ToastUtils from '../../../../../utils/ToastUtils'
 
 const EditProfile = (props) => {
   const {user, setUserUpdateFlag, userUpdateFlag} = props
@@ -48,7 +49,6 @@ const EditProfile = (props) => {
   })
 
   useEffect(() => {
-    console.log('selectedListQuestionList', selectedListQuestionList)
     setProfileDetailsFormValue({
       fullName: user.fullName,
       userName: user.userName,
@@ -136,7 +136,13 @@ const EditProfile = (props) => {
   const handleProfileChange = (e) => {
     let name = e.target.name
     let value = e.target.value
-    if (name !== 'countryCode') {
+    if (name === 'mobileNo') {
+      if (value > 10) {
+        ToastUtils({type: 'error', message: 'Please Enter 10 Digit Mobile'})
+      } else {
+        setProfileDetailsFormValue({...profileDetailsFormValue, [name]: value})
+      }
+    } else if (name !== 'countryCode') {
       setProfileDetailsFormValue({...profileDetailsFormValue, [name]: value})
     } else {
       let newValue = value.substring(1, value.length)
@@ -169,6 +175,7 @@ const EditProfile = (props) => {
     let result = await UpdateUserDetailsByUID(userID, profileDetailsFormValue)
     if (result.status === 200) {
       setUserUpdateFlag(userUpdateFlag + 1)
+      ToastUtils({type: 'success', message: 'Profile Update SuccessFully'})
     }
   }
 
