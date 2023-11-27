@@ -21,8 +21,6 @@ const UsersTable = () => {
     data,
   })
 
-  console.log('data', data)
-
   return (
     <KTCardBody className='py-4'>
       <div className='table-responsive'>

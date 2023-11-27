@@ -13,15 +13,21 @@ type Props = {
   isDrawer?: boolean
 }
 
+const bufferMessages = defaultMessages
+
 const ChatInner = (props: any) => {
   const {isDrawer = false, receiverUserDetails} = props
 
   const currentUserId = parseInt(localStorage.getItem('userId') || '1')
 
+  const [currentDate, setCurrentDate] = useState(new Date())
+  const [chatUpdateFlag, toggleChatUpdateFlat] = useState<boolean>(false)
   const [message, setMessage] = useState<string>('')
-  const [messageList, setMessageList] = useState<any>([])
+  const [messages, setMessages] = useState<any>([])
+  const [userInfos] = useState<UserInfoModel[]>(defaultUserInfos)
   const [page, setPage] = useState<any>(1)
   const [pageSize, setPageSize] = useState<any>(100)
+  const [chatFlag, setChatFlag] = useState<any>(false)
   const dates = new Set()
 
   const renderDate = (chat: any, dateNum: any) => {
@@ -39,53 +45,37 @@ const ChatInner = (props: any) => {
 
   useEffect(() => {
     getchatList()
-    socket.emit('join_room', receiverUserDetails?.chatRoomId, receiverUserDetails?.chatId)
+    //socket.emit('join_room', receiverUserDetails?.chatRoomId, receiverUserDetails?.chatId)
   }, [])
 
-  useEffect(() => {
-    //console.log('new message REceived inside useEffect', socket)
-    socket.on('chat_message', (newMessage) => {
-      //console.log('new message Received', newMessage)
-      const new_message = {
-        chatId: receiverUserDetails.chatId,
-        chatRoomId: receiverUserDetails.chatRoomId,
-        senderId: receiverUserDetails.userId,
-        receiverId: currentUserId,
-        giftId: null,
-        videoCallId: null,
-        message: newMessage,
-        type: 'text',
-        isRead: false,
-        deletedBySender: false,
-        deletedByReceiver: false,
-        status: true,
-        createdBy: currentUserId,
-        updatedBy: currentUserId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        videoCallDetail: null,
-      }
-      let messages = JSON.parse(localStorage.getItem('messageList') || '')
-      const oldMessage = [...messages]
-      oldMessage.push(new_message)
-      localStorage.setItem('messageList', JSON.stringify(oldMessage))
-      setMessageList(oldMessage)
-    })
-  }, [socket])
+  // useEffect(() => {
+  //   //console.log('new message REceived inside useEffect', socket)
+  //   socket.on('chat_message', (newMessage) => {
+  //     console.log('new message Received', newMessage)
+  //     let oldMessageArray = [...messages]
+  //     //console.log('oldMessageArray', oldMessageArray)
+  //     oldMessageArray.push(newMessage)
+  //     setMessages(oldMessageArray)
+  //   })
+
+  //   // return () => {
+  //   //   socket.off('chat_message')
+  //   // }
+  // }, [socket])
 
   const sendMessage = () => {
     console.log('in sendmessage')
+
     socket.emit('chat_message', {
       message: message,
-      senderId: receiverUserDetails.userId,
-      receiverId: currentUserId,
+      senderId: currentUserId,
+      receiverId: receiverUserDetails.userId,
       type: 'text',
       chatRoomId: receiverUserDetails.chatRoomId,
       chatId: receiverUserDetails.chatId,
     })
 
     setMessage('')
-
     // const newMessage = {
     //   chatId: receiverUserDetails.chatId,
     //   chatRoomId: receiverUserDetails.chatRoomId,
@@ -105,11 +95,19 @@ const ChatInner = (props: any) => {
     //   updatedAt: new Date(),
     //   videoCallDetail: null,
     // }
-    // let messages = JSON.parse(localStorage.getItem('messageList') || '')
+
     // const oldMessage = [...messages]
     // oldMessage.push(newMessage)
-    // localStorage.setItem('messageList', JSON.stringify(oldMessage))
-    // setMessageList(oldMessage)
+    // setMessages(oldMessage)
+
+    // bufferMessages.push(newMessage)
+    // setMessages(bufferMessages)
+    // toggleChatUpdateFlat(!chatUpdateFlag)
+    // setTimeout(() => {
+    //   bufferMessages.push(messageFromClient)
+    //   setMessages(() => bufferMessages)
+    //   toggleChatUpdateFlat((flag) => !flag)
+    // }, 1000)
   }
 
   // const onEnterPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -121,11 +119,10 @@ const ChatInner = (props: any) => {
 
   const getchatList = async () => {
     let result = await getMessagesByUserID(currentUserId, page, pageSize)
-    localStorage.setItem('messageList', JSON.stringify(result.data))
-    setMessageList(result.data)
+    setMessages(result.data)
   }
 
-  return messageList === undefined ? (
+  return messages === undefined ? (
     <div>Loading</div>
   ) : (
     <>
@@ -191,13 +188,13 @@ const ChatInner = (props: any) => {
           }
           data-kt-scroll-offset={isDrawer ? '0px' : '5px'}
         >
-          {messageList
+          {messages
             .sort((a: any, b: any) => {
               return sortData(a.updatedAt, b.updatedAt)
             })
             .map((message: any, index: any) => {
               //const userInfo = userInfos[message.user]
-              const userType = currentUserId !== message.receiverId
+              const userType = currentUserId !== message.senderId
               const dateNum = DateTimeFormatter(message.updatedAt)
               const state = userType ? 'info' : 'primary'
               const templateAttr = {}

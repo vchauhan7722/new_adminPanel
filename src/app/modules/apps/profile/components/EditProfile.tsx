@@ -5,19 +5,25 @@ import * as Yup from 'yup'
 import clsx from 'clsx'
 import {useIntl} from 'react-intl'
 import {
+  UpdateUserDetailsByUID,
   addUserInterest,
+  createUserQuetionAnswerForProfile,
   getAllInterest,
   getCitiesBYSearch,
   getUserQuetionAnswerForProfile,
   removeUserInterest,
+  updateUserQuetionAnswerForProfile,
 } from '../../../../../API/api-endpoint'
+import '../../../../../_metronic/assets/css/react-phone-number-input.css'
+import PhoneInput from 'react-phone-input-2'
+import {DateTimeFormatter} from '../../../../../utils/Utils'
+import moment from 'moment'
 
 const EditProfile = (props) => {
-  const {user} = props
+  const {user, setUserUpdateFlag, userUpdateFlag} = props
   const intl = useIntl()
   let userID = localStorage.getItem('userId')
 
-  const [profileDetailsFormValue, setProfileDetailsFormValue] = useState({})
   const [searchTerm, setSearchTerm] = useState('')
   const [suggestions, setSuggestions] = useState([])
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1)
@@ -27,8 +33,22 @@ const EditProfile = (props) => {
   const [selectedListQuestionList, setSelectedQuestionList] = useState<any>(
     user.userQuestionAnswers
   )
+  const [profileDetailsFormValue, setProfileDetailsFormValue] = useState({
+    fullName: '',
+    userName: '',
+    email: '',
+    mobileNo: '',
+    countryCode: '',
+    city: '',
+    state: '',
+    country: '',
+    birthDate: '',
+    gender: 1,
+    bio: '',
+  })
 
   useEffect(() => {
+    console.log('selectedListQuestionList', selectedListQuestionList)
     setProfileDetailsFormValue({
       fullName: user.fullName,
       userName: user.userName,
@@ -42,6 +62,7 @@ const EditProfile = (props) => {
       gender: user.genderId,
       bio: user.bio,
     })
+    setSearchTerm(`${user.city}, ${user.state}, ${user.country}`)
   }, [])
 
   useEffect(() => {
@@ -85,7 +106,17 @@ const EditProfile = (props) => {
   }
 
   const handleSearchChange = async (event) => {
+    console.log(event.target.value)
     const inputValue = event.target.value
+
+    let spiltData = inputValue.split(',')
+    setProfileDetailsFormValue({
+      ...profileDetailsFormValue,
+      city: spiltData[0],
+      state: spiltData[1],
+      country: spiltData[2],
+    })
+
     setSearchTerm(inputValue)
 
     // Filter suggestions based on inputValue
@@ -100,6 +131,52 @@ const EditProfile = (props) => {
     } else if (inputValue.length === 0) {
       setSuggestions([])
     }
+  }
+
+  const handleProfileChange = (e) => {
+    let name = e.target.name
+    let value = e.target.value
+    if (name !== 'countryCode') {
+      setProfileDetailsFormValue({...profileDetailsFormValue, [name]: value})
+    } else {
+      let newValue = value.substring(1, value.length)
+      setProfileDetailsFormValue({...profileDetailsFormValue, [name]: newValue})
+    }
+  }
+
+  const handleChangeQuestions = async (e, questionID) => {
+    const matchedAnswerIds = selectedListQuestionList.filter(
+      (item) => item.questionId === questionID
+    )
+
+    let answerId = parseInt(e.target.value)
+
+    if (matchedAnswerIds.length !== 0) {
+      let result = await updateUserQuetionAnswerForProfile(userID, questionID, answerId)
+      if (result.status === 200) {
+        setUserUpdateFlag(userUpdateFlag + 1)
+      }
+    } else {
+      let result = await createUserQuetionAnswerForProfile(userID, questionID, answerId)
+      if (result.status === 200) {
+        setUserUpdateFlag(userUpdateFlag + 1)
+      }
+    }
+  }
+
+  const updateProfile = async () => {
+    console.log(profileDetailsFormValue)
+    let result = await UpdateUserDetailsByUID(userID, profileDetailsFormValue)
+    if (result.status === 200) {
+      setUserUpdateFlag(userUpdateFlag + 1)
+    }
+  }
+
+  const getDefaultValueOfAnswer = (questionID) => {
+    const matchedAnswerIds = selectedListQuestionList
+      .filter((item) => item.questionId === questionID)
+      .map((item) => item.answerId)
+    return matchedAnswerIds[0]
   }
 
   return (
@@ -126,7 +203,7 @@ const EditProfile = (props) => {
           <div className='col-lg-4'>
             <h3 className='mb-7'>Profile Details</h3>
             <div className='row mb-6'>
-              <label className='col-lg-4 required fw-bold fs-6 mt-2'>Full Name</label>
+              <label className='col-lg-4 required fw-bold fs-6 mt-3'>Full Name</label>
               <div className='col-lg-8'>
                 {/* begin::Input */}
                 <input
@@ -135,13 +212,15 @@ const EditProfile = (props) => {
                   name='fullName'
                   className={clsx('form-control form-control-solid mb-3 mb-lg-0')}
                   autoComplete='off'
+                  value={profileDetailsFormValue?.fullName}
+                  onChange={(e) => handleProfileChange(e)}
                 />
                 {/* end::Input */}
               </div>
             </div>
 
             <div className='row mb-6'>
-              <label className='col-lg-4 required fw-bold fs-6 mt-2'>User Name</label>
+              <label className='col-lg-4 required fw-bold fs-6 mt-3'>User Name</label>
               <div className='col-lg-8'>
                 {/* begin::Input */}
                 <input
@@ -150,13 +229,15 @@ const EditProfile = (props) => {
                   name='userName'
                   className={clsx('form-control form-control-solid mb-3 mb-lg-0')}
                   autoComplete='off'
+                  value={profileDetailsFormValue?.userName}
+                  onChange={(e) => handleProfileChange(e)}
                 />
                 {/* end::Input */}
               </div>
             </div>
 
             <div className='row mb-6'>
-              <label className='col-lg-4 required fw-bold fs-6 mt-2'>Email</label>
+              <label className='col-lg-4 required fw-bold fs-6 mt-3'>Email</label>
               <div className='col-lg-8'>
                 {/* begin::Input */}
                 <input
@@ -165,14 +246,29 @@ const EditProfile = (props) => {
                   name='email'
                   className={clsx('form-control form-control-solid')}
                   autoComplete='off'
+                  value={profileDetailsFormValue?.email}
+                  onChange={(e) => handleProfileChange(e)}
                 />
                 {/* end::Input */}
               </div>
             </div>
 
             <div className='row mb-6'>
-              <label className='col-lg-4 required fw-bold fs-6 mt-2'>Mobile No</label>
-              <div className='col-lg-8'>
+              <label className='col-lg-4 required fw-bold fs-6 mt-3'>Mobile No</label>
+              <div className='col-lg-3'>
+                {/* begin::Input */}
+                <input
+                  placeholder='Country Code'
+                  type='text'
+                  name='countryCode'
+                  className={clsx('form-control form-control-solid mb-3 mb-lg-0')}
+                  autoComplete='off'
+                  value={'+' + profileDetailsFormValue?.countryCode}
+                  onChange={(e) => handleProfileChange(e)}
+                />
+                {/* end::Input */}
+              </div>
+              <div className='col-lg-5'>
                 {/* begin::Input */}
                 <input
                   placeholder='Mobile No'
@@ -180,13 +276,15 @@ const EditProfile = (props) => {
                   name='mobileNo'
                   className={clsx('form-control form-control-solid mb-3 mb-lg-0')}
                   autoComplete='off'
+                  value={profileDetailsFormValue?.mobileNo}
+                  onChange={(e) => handleProfileChange(e)}
                 />
                 {/* end::Input */}
               </div>
             </div>
 
             <div className='row mb-6'>
-              <label className='col-lg-4 required fw-bold fs-6 mt-2'>Location</label>
+              <label className='col-lg-4 required fw-bold fs-6 mt-3'>Location</label>
               <div className='col-lg-8'>
                 {/* begin::Input */}
                 {/* <input
@@ -220,6 +318,12 @@ const EditProfile = (props) => {
                             setSearchTerm(
                               `${suggestion.name}, ${suggestion.state}, ${suggestion.country}`
                             )
+                            setProfileDetailsFormValue({
+                              ...profileDetailsFormValue,
+                              city: suggestion.name,
+                              state: suggestion.state,
+                              country: suggestion.country,
+                            })
                             setActiveSuggestionIndex(-1)
                             setSuggestions([])
                           }}
@@ -235,7 +339,7 @@ const EditProfile = (props) => {
             </div>
 
             <div className='row mb-6'>
-              <label className='col-lg-4 required fw-bold fs-6 mt-2'>Birth Date</label>
+              <label className='col-lg-4 required fw-bold fs-6 mt-3'>Birth Date</label>
               <div className='col-lg-8'>
                 {/* begin::Input */}
                 <input
@@ -244,14 +348,15 @@ const EditProfile = (props) => {
                   name='birthDate'
                   className={clsx('form-control form-control-solid mb-3 mb-lg-0')}
                   autoComplete='off'
+                  value={new Date(profileDetailsFormValue?.birthDate).toLocaleDateString('en-CA')}
+                  onChange={(e) => handleProfileChange(e)}
                 />
-
                 {/* end::Input */}
               </div>
             </div>
 
             <div className='row mb-6'>
-              <label className='col-lg-4 form-label fs-6 fw-bold mt-2'>Gender:</label>
+              <label className='col-lg-4 form-label fs-6 fw-bold mt-3'>Gender:</label>
               <div className='col-lg-8'>
                 <select
                   className='form-select form-select-solid fw-bolder'
@@ -260,24 +365,30 @@ const EditProfile = (props) => {
                   data-allow-clear='true'
                   data-kt-user-table-filter='gender'
                   data-hide-search='true'
+                  name='gender'
+                  defaultValue={profileDetailsFormValue?.gender}
+                  //value={profileDetailsFormValue?.gender}
+                  onChange={(e) => handleProfileChange(e)}
                 >
                   <option value=''></option>
-                  <option value='male'>Male</option>
-                  <option value='female'>Female</option>
-                  <option value='lesibian'>Lesibian</option>
-                  <option value='gay'>Gay</option>
+                  <option value={1}>Male</option>
+                  <option value={2}>Female</option>
+                  <option value={3}>Lesibian</option>
+                  <option value={4}>Gay</option>
                 </select>
               </div>
             </div>
 
             <div className='row mb-6'>
-              <label className='col-lg-4 required fw-bold fs-6 mb-2'>Bio</label>
+              <label className='col-lg-4 required fw-bold fs-6 mt-3'>Bio</label>
               <div className='col-lg-8'>
                 {/* begin::Input */}
                 <textarea
                   name='bio'
                   className={clsx('form-control form-control-solid mb-3 mb-lg-0')}
                   autoComplete='off'
+                  value={profileDetailsFormValue?.bio}
+                  onChange={(e) => handleProfileChange(e)}
                 />
 
                 {/* end::Input */}
@@ -290,16 +401,17 @@ const EditProfile = (props) => {
             {questionList.map((q: any, index: any) => {
               return (
                 <div key={index} className='row mb-6'>
-                  <label className='col-lg-6 form-label fs-6 fw-bold'>{q.question}</label>
+                  <label className='col-lg-6 form-label mt-3 fs-6 fw-bold'>{q.question}</label>
                   <div className='col-lg-6'>
                     <select
                       className='form-select form-select-solid fw-bolder'
                       data-kt-select2='true'
                       data-placeholder='Select option'
                       data-allow-clear='true'
-                      data-kt-user-table-filter='gender'
+                      name='question'
                       data-hide-search='true'
-                      defaultValue='-'
+                      defaultValue={getDefaultValueOfAnswer(q.questionId)}
+                      onChange={(e) => handleChangeQuestions(e, q.questionId)}
                     >
                       <option value='-'>select Option</option>
                       {q.answers.map((a: any, index: any) => {
@@ -357,7 +469,7 @@ const EditProfile = (props) => {
         </div>
 
         <div className='card-footer d-flex justify-content-start p-4'>
-          <button type='submit' className='btn btn-primary'>
+          <button type='submit' className='btn btn-primary' onClick={updateProfile}>
             Save Changes
           </button>
         </div>

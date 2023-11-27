@@ -29,6 +29,7 @@ const profileBreadCrumbs: Array<PageLink> = [
 
 const ProfilePage = () => {
   const [userDetails, setUserDetails] = useState()
+  const [userUpdateFlag, setUserUpdateFlag] = useState({count: 1})
 
   const intl = useIntl()
   let location = useLocation()
@@ -36,7 +37,7 @@ const ProfilePage = () => {
 
   useEffect(() => {
     getUserDetails()
-  }, [])
+  }, [userUpdateFlag])
 
   const getUserDetails = async () => {
     let user_details = await getUserpProfileDetailsUsingUserID(UserID)
@@ -88,7 +89,11 @@ const ProfilePage = () => {
               <PageTitle breadcrumbs={profileBreadCrumbs}>
                 {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.EDITPROFILE'})}
               </PageTitle>
-              <EditProfile user={userDetails} />
+              <EditProfile
+                user={userDetails}
+                setUserUpdateFlag={setUserUpdateFlag}
+                userUpdateFlag={userUpdateFlag}
+              />
             </>
           }
         />
@@ -155,6 +160,17 @@ const ProfilePage = () => {
                 {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.CREDIT'})}
               </PageTitle>
               <div>Credit</div>
+            </>
+          }
+        />
+        <Route
+          path='/history/:id'
+          element={
+            <>
+              <PageTitle breadcrumbs={profileBreadCrumbs}>
+                {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.HISTORY'})}
+              </PageTitle>
+              <div>History</div>
             </>
           }
         />

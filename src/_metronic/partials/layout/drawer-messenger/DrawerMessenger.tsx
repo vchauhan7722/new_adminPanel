@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, {FC} from 'react'
 import {KTIcon} from '../../../helpers'
-import {ChatInner} from '../../chat/ChatInner'
+import {ChatInner} from '../../chat/ChatInner1'
 
 const DrawerMessenger: FC = () => (
   <div

@@ -65,7 +65,7 @@ const useQueryResponsePagination = () => {
   }
 
   const {response} = useQueryResponse()
-  console.log('response 69', response)
+  //console.log('response 69', response)
   if (!response || response !== undefined) {
     let pagination = {
       page: response?.page,

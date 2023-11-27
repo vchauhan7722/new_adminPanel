@@ -333,7 +333,6 @@ export const addUserInterest = async (userID, interestId) => {
 export const removeUserInterest = async (userID, interestId) => {
   try {
     let accessToken = localStorage.getItem('accessToken')
-    console.log(accessToken)
 
     let formdata = new FormData()
     formdata = {
@@ -379,13 +378,44 @@ export const getUserQuetionAnswerForProfile = async userID => {
   }
 }
 
-export const updateUserQuetionAnswerForProfile = async (userID, questionID) => {
+export const createUserQuetionAnswerForProfile = async (userID, questionID,answerID) => {
   try {
     let accessToken = localStorage.getItem('accessToken')
+    let formdata = new FormData()
+    formdata = {
+      questionId : questionID,
+      answerId : answerID
+    }
+
+    const apiUrl = `${APIURL}/api/v1/users/${userID}/questions`
+
+    let response = await axios.post(apiUrl, formdata,{
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const updateUserQuetionAnswerForProfile = async (userID, questionID,answerID) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+    let formdata = new FormData()
+    formdata = {
+      questionId : questionID,
+      answerId : answerID
+    }
 
     const apiUrl = `${APIURL}/api/v1/users/${userID}/questions/${questionID}`
 
-    let response = await axios.put(apiUrl, {
+    let response = await axios.put(apiUrl, formdata,{
       headers: {
         'Content-Type': `application/json`,
         'x-access-token': accessToken
@@ -556,4 +586,31 @@ export const getMessagesByUserID = async (userID,page,pageSize) => {
   }
 }
 
-///api/v1/communications/chat/users/2/messages
+export const UpdateUserDetailsByUID = async (UID, newUserData) => {
+  let accessToken = localStorage.getItem('accessToken')
+  let formdata = new FormData()
+  formdata = {
+    mobileNo: newUserData.mobileNo,
+    countryCode: newUserData.countryCode,
+    fullName: newUserData.fullName,
+    userName: newUserData.userName,
+    email: newUserData.email,
+    genderId: parseInt(newUserData.gender),
+    city: newUserData.city,
+    state: newUserData.state,
+    country: newUserData.country,
+    birthDate: newUserData.birthDate,
+    bio:newUserData.bio
+  }
+
+  const apiUrl = `${APIURL}/api/v1/users/update/${UID}`
+
+  let response = await axios.put(apiUrl, formdata, {
+    headers: {
+      'Content-Type': `application/json`,
+      'x-access-token': accessToken
+    }
+  })
+
+  return response.data
+}

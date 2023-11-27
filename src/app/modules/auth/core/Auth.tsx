@@ -52,6 +52,7 @@ const AuthProvider: FC<WithChildren> = ({children}) => {
     saveAuth(undefined)
     setCurrentUser(undefined)
     localStorage.removeItem('accessToken')
+    localStorage.removeItem('messageList')
   }
 
   return (

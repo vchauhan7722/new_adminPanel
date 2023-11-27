@@ -2,10 +2,11 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, {FC, useEffect, useState} from 'react'
 import {KTIcon, toAbsoluteUrl} from '../../../../../_metronic/helpers'
-import {ChatInner, Dropdown1} from '../../../../../_metronic/partials'
+import {Dropdown1} from '../../../../../_metronic/partials'
 import {getChatMemberByUserID, getMessagesByUserID} from '../../../../../API/api-endpoint'
 import {DateTimeFormatter, calculateTimeDifference} from '../../../../../utils/Utils'
 import InfinitScroll from 'react-infinite-scroll-component'
+import {ChatInner} from '../../../../../_metronic/partials/chat/ChatInner'
 
 const Chat: FC = () => {
   const [chatMemberList, setChatMemberList] = useState<any>([])

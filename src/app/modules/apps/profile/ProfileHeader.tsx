@@ -313,7 +313,17 @@ const ProfileHeader = (props) => {
                     {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.CREDIT'})}
                   </Link>
                 </li>
-
+                <li className='nav-item'>
+                  <Link
+                    className={
+                      `nav-link text-active-primary me-6 ` +
+                      (location.pathname === `/apps/users-profile/history/${UserID}` && 'active')
+                    }
+                    to={`/apps/users-profile/history/${UserID}`}
+                  >
+                    {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.HISTORY'})}
+                  </Link>
+                </li>
                 <li className='nav-item'>
                   <Link
                     className={
