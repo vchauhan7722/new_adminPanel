@@ -283,6 +283,79 @@ export const getAllInterest = async () => {
   }
 }
 
+export const createInterest = async (name) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+
+    let formdata = new FormData()
+    formdata = {
+      name: name
+    }
+
+    const apiUrl = `${APIURL}/api/v1/masters/interests`
+
+    let response = await axios.post(apiUrl, formdata, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const updateInterest = async (interestId,name) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+
+    let formdata = new FormData()
+    formdata = {
+      name: name
+    }
+
+    const apiUrl = `${APIURL}/api/v1/masters/interests/${interestId}`
+
+    let response = await axios.put(apiUrl, formdata, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const removeInterest = async (interestId) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+
+    const apiUrl = `${APIURL}/api/v1/masters/interests/${interestId}`
+
+    let response = await axios.delete(apiUrl,  {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
 export const getUserInterest = async userID => {
   try {
     let accessToken = localStorage.getItem('accessToken')
@@ -347,6 +420,66 @@ export const removeUserInterest = async (userID, interestId) => {
         'x-access-token': accessToken
       },
       data: formdata
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const addQuestions = async (question,order,inputType,genderId,questionIcon) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+
+    let formdata = new FormData()
+    formdata = {
+      question: question,
+      order:order,
+      inputType:inputType,
+      genderId:genderId,
+      questionIcon:questionIcon
+    }
+
+    const apiUrl = `${APIURL}/api/v1/masters/questions`
+
+    let response = await axios.post(apiUrl, formdata, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const updateQuestions = async (updatedData) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+
+    let formdata = new FormData()
+    formdata = {
+      question: updatedData.question,
+      order:updatedData.order,
+      inputType:updatedData.inputType,
+      genderId:updatedData.genderId,
+      questionIcon:updatedData.questionIcon
+    }
+
+    const apiUrl = `${APIURL}/api/v1/masters/questions/${updatedData.questionId}`
+
+    let response = await axios.put(apiUrl, formdata, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
     })
 
     return response.data

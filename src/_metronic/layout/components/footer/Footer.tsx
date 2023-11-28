@@ -14,11 +14,11 @@ const Footer = () => {
           {new Date().getFullYear().toString()}&copy;
         </span>
         <a
-          href='https://yourdworld.com/'
+          //href='https://yourdworld.com/'
           target='_blank'
           className='text-gray-800 text-hover-primary'
         >
-          YourDworld
+          Lucky1
         </a>
       </div>
 

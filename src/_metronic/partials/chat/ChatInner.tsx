@@ -82,8 +82,8 @@ const ChatInner = (props: any) => {
   const sendMessage = () => {
     socket.emit('chat_message', {
       message: message,
-      senderId: currentUserId,
-      receiverId: receiverUserDetails.userId,
+      senderId: receiverUserDetails.userId,
+      receiverId: currentUserId,
       type: 'text',
       chatRoomId: receiverUserDetails.chatRoomId,
       chatId: receiverUserDetails.chatId,
@@ -202,7 +202,7 @@ const ChatInner = (props: any) => {
             })
             .map((message: any, index: any) => {
               //const userInfo = userInfos[message.user]
-              const userType = currentUserId === message.senderId
+              const userType = currentUserId !== message.receiverId
               const dateNum = DateTimeFormatter(message.updatedAt)
               const state = userType ? 'info' : 'primary'
               const templateAttr = {}

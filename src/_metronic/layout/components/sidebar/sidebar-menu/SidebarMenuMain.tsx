@@ -24,12 +24,12 @@ const SidebarMenuMain = () => {
         fontIcon='bi-layers'
       />
 
-      {/* <SidebarMenuItem
-        to='/apps/users-profile/overview'
+      <SidebarMenuItem
+        to='/plugins'
         icon='abstract-28'
-        title={intl.formatMessage({id: 'MENU.PROFILEPAGE'})}
+        title={intl.formatMessage({id: 'MENU.PLUGINS'})}
         fontIcon='bi-layers'
-      /> */}
+      />
     </>
   )
 }
