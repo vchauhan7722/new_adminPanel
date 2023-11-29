@@ -5,13 +5,16 @@ import InputGroup from 'react-bootstrap/InputGroup'
 import FormControl from 'react-bootstrap/FormControl'
 import Button from 'react-bootstrap/Button'
 import {
+  addAnswer,
   addQuestions,
-  getUserQuetionAnswerForProfile,
+  getUserQuestionAnswerForProfile,
+  updateAnswers,
   updateQuestions,
 } from '../../../../../../API/api-endpoint'
 import {Form} from 'react-bootstrap'
 import {KTCardBody} from '../../../../../../_metronic/helpers'
 import {StatisticsWidget1} from '../../../../../../_metronic/partials/widgets'
+import ToastUtils from '../../../../../../utils/ToastUtils'
 
 const genders = [
   {name: 'All Genders', value: 0},
@@ -25,6 +28,9 @@ const Questions = () => {
   const userID = localStorage.getItem('userId')
   const [tableData, setTableData] = useState<any>([])
   const [file, setFile] = useState('')
+  const [currentFile, setCurrentFile] = useState('')
+  const [getQuestionFlag, setGetQuestionFlag] = useState(1)
+  const [currentAnswer, setCurrentAnswer] = useState<any>([])
   const [questionFormValue, setQuetionFormValue] = useState({
     question: '',
     order: 0,
@@ -33,16 +39,16 @@ const Questions = () => {
     answers: [],
     icon: '',
   })
-  const [getQuestionFlag, setGetQuestionFlag] = useState(1)
 
   const hiddenFileInput = useRef<HTMLInputElement>(document.createElement('input'))
+  const hiddenCurrentFileInput = useRef<HTMLInputElement>(document.createElement('input'))
 
   useEffect(() => {
     getAllQuestionWithAnswer()
   }, [getQuestionFlag])
 
   const getAllQuestionWithAnswer = async () => {
-    let result = await getUserQuetionAnswerForProfile(userID)
+    let result = await getUserQuestionAnswerForProfile(userID)
     setTableData(result)
   }
 
@@ -51,28 +57,30 @@ const Questions = () => {
     oldTableData.splice(0, 0, questionFormValue)
     setTableData(oldTableData)
 
-    console.log(questionFormValue, file)
-
     //create questions api
-    // let result = await addQuestions(
-    //   questionFormValue.question,
-    //   questionFormValue.order,
-    //   questionFormValue.inputType,
-    //   questionFormValue.genderId,
-    //   file
-    // )
-    // if (result.status === 200) {
-    //   setQuetionFormValue({
-    //     question: '',
-    //     order: 1,
-    //     inputType: 'text',
-    //     genderId: 0,
-    //     answers: [],
-    //     icon: '',
-    //   })
-    //   //setFile('')
-    //   setGetQuestionFlag(getQuestionFlag + 1)
-    // }
+    let result = await addQuestions(
+      questionFormValue.question,
+      questionFormValue.order,
+      questionFormValue.inputType,
+      questionFormValue.genderId,
+      file
+    )
+    if (result.status === 200) {
+      setQuetionFormValue({
+        question: '',
+        order: 1,
+        inputType: 'text',
+        genderId: 0,
+        answers: [],
+        icon: '',
+      })
+      //setFile('')
+      setCurrentFile('')
+      setGetQuestionFlag(getQuestionFlag + 1)
+      ToastUtils({type: 'success', message: 'Questions Was Added'})
+    } else {
+      ToastUtils({type: 'error', message: 'Questions Was Not Added'})
+    }
   }
 
   const handleInputChange = (event: any, index: any) => {
@@ -112,7 +120,7 @@ const Questions = () => {
   const handleUpdateQuestion = async (questionId) => {
     //update questions api
     let updatedData = tableData.filter((question) => question.questionId === questionId)
-    let result = await updateQuestions(updatedData[0])
+    let result = await updateQuestions(updatedData[0], file)
     if (result.status === 200) {
       setQuetionFormValue({
         question: '',
@@ -122,8 +130,12 @@ const Questions = () => {
         answers: [],
         icon: '',
       })
-      //setFile('')
+      setFile('')
+      setCurrentFile('')
       setGetQuestionFlag(getQuestionFlag + 1)
+      ToastUtils({type: 'success', message: 'Questions Was Updated'})
+    } else {
+      ToastUtils({type: 'error', message: 'Questions Was Not Updated'})
     }
   }
 
@@ -135,6 +147,67 @@ const Questions = () => {
     // updatedTableData[index]['icon'] = fileUploaded
     // setTableData(updatedTableData)
     setFile(fileUploaded)
+  }
+
+  const handleCurrentIconChange = (event: any) => {
+    const fileUploaded = event.target.files[0]
+    console.log(fileUploaded)
+    setCurrentFile(fileUploaded)
+  }
+
+  const handleClick = (index: any) => {
+    const fileInput = document.getElementById(`fileInput${index}`)
+    fileInput?.click()
+  }
+
+  const handleCurrentAnswerChange = (event: any, questionId: any, questionIndex: any) => {
+    const currentAnswerData = [...currentAnswer]
+    currentAnswerData[questionIndex] = event.target.value
+    setCurrentAnswer(currentAnswerData)
+  }
+
+  const handleUpdateAnswer = async (questionIndex: any, questionId: any) => {
+    const updatedTableData = [...tableData]
+    let answerArray = updatedTableData[questionIndex].answers
+    console.log('answerArray', answerArray)
+    //let answerText = currentAnswer[questionIndex]
+    // let answerObject = {
+    //   answer: answerText,
+    //   questionId: questionIndex + 1,
+    //   status: true,
+    // }
+    // answerArray.push(answerObject)
+    let answerText = currentAnswer[questionIndex]
+    if (answerText !== undefined) {
+      //here call a add a answer api
+      let result = await addAnswer(answerText, questionId)
+      if (result.status === 200) {
+        let oldAnswerDetails = [...currentAnswer]
+        oldAnswerDetails[questionIndex] = ''
+        setCurrentAnswer(oldAnswerDetails)
+        setGetQuestionFlag(getQuestionFlag + 1)
+      }
+    }
+
+    if (answerArray.length !== 0) {
+      let response = await updateAnswers(answerArray)
+      if (response.status === 200) {
+        setGetQuestionFlag(getQuestionFlag + 1)
+        ToastUtils({type: 'success', message: 'Answer Was Updated'})
+      } else {
+        ToastUtils({type: 'error', message: 'Answer Was Not Updated'})
+      }
+    }
+
+    // updatedTableData[questionIndex].answers = answerArray
+    // setTableData(updatedTableData)
+  }
+
+  const handleExitingAnswer = (questionIndex: any, answerIndex: any, event: any) => {
+    const updatedTableData = [...tableData]
+    console.log(updatedTableData[questionIndex].answers[answerIndex].answer)
+    updatedTableData[questionIndex].answers[answerIndex].answer = event.target.value
+    setTableData(updatedTableData)
   }
 
   return (
@@ -160,16 +233,18 @@ const Questions = () => {
                     <button
                       className='btn btn-light'
                       type='button'
-                      onClick={() => hiddenFileInput.current.click()}
+                      onClick={() => handleClick(index)}
                     >
                       <i className='fa-solid fa-upload'></i>
                     </button>
                     <input
                       type='file'
                       name='icon'
-                      //onChange={(e) => handleIconChange(e, row.questionId)}
+                      id={`fileInput${index}`}
+                      onChange={(e) => handleIconChange(e)}
                       ref={hiddenFileInput}
                       style={{display: 'none'}} // Make the file input element invisible
+                      accept='image/*'
                     />
                   </>
                 ) : (
@@ -249,7 +324,7 @@ const Questions = () => {
               <button
                 className='btn btn-light'
                 type='button'
-                onClick={() => hiddenFileInput.current.click()}
+                onClick={() => hiddenCurrentFileInput.current.click()}
               >
                 <i className='fa-solid fa-upload'></i>
               </button>
@@ -257,9 +332,18 @@ const Questions = () => {
                 type='file'
                 name='icon'
                 onChange={(event) => handleIconChange(event)}
-                ref={hiddenFileInput}
-                style={{display: 'none'}} // Make the file input element invisible
+                ref={hiddenCurrentFileInput}
+                style={{display: 'none'}}
+                accept='image/*'
               />
+              {/* <div className='symbol symbol-50px overflow-visible me-3'>
+                <img
+                  src={`${process.env.REACT_APP_SERVER_URL}/${row.icon}`}
+                  alt='Icon'
+                  width='50px'
+                  height='50px'
+                />
+              </div> */}
             </td>
             <td>
               <InputGroup>
@@ -306,23 +390,44 @@ const Questions = () => {
       <div>
         <div className='row g-5 g-xl-8'>
           {tableData !== undefined &&
-            tableData.map((question: any, index: number) => {
+            tableData.map((question: any, questionindex: number) => {
               return (
-                <div className='col-xl-4' key={index}>
+                <div className='col-xl-4' key={questionindex}>
                   <div className='card p-3' style={{height: '300px'}}>
                     <div className='d-flex justify-content-between'>
                       <h3 className='mt-3 fw-bold text-gray-800 fs-3'>{question.question}</h3>
-                      <button className='btn btn-light text-black'>Update</button>
+                      <button
+                        className='btn btn-light text-black'
+                        onClick={() => handleUpdateAnswer(questionindex, question.questionId)}
+                      >
+                        Update
+                      </button>
                     </div>
                     <hr></hr>
                     <div className='h-200px overflow-scroll'>
-                      {question.answers.map((answer: any, index: number) => {
+                      {question.answers.map((answer: any, answerindex: number) => {
                         return (
-                          <p className='fw-bold text-muted fs-6' key={index}>
-                            {answer.answer}
-                          </p>
+                          <FormControl
+                            key={answerindex}
+                            name='answer'
+                            value={answer.answer}
+                            onChange={(event) =>
+                              handleExitingAnswer(questionindex, answerindex, event)
+                            }
+                            className='border border-0'
+                          />
                         )
                       })}
+
+                      <FormControl
+                        placeholder='Add Answer'
+                        name='answer'
+                        value={currentAnswer[questionindex]}
+                        onChange={(event) =>
+                          handleCurrentAnswerChange(event, question.questionId, questionindex)
+                        }
+                        className='border border-0'
+                      />
                     </div>
                   </div>
                 </div>

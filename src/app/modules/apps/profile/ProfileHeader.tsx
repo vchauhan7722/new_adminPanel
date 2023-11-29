@@ -13,11 +13,10 @@ const ProfileHeader = (props) => {
   let UserID = localStorage.getItem('userId')
 
   return (
-    <Accordion defaultActiveKey='0'>
+    <Accordion defaultActiveKey='0' className='mb-5'>
       <Accordion.Item eventKey='0'>
-        {' '}
-        <div className='card mb-5 mb-xl-10'>
-          <div className='card-body pt-9 pb-0'>
+        <div className='p-7 '>
+          <div className=' pt-9 pb-0'>
             <div className='d-flex flex-wrap flex-sm-nowrap mb-3'>
               <div className='me-7 mb-4'>
                 <div className='symbol symbol-100px symbol-lg-160px symbol-fixed position-relative'>
@@ -150,7 +149,7 @@ const ProfileHeader = (props) => {
                       <div className='border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3'>
                         <div className='d-flex align-items-center'>
                           <KTIcon iconName='arrow-up' className='fs-3 text-success me-2' />
-                          <div className='fs-2 fw-bolder'>&copy; {user.totalCredit}</div>
+                          <div className='fs-2 fw-bolder'> {user.totalCredit}</div>
                         </div>
 
                         <div className='fw-bold fs-6 text-gray-400'>
@@ -190,10 +189,28 @@ const ProfileHeader = (props) => {
                           {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.SPOTLIGHT'})}
                         </div>
                       </div>
+
+                      <div className='border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3'>
+                        <div className=''>
+                          <div className='d-flex justify-content-between w-100 mt-auto mb-2'>
+                            <span className='fw-bold fs-6 text-gray-400 me-4'>
+                              Profile Completion
+                            </span>
+                            <span className='fw-bolder fs-6'>50%</span>
+                          </div>
+                          <div className='h-5px w-100 bg-light mb-3'>
+                            <div
+                              className='bg-success rounded h-5px'
+                              role='progressbar'
+                              style={{width: '70%'}}
+                            ></div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
-                  <div className='d-flex align-items-center w-200px w-sm-300px flex-column mt-3'>
+                  {/* <div className='d-flex align-items-center w-200px w-sm-300px flex-column mt-3'>
                     <div className='d-flex justify-content-between w-100 mt-auto mb-2'>
                       <span className='fw-bold fs-6 text-gray-400'>Profile Compleation</span>
                       <span className='fw-bolder fs-6'>50%</span>
@@ -205,12 +222,12 @@ const ProfileHeader = (props) => {
                         style={{width: '50%'}}
                       ></div>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>
 
-            <div className='d-flex overflow-auto h-55px'>
+            <div className='d-flex overflow-auto '>
               <ul className='nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bolder flex-nowrap'>
                 <li className='nav-item'>
                   <Link
@@ -218,7 +235,7 @@ const ProfileHeader = (props) => {
                       `nav-link text-active-primary me-6 ` +
                       (location.pathname === `/apps/users-profile/activity/${UserID}` && 'active')
                     }
-                    to={`/apps/users-profile/activity/${UserID}`} //${UserID}
+                    to={`/apps/users-profile/activity/${UserID}`}
                   >
                     {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.ACTIVITY'})}
                   </Link>

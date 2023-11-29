@@ -3,7 +3,7 @@ import {KTCardBody} from '../../../../_metronic/helpers/components/KTCardBody'
 import PluginData from '../plugins/PluginsData'
 import clsx from 'clsx'
 import {useIntl} from 'react-intl'
-import ProfileQuestionsAndIntrest from './Componants/ProfileQuestionsAndInterest'
+import ProfileQuestionsAndInterest from './Componants/ProfileQuestionsAndInterest'
 
 const Plugins = () => {
   const intl = useIntl()
@@ -84,7 +84,7 @@ const Plugins = () => {
         </KTCardBody>
       )}
 
-      {selectedPlugins === 'Profile questions and Interest' && <ProfileQuestionsAndIntrest />}
+      {selectedPlugins === 'Profile questions and Interest' && <ProfileQuestionsAndInterest />}
     </>
   )
 }

@@ -1,23 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react'
-import {useFormik} from 'formik'
-import * as Yup from 'yup'
 import clsx from 'clsx'
 import {useIntl} from 'react-intl'
 import {
   UpdateUserDetailsByUID,
   addUserInterest,
-  createUserQuetionAnswerForProfile,
+  createUserQuestionAnswerForProfile,
   getAllInterest,
   getCitiesBYSearch,
-  getUserQuetionAnswerForProfile,
+  getUserQuestionAnswerForProfile,
   removeUserInterest,
-  updateUserQuetionAnswerForProfile,
+  updateUserQuestionAnswerForProfile,
 } from '../../../../../API/api-endpoint'
 import '../../../../../_metronic/assets/css/react-phone-number-input.css'
-import PhoneInput from 'react-phone-input-2'
-import {DateTimeFormatter} from '../../../../../utils/Utils'
-import moment from 'moment'
 import ToastUtils from '../../../../../utils/ToastUtils'
 
 const EditProfile = (props) => {
@@ -71,7 +66,7 @@ const EditProfile = (props) => {
   }, [])
 
   const getAllQuestionAnswer = async () => {
-    let result = await getUserQuetionAnswerForProfile(userID)
+    let result = await getUserQuestionAnswerForProfile(userID)
     setQuestionList(result)
   }
 
@@ -158,12 +153,12 @@ const EditProfile = (props) => {
     let answerId = parseInt(e.target.value)
 
     if (matchedAnswerIds.length !== 0) {
-      let result = await updateUserQuetionAnswerForProfile(userID, questionID, answerId)
+      let result = await updateUserQuestionAnswerForProfile(userID, questionID, answerId)
       if (result.status === 200) {
         setUserUpdateFlag(userUpdateFlag + 1)
       }
     } else {
-      let result = await createUserQuetionAnswerForProfile(userID, questionID, answerId)
+      let result = await createUserQuestionAnswerForProfile(userID, questionID, answerId)
       if (result.status === 200) {
         setUserUpdateFlag(userUpdateFlag + 1)
       }

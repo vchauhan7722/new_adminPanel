@@ -45,9 +45,9 @@ export const calculateTimeDifference = (givenTime: any) => {
   }
 }
 
-export const oldcalculateDateTimeDifference = (pastdate: any) => {
+export const oldCalculateDateTimeDifference = (pastDateString: any) => {
   const currentDate = new Date()
-  const pastDate = new Date(pastdate)
+  const pastDate = new Date(pastDateString)
   const timeDifference = Math.abs(currentDate.getTime() - pastDate.getTime())
   const minutes = Math.floor(timeDifference / (60 * 1000))
   const hours = Math.floor(timeDifference / (60 * 60 * 1000))
@@ -79,7 +79,7 @@ export const handleAPIResponse = (status: any) => {
   if (status === 200) {
     return true
   } else if (status === 401) {
-    ToastUtils({type: 'error', message: 'unAuthorised User'})
+    ToastUtils({type: 'error', message: 'unAuthorized User'})
   } else if (status === 500) {
     ToastUtils({type: 'error', message: 'Internal Server Error'})
   } else if (status === 404) {

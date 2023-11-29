@@ -1,6 +1,4 @@
 import axios from 'axios'
-import ToastUtils from '../utils/ToastUtils'
-import { handleAPIResponse } from '../utils/Utils'
 
 let APIURL = process.env.REACT_APP_SERVER_URL //NEXT_PUBLIC_PRODUCTION_SERVER_URL
 
@@ -11,8 +9,6 @@ export const getAllUser = async paginationModel => {
     let pageModel = paginationModel.split('&')
     let page = pageModel[0].split('=')[1]
     let pageSize = pageModel[1].split('=')[1]
-
-    console.log(page,pageSize)
 
     const apiUrl = `${APIURL}/api/v1/users?page=${page}&pageSize=${pageSize}`
 
@@ -433,21 +429,21 @@ export const removeUserInterest = async (userID, interestId) => {
 export const addQuestions = async (question,order,inputType,genderId,questionIcon) => {
   try {
     let accessToken = localStorage.getItem('accessToken')
-
+    
     let formdata = new FormData()
     formdata = {
       question: question,
       order:order,
       inputType:inputType,
-      genderId:genderId,
-      questionIcon:questionIcon
+      genderId: parseInt(genderId),
+      questionIcon: questionIcon
     }
 
     const apiUrl = `${APIURL}/api/v1/masters/questions`
 
     let response = await axios.post(apiUrl, formdata, {
       headers: {
-        'Content-Type': `application/json`,
+        'Content-Type': `multipart/form-data`,
         'x-access-token': accessToken
       }
     })
@@ -460,7 +456,7 @@ export const addQuestions = async (question,order,inputType,genderId,questionIco
   }
 }
 
-export const updateQuestions = async (updatedData) => {
+export const updateQuestions = async (updatedData,file) => {
   try {
     let accessToken = localStorage.getItem('accessToken')
 
@@ -470,10 +466,65 @@ export const updateQuestions = async (updatedData) => {
       order:updatedData.order,
       inputType:updatedData.inputType,
       genderId:updatedData.genderId,
-      questionIcon:updatedData.questionIcon
+      questionIcon:file
     }
 
     const apiUrl = `${APIURL}/api/v1/masters/questions/${updatedData.questionId}`
+
+    let response = await axios.put(apiUrl, formdata, {
+      headers: {
+        'Content-Type': `multipart/form-data`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const addAnswer = async (answer,questionId) => {
+  //
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+
+    let formdata = new FormData()
+    formdata = {
+      answer :answer,
+      questionId:questionId
+    }
+
+    const apiUrl = `${APIURL}/api/v1/masters/answers`
+
+    let response = await axios.post(apiUrl, formdata, {
+      headers: {
+        'Content-Type': `application/x-www-form-urlencoded`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const updateAnswers = async (answers) => {
+  //
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+
+    let formdata = new FormData()
+    formdata = {
+      answers :answers,
+    }
+
+    const apiUrl = `${APIURL}/api/v1/masters/answers`
 
     let response = await axios.put(apiUrl, formdata, {
       headers: {
@@ -490,7 +541,7 @@ export const updateQuestions = async (updatedData) => {
   }
 }
 
-export const getUserQuetionAnswerForProfile = async userID => {
+export const getUserQuestionAnswerForProfile = async userID => {
   try {
     let accessToken = localStorage.getItem('accessToken')
 
@@ -511,7 +562,7 @@ export const getUserQuetionAnswerForProfile = async userID => {
   }
 }
 
-export const createUserQuetionAnswerForProfile = async (userID, questionID,answerID) => {
+export const createUserQuestionAnswerForProfile = async (userID, questionID,answerID) => {
   try {
     let accessToken = localStorage.getItem('accessToken')
     let formdata = new FormData()
@@ -537,7 +588,7 @@ export const createUserQuetionAnswerForProfile = async (userID, questionID,answe
   }
 }
 
-export const updateUserQuetionAnswerForProfile = async (userID, questionID,answerID) => {
+export const updateUserQuestionAnswerForProfile = async (userID, questionID,answerID) => {
   try {
     let accessToken = localStorage.getItem('accessToken')
     let formdata = new FormData()
@@ -677,48 +728,6 @@ export const getUserCreditsHistoryWithPagination = async (userID, page, pageSize
   }
 }
 
-export const getChatMemberByUserID = async (userID,page,pageSize) => {
-  try {
-    let accessToken = localStorage.getItem('accessToken')
-
-    const apiUrl = `${APIURL}/api/v1/communications/chat/users/${userID}?page=${page}&pageSize=${pageSize}`
-
-    let response = await axios.get(apiUrl, {
-      headers: {
-        'Content-Type': `application/json`,
-        'x-access-token': accessToken
-      }
-    })
-
-    return response.data.data
-  } catch (error) {
-    console.log(error.message)
-
-    return error.message
-  }
-}
-
-export const getMessagesByUserID = async (userID,page,pageSize) => {
-  try {
-    let accessToken = localStorage.getItem('accessToken')
-
-    const apiUrl = `${APIURL}/api/v1/communications/chat/users/${userID}/messages?page=${page}&pageSize=${pageSize}`
-
-    let response = await axios.get(apiUrl, {
-      headers: {
-        'Content-Type': `application/json`,
-        'x-access-token': accessToken
-      }
-    })
-
-    return response.data
-  } catch (error) {
-    console.log(error.message)
-
-    return error.message
-  }
-}
-
 export const UpdateUserDetailsByUID = async (UID, newUserData) => {
   let accessToken = localStorage.getItem('accessToken')
   let formdata = new FormData()
@@ -746,4 +755,47 @@ export const UpdateUserDetailsByUID = async (UID, newUserData) => {
   })
 
   return response.data
+}
+
+/*For Chats */
+export const getMessagesByUserID = async (userID,chatroomID,page,pageSize) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+
+    const apiUrl = `${APIURL}/api/v1/communications/chat/users/${userID}/chatroom/${chatroomID}/messages?page=${page}&pageSize=${pageSize}`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const getChatMemberByUserID = async (userID,page,pageSize) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+
+    const apiUrl = `${APIURL}/api/v1/communications/chat/users/${userID}?page=${page}&pageSize=${pageSize}`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
 }

@@ -2,9 +2,8 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, {FC, useEffect, useState} from 'react'
 import {KTIcon, toAbsoluteUrl} from '../../../../../_metronic/helpers'
-import {Dropdown1} from '../../../../../_metronic/partials'
-import {getChatMemberByUserID, getMessagesByUserID} from '../../../../../API/api-endpoint'
-import {DateTimeFormatter, calculateTimeDifference} from '../../../../../utils/Utils'
+import {getChatMemberByUserID} from '../../../../../API/api-endpoint'
+import {calculateTimeDifference} from '../../../../../utils/Utils'
 import InfinitScroll from 'react-infinite-scroll-component'
 import {ChatInner} from '../../../../../_metronic/partials/chat/ChatInner'
 
@@ -105,13 +104,15 @@ const Chat: FC = () => {
                               >
                                 {member.usersDetail.fullName}
                               </a>
-                              <div className='fw-bold text-gray-400'>Hello</div>
+                              <div className='fw-bold text-gray-400'>
+                                {member?.messageDetail?.message}
+                              </div>
                             </div>
                           </div>
 
                           <div className='d-flex flex-column align-items-end ms-2'>
                             <span className='text-muted fs-7 mb-1'>
-                              {calculateTimeDifference(member.updatedAt)}
+                              {calculateTimeDifference(member?.messageDetail?.createdAt)}
                             </span>
                           </div>
                         </div>

@@ -2,7 +2,7 @@ import React from 'react'
 import {useIntl} from 'react-intl'
 import {DateWithTimeFormatter} from '../../../../../utils/Utils'
 
-export function Overview(props) {
+export function Overview(props: any) {
   const {user} = props
   const intl = useIntl()
 
@@ -18,10 +18,6 @@ export function Overview(props) {
             </h3>
           </div>
         </div>
-        {/* 
-    <Link to='/crafted/account/settings' className='btn btn-primary align-self-center'>
-      Edit Profile
-    </Link> */}
       </div>
 
       <div className='card-body row p-9'>

@@ -16,8 +16,9 @@ type Props = {
 const ChatInner = (props: any) => {
   const {isDrawer = false, receiverUserDetails} = props
 
-  let location = useLocation()
-  const currentUserId = parseInt(localStorage.getItem('userId') || '1') //GetIDFromURL(location)
+  const messagesEndRef = useRef<any>(null)
+
+  const currentUserId = parseInt(localStorage.getItem('userId') || '1')
 
   const [message, setMessage] = useState<string>('')
   const [messageList, setMessageList] = useState<any>([])
@@ -44,9 +45,8 @@ const ChatInner = (props: any) => {
   }, [])
 
   useEffect(() => {
-    //console.log('new message REceived inside useEffect', socket)
     socket.on('chat_message', (newMessage) => {
-      //console.log('new message Received', newMessage)
+      // console.log('new message Received', newMessage)
       // const new_message = {
       //   chatId: receiverUserDetails.chatId,
       //   chatRoomId: receiverUserDetails.chatRoomId,
@@ -79,17 +79,31 @@ const ChatInner = (props: any) => {
     }
   }, [socket])
 
-  const sendMessage = () => {
-    socket.emit('chat_message', {
-      message: message,
-      senderId: receiverUserDetails.userId,
-      receiverId: currentUserId,
-      type: 'text',
-      chatRoomId: receiverUserDetails.chatRoomId,
-      chatId: receiverUserDetails.chatId,
-    })
+  useEffect(() => {
+    scrollToBottom()
+  }, [messageList])
 
-    setMessage('')
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({behavior: 'smooth'})
+  }
+
+  const sendMessage = () => {
+    if (message.length !== 0) {
+      socket.emit('chat_message', {
+        message: message,
+        senderId: receiverUserDetails.userId,
+        receiverId: currentUserId,
+        type: 'text',
+        chatRoomId: receiverUserDetails.chatRoomId,
+        chatId: receiverUserDetails.chatId,
+      })
+
+      setMessage('')
+      const element = window.document.getElementById('chatInput')
+      if (element !== null) {
+        element.autofocus = true
+      }
+    }
 
     // const newMessage = {
     //   chatId: receiverUserDetails.chatId,
@@ -120,12 +134,17 @@ const ChatInner = (props: any) => {
   const onEnterPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.keyCode === 13 && e.shiftKey === false) {
       e.preventDefault()
-      //sendMessage()
+      sendMessage()
     }
   }
 
   const getchatList = async () => {
-    let result = await getMessagesByUserID(receiverUserDetails.userId, page, pageSize)
+    let result = await getMessagesByUserID(
+      receiverUserDetails.userId,
+      receiverUserDetails.chatRoomId,
+      page,
+      pageSize
+    )
     sessionStorage.setItem('messageList', JSON.stringify(result.data))
     setMessageList(result.data)
   }
@@ -220,7 +239,9 @@ const ChatInner = (props: any) => {
                   {dates.has(dateNum) ? null : renderDate(message, dateNum)}
                   <div
                     key={`message${index}`}
-                    className={clsx('d-flex', contentClass, 'mb-10', {'d-none': message.template})}
+                    className={clsx('d-flex', contentClass, 'mb-10', {
+                      'd-none': message.template,
+                    })}
                     {...templateAttr}
                   >
                     <div
@@ -278,6 +299,7 @@ const ChatInner = (props: any) => {
                 </>
               )
             })}
+          <div ref={messagesEndRef} />
         </div>
 
         <div
@@ -310,8 +332,9 @@ const ChatInner = (props: any) => {
               data-kt-element='input'
               placeholder='Type a message'
               value={message}
+              id='chatInput'
               onChange={(e) => setMessage(e.target.value)}
-              //onKeyDown={onEnterPress}
+              onKeyDown={onEnterPress}
             ></textarea>
             <button
               className='btn btn-primary ms-7'

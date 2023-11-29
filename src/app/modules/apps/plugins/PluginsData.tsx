@@ -2,14 +2,6 @@ const PluginData = [
   {
     pluginId: 1,
     icon: '',
-    name: 'Interests',
-    type: 'Software',
-    description: 'Customize interest system',
-    status: 'Active',
-  },
-  {
-    pluginId: 2,
-    icon: '',
     name: 'Profile questions and Interest',
     type: 'Software',
     description: 'Customize your users profile with your own custom questions and interest system',

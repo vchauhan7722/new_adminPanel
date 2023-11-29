@@ -8,6 +8,7 @@ import {
   removeInterest,
   updateInterest,
 } from '../../../../../../API/api-endpoint'
+import ToastUtils from '../../../../../../utils/ToastUtils'
 
 const ProfileInterest = () => {
   let userID = localStorage.getItem('userId')
@@ -30,6 +31,9 @@ const ProfileInterest = () => {
     if (result.status === 200) {
       setInterestFlag(interestFlag + 1)
       setInterest('')
+      ToastUtils({type: 'success', message: 'Interest Was Added'})
+    } else {
+      ToastUtils({type: 'error', message: 'Interest Was Not Added'})
     }
   }
 
@@ -38,6 +42,9 @@ const ProfileInterest = () => {
     if (result.status === 200) {
       setInterestFlag(interestFlag + 1)
       setInterest('')
+      ToastUtils({type: 'success', message: 'Interest Was Deleted'})
+    } else {
+      ToastUtils({type: 'error', message: 'Interest Was Not Deleted'})
     }
   }
 
@@ -46,6 +53,9 @@ const ProfileInterest = () => {
     if (result.status === 200) {
       setInterestFlag(interestFlag + 1)
       setInterest('')
+      ToastUtils({type: 'success', message: 'Interest Was Updated'})
+    } else {
+      ToastUtils({type: 'success', message: 'Interest Was Not Deleted'})
     }
   }
 
