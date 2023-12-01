@@ -18,7 +18,7 @@ const Footer = () => {
           target='_blank'
           className='text-gray-800 text-hover-primary'
         >
-          Lucky1
+          Metronic
         </a>
       </div>
 

@@ -87,6 +87,7 @@ const EditProfile = (props) => {
       let oldSelectedInterest = [...selectedInterestList]
       oldSelectedInterest.push(newInterest)
       setselectedInterestList(oldSelectedInterest)
+      ToastUtils({type: 'success', message: 'Interest Was Added'})
     }
   }
 
@@ -97,6 +98,7 @@ const EditProfile = (props) => {
       let oldSelectedInterest = [...selectedInterestList]
       oldSelectedInterest.splice(index, 1)
       setselectedInterestList(oldSelectedInterest)
+      ToastUtils({type: 'success', message: 'Interest Was Deleted'})
     }
   }
 
@@ -156,11 +158,13 @@ const EditProfile = (props) => {
       let result = await updateUserQuestionAnswerForProfile(userID, questionID, answerId)
       if (result.status === 200) {
         setUserUpdateFlag(userUpdateFlag + 1)
+        ToastUtils({type: 'success', message: 'Answer Is Updated'})
       }
     } else {
       let result = await createUserQuestionAnswerForProfile(userID, questionID, answerId)
       if (result.status === 200) {
         setUserUpdateFlag(userUpdateFlag + 1)
+        ToastUtils({type: 'success', message: 'Question Is Created With Answer'})
       }
     }
   }

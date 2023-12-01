@@ -4,19 +4,20 @@ import {FC, useEffect, useState, useRef} from 'react'
 import clsx from 'clsx'
 import {toAbsoluteUrl, defaultMessages, defaultUserInfos, UserInfoModel} from '../../helpers'
 import socket from '../../../config'
-import {getMessagesByUserID} from '../../../API/api-endpoint'
+import {getMessagesByUserID, sendCreditInChat} from '../../../API/api-endpoint'
 import {Dropdown1} from '../content/dropdown/Dropdown1'
 import {DateTimeFormatter, GetIDFromURL, TimeFormatter, sortData} from '../../../utils/Utils'
-import {useLocation} from 'react-router-dom'
+import {Link, useLocation} from 'react-router-dom'
 
 type Props = {
   isDrawer?: boolean
 }
 
 const ChatInner = (props: any) => {
-  const {isDrawer = false, receiverUserDetails} = props
+  const {isDrawer = false, receiverUserDetails, giftCategoriesList, giftList} = props
 
   const messagesEndRef = useRef<any>(null)
+  const hiddenFileInput = useRef<HTMLInputElement>(document.createElement('input'))
 
   const currentUserId = parseInt(localStorage.getItem('userId') || '1')
 
@@ -24,6 +25,11 @@ const ChatInner = (props: any) => {
   const [messageList, setMessageList] = useState<any>([])
   const [page, setPage] = useState<any>(1)
   const [pageSize, setPageSize] = useState<any>(100)
+  const [selectedGiftCategory, setSelectedGiftCategory] = useState<any>('all')
+  const [selectedGift, setSelectedGift] = useState<any>(undefined)
+  const [file, setFile] = useState<any>(undefined)
+  const [creditToSend, setCreditToSend] = useState<any>(1)
+
   const dates = new Set()
 
   const renderDate = (chat: any, dateNum: any) => {
@@ -46,7 +52,7 @@ const ChatInner = (props: any) => {
 
   useEffect(() => {
     socket.on('chat_message', (newMessage) => {
-      // console.log('new message Received', newMessage)
+      console.log('new message Received', newMessage)
       // const new_message = {
       //   chatId: receiverUserDetails.chatId,
       //   chatRoomId: receiverUserDetails.chatRoomId,
@@ -66,6 +72,7 @@ const ChatInner = (props: any) => {
       //   updatedAt: new Date(),
       //   videoCallDetail: null,
       // }
+      socket.emit('message_read', {messageId: newMessage.messageId, userId: newMessage.receiverId})
       let messages = JSON.parse(sessionStorage.getItem('messageList') || '')
       const oldMessage = [...messages]
       oldMessage.push(newMessage)
@@ -78,6 +85,21 @@ const ChatInner = (props: any) => {
       socket.close()
     }
   }, [socket])
+
+  // useEffect(() => {
+  //   socket.on('gift_message', (newMessage) => {
+  //     let messages = JSON.parse(sessionStorage.getItem('messageList') || '')
+  //     const oldMessage = [...messages]
+  //     oldMessage.push(newMessage)
+  //     sessionStorage.setItem('messageList', JSON.stringify(oldMessage))
+  //     setMessageList(oldMessage)
+  //   })
+
+  //   // Clean up the WebSocket connection when the component unmounts
+  //   return () => {
+  //     socket.close()
+  //   }
+  // }, [socket])
 
   useEffect(() => {
     scrollToBottom()
@@ -131,6 +153,25 @@ const ChatInner = (props: any) => {
     // setMessageList(oldMessage)
   }
 
+  const sendGift = () => {
+    socket.emit('send_gift', {
+      senderId: receiverUserDetails.userId,
+      receiverId: currentUserId,
+      type: 'gift',
+      giftId: selectedGift.giftId,
+      chatRoomId: receiverUserDetails.chatRoomId,
+      chatId: receiverUserDetails.chatId,
+    })
+    const element = window.document.getElementById('chatInput')
+    if (element !== null) {
+      element.autofocus = true
+    }
+  }
+
+  const sendCredit = async () => {
+    let result = await sendCreditInChat(receiverUserDetails.userId, currentUserId, creditToSend)
+  }
+
   const onEnterPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.keyCode === 13 && e.shiftKey === false) {
       e.preventDefault()
@@ -147,6 +188,31 @@ const ChatInner = (props: any) => {
     )
     sessionStorage.setItem('messageList', JSON.stringify(result.data))
     setMessageList(result.data)
+  }
+
+  const handleClick = () => {
+    const fileInput = document.getElementById(`fileInput`)
+    fileInput?.click()
+  }
+
+  const handleMediaChange = (event: any) => {
+    const fileUploaded = event.target.files[0]
+    //console.log('fileUploaded', fileUploaded)
+    socket.emit('media_message', {
+      senderId: receiverUserDetails.userId,
+      receiverId: currentUserId,
+      type: 'media',
+      fileData: fileUploaded,
+      fileName: fileUploaded.name,
+      chatRoomId: receiverUserDetails.chatRoomId,
+      chatId: receiverUserDetails.chatId,
+    })
+    const element = window.document.getElementById('chatInput')
+    if (element !== null) {
+      element.autofocus = true
+    }
+
+    //setFile(fileUploaded)
   }
 
   return messageList === undefined ? (
@@ -177,9 +243,45 @@ const ChatInner = (props: any) => {
               </div>
             )}
           </div>
+          <div className='ms-3'>
+            <img
+              alt='Pic'
+              src={toAbsoluteUrl(`/media/logos/Premiuim.png`)}
+              width='17px'
+              height='17px'
+            />
+            <span className='text-muted fs-7 ms-3'>Get</span>
+          </div>
+          <div className='ms-3'>
+            <img
+              alt='Pic'
+              src={toAbsoluteUrl(`/media/logos/Credits.png`)}
+              width='17px'
+              height='17px'
+            />
+            <span className='text-muted fs-7 ms-3'>
+              {receiverUserDetails?.usersDetail?.totalCredit}
+            </span>
+          </div>
         </div>
 
         <div className='card-toolbar'>
+          <div className='me-3' data-bs-toggle='modal' data-bs-target='#kt_modal_credit'>
+            <img
+              alt='Pic'
+              src={toAbsoluteUrl(`/media/logos/Credits.png`)}
+              width='20px'
+              height='20px'
+            />
+          </div>
+          <div data-bs-toggle='modal' data-bs-target='#kt_modal_gift' className='me-5'>
+            <img
+              alt='Pic'
+              src={toAbsoluteUrl(`/media/logos/gift.png`)}
+              width='20px'
+              height='20px'
+            />
+          </div>
           <div className='me-n3'>
             <button
               className='btn btn-sm btn-icon btn-active-light-primary'
@@ -291,8 +393,152 @@ const ChatInner = (props: any) => {
                             </div>
                           </div>
                         </>
+                      ) : message.type === 'gift' ? (
+                        <div
+                          className={clsx(
+                            'rounded',
+                            `bg-light-${state}`,
+                            'text-dark fw-bold mw-lg-400px',
+                            `text-${userType ? 'start' : 'end'}`
+                          )}
+                          data-kt-element='message-text'
+                        >
+                          {' '}
+                          <div className='d-flex align-items-center ms-1 mt-1 me-1'>
+                            {userType ? (
+                              <>
+                                <div className='ms-3'>
+                                  <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start mb-3'>
+                                    <img
+                                      alt='Pic'
+                                      src={`${process.env.REACT_APP_SERVER_URL}/${message.giftDetail.icon}`}
+                                      width='50px'
+                                      height='50px'
+                                    />
+                                  </span>
+
+                                  <span className='text-muted fs-9 me-2'>
+                                    {TimeFormatter(message.updatedAt)}
+                                  </span>
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <div className='ms-3 me-3'>
+                                  <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start '>
+                                    <img
+                                      alt='Pic'
+                                      src={`${process.env.REACT_APP_SERVER_URL}/${message.giftDetail.icon}`}
+                                      width='50px'
+                                      height='50px'
+                                    />
+                                  </span>
+                                  <span className='text-muted fs-9'>
+                                    {TimeFormatter(message.updatedAt)}
+                                  </span>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      ) : message.type === 'media' ? (
+                        <div
+                          className={clsx(
+                            'rounded',
+                            `bg-light-${state}`,
+                            'text-dark fw-bold mw-lg-400px',
+                            `text-${userType ? 'start' : 'end'}`
+                          )}
+                          data-kt-element='message-text'
+                        >
+                          {' '}
+                          <div className='d-flex align-items-center ms-1 mt-1 me-1'>
+                            {userType ? (
+                              <>
+                                <div className='ms-3'>
+                                  <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start mb-3'></span>
+                                  <img
+                                    alt='Pic'
+                                    src={`${process.env.REACT_APP_SERVER_URL}/${message.message}`}
+                                    width='100px'
+                                    height='100px'
+                                    className='me-2'
+                                  />{' '}
+                                  <span className='text-muted fs-9 me-2'>
+                                    {TimeFormatter(message.updatedAt)}
+                                  </span>
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <div className='ms-3 me-3'>
+                                  <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start '>
+                                    <img
+                                      alt='Pic'
+                                      src={`${process.env.REACT_APP_SERVER_URL}/${message.message}`}
+                                      width='100px'
+                                      height='100px'
+                                      className='me-2'
+                                    />
+                                  </span>
+                                  <span className='text-muted fs-9'>
+                                    {TimeFormatter(message.updatedAt)}
+                                  </span>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        </div>
                       ) : (
-                        ''
+                        <div
+                          className={clsx(
+                            'rounded',
+                            `bg-light-${state}`,
+                            'text-dark fw-bold mw-lg-400px',
+                            `text-${userType ? 'start' : 'end'}`
+                          )}
+                          data-kt-element='message-text'
+                        >
+                          {' '}
+                          <div className='d-flex align-items-center ms-1 mt-1 me-1'>
+                            {userType ? (
+                              <>
+                                <div className='ms-3'>
+                                  <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start mb-3'></span>
+                                  <img
+                                    alt='Pic'
+                                    src={toAbsoluteUrl(`/media/logos/Credits.png`)}
+                                    width='20px'
+                                    height='20px'
+                                    className='me-2'
+                                  />{' '}
+                                  {message.message} Credits
+                                  <span className='text-muted fs-9 me-2'>
+                                    {TimeFormatter(message.updatedAt)}
+                                  </span>
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <div className='ms-3 me-3'>
+                                  <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start '>
+                                    <img
+                                      alt='Pic'
+                                      src={toAbsoluteUrl(`/media/logos/Credits.png`)}
+                                      width='20px'
+                                      height='20px'
+                                      className='me-2'
+                                    />
+                                    {message.message} Credits
+                                  </span>
+                                  <span className='text-muted fs-9'>
+                                    {TimeFormatter(message.updatedAt)}
+                                  </span>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -313,17 +559,19 @@ const ChatInner = (props: any) => {
                 type='button'
                 data-bs-toggle='tooltip'
                 title='Coming soon'
+                onClick={() => handleClick()}
               >
                 <i className='bi bi-paperclip fs-3'></i>
               </button>
-              <button
-                className='btn btn-sm btn-icon btn-active-light-primary me-1'
-                type='button'
-                data-bs-toggle='tooltip'
-                title='Coming soon'
-              >
-                <i className='bi bi-upload fs-3'></i>
-              </button>
+              <input
+                type='file'
+                name='icon'
+                id='fileInput'
+                onChange={(e) => handleMediaChange(e)}
+                ref={hiddenFileInput}
+                style={{display: 'none'}} // Make the file input element invisible
+                accept='image/*,video/*'
+              />
             </div>
             &nbsp;
             <textarea
@@ -342,8 +590,153 @@ const ChatInner = (props: any) => {
               //data-kt-element='send'
               onClick={() => sendMessage()}
             >
-              Send
+              <i className='fa-solid fa-paper-plane'></i>
             </button>
+          </div>
+        </div>
+      </div>
+      <div className='modal fade' tabIndex={-1} id='kt_modal_gift'>
+        <div className='modal-dialog'>
+          <div className='modal-content'>
+            <div className='modal-header'>
+              <h5 className='modal-title'>Send Gift</h5>
+              <div
+                className='btn btn-icon btn-sm btn-active-light-primary ms-2'
+                data-bs-dismiss='modal'
+                aria-label='Close'
+              >
+                <i className='fa-solid fa-xmark'></i>
+              </div>
+            </div>
+            <div className='d-flex overflow-auto '>
+              <ul className='nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bolder flex-nowrap ms-5'>
+                <li className='nav-item'>
+                  <div
+                    className={`nav-link text-active-primary ${
+                      selectedGiftCategory === 'all' && 'active'
+                    }`}
+                    onClick={() => setSelectedGiftCategory('all')}
+                  >
+                    All
+                  </div>
+                </li>
+                {giftCategoriesList.map((category: any) => {
+                  return (
+                    <li className='nav-item'>
+                      <div
+                        className={`nav-link text-active-primary ${
+                          selectedGiftCategory?.giftCategoryId === category.giftCategoryId &&
+                          'active'
+                        }`}
+                        onClick={() => setSelectedGiftCategory(category)}
+                      >
+                        {category.name}
+                      </div>
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+            <div className='modal-body'>
+              <div className='row'>
+                {giftList
+                  .filter((category: any) =>
+                    selectedGiftCategory !== 'all'
+                      ? category.giftCategoryId === selectedGiftCategory?.giftCategoryId
+                      : category.giftCategoryId
+                  )
+                  .map((gift: any, index: any) => {
+                    return (
+                      <div
+                        className={`col-2 d-flex flex-column ${
+                          gift.giftId === selectedGift?.giftId && 'bg-info'
+                        }`}
+                        key={index}
+                        onClick={() => setSelectedGift(gift)}
+                      >
+                        <img
+                          alt='Pic'
+                          src={`${process.env.REACT_APP_SERVER_URL}/${gift.icon}`}
+                          width='50px'
+                          height='50px'
+                        />
+                        <span className='text-muted fs-6'>{gift.credit} coins</span>
+                      </div>
+                    )
+                  })}
+              </div>
+            </div>
+            <div className='modal-footer'>
+              <button
+                type='button'
+                className='btn btn-danger'
+                data-bs-dismiss='modal'
+                onClick={() => {
+                  setSelectedGift(undefined)
+                  setSelectedGiftCategory('all')
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type='button'
+                className='btn btn-primary'
+                data-bs-dismiss='modal'
+                onClick={sendGift}
+              >
+                Send Gift
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className='modal fade' tabIndex={-1} id='kt_modal_credit'>
+        <div className='modal-dialog'>
+          <div className='modal-content'>
+            <div className='modal-header'>
+              <h5 className='modal-title'>Send Credit</h5>
+              <div
+                className='btn btn-icon btn-sm btn-active-light-primary ms-2'
+                data-bs-dismiss='modal'
+                aria-label='Close'
+              >
+                <i className='fa-solid fa-xmark'></i>
+              </div>
+            </div>
+            <div className='modal-body'>
+              <div>
+                <input
+                  placeholder='Enter Credits'
+                  type='text'
+                  name='interest'
+                  className={clsx('form-control form-control-solid mb-3 mb-lg-0')}
+                  autoComplete='off'
+                  value={creditToSend}
+                  onChange={(e) => setCreditToSend(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className='modal-footer'>
+              <button
+                type='button'
+                className='btn btn-danger'
+                data-bs-dismiss='modal'
+                onClick={() => {
+                  setSelectedGift(undefined)
+                  setSelectedGiftCategory('all')
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type='button'
+                className='btn btn-primary'
+                data-bs-dismiss='modal'
+                onClick={sendCredit}
+              >
+                Send Credit
+              </button>
+            </div>
           </div>
         </div>
       </div>

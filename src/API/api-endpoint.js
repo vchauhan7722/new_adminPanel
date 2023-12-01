@@ -661,12 +661,13 @@ export const updatemultiMediaActionForMedia = async (userID, mediaIDArray, actio
   }
 }
 
-export const updateAprroveMediaActionForUserMedia = async (userID, mediaID, isVerify) => {
+export const updateMediaActionForUserMedia = async (userID, mediaID, type,typeValue) => {
   try {
     let accessToken = localStorage.getItem('accessToken')
 
     let body = {
-      isVerify: isVerify
+      [`${type}`]: typeValue,
+     
     }
 
     const apiUrl = `${APIURL}/api/v1/users/${userID}/update/media/${mediaID}`
@@ -786,6 +787,75 @@ export const getChatMemberByUserID = async (userID,page,pageSize) => {
     const apiUrl = `${APIURL}/api/v1/communications/chat/users/${userID}?page=${page}&pageSize=${pageSize}`
 
     let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const getAllGifts = async () => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+
+    const apiUrl = `${APIURL}/api/v1/masters/gifts`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const getAllGiftsCategory = async () => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+
+    const apiUrl = `${APIURL}/api/v1/masters/gifts-category`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const sendCreditInChat = async (senderID,receiverId,credit) => {
+  try {
+    console.log("api endpoint",senderID,receiverId,credit)
+    let accessToken = localStorage.getItem('accessToken')
+    let formData = new FormData()
+    formData = {
+      receiverId : receiverId,
+      credit : credit
+    }
+
+    const apiUrl = `${APIURL}/api/v1/users/${senderID}/send/credit`
+
+    let response = await axios.post(apiUrl,formData, {
       headers: {
         'Content-Type': `application/json`,
         'x-access-token': accessToken

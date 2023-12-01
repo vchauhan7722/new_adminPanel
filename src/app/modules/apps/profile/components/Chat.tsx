@@ -2,8 +2,12 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, {FC, useEffect, useState} from 'react'
 import {KTIcon, toAbsoluteUrl} from '../../../../../_metronic/helpers'
-import {getChatMemberByUserID} from '../../../../../API/api-endpoint'
-import {calculateTimeDifference} from '../../../../../utils/Utils'
+import {
+  getAllGifts,
+  getAllGiftsCategory,
+  getChatMemberByUserID,
+} from '../../../../../API/api-endpoint'
+import {calculateTimeDifferenceForChatMessage} from '../../../../../utils/Utils'
 import InfinitScroll from 'react-infinite-scroll-component'
 import {ChatInner} from '../../../../../_metronic/partials/chat/ChatInner'
 
@@ -12,16 +16,30 @@ const Chat: FC = () => {
   const [page, setPage] = useState<any>(1)
   const [pageSize, setPageSize] = useState<any>(10)
   const [receiverUserDetails, setReceiverUserDetails] = useState<any>(undefined)
+  const [giftCategoriesList, setGiftCategoriesList] = useState<any>([])
+  const [giftList, setGiftList] = useState<any>([])
 
   let userID = localStorage.getItem('userId')
 
   useEffect(() => {
     getChatMemberByUID(page, pageSize)
+    getAllGiftCategoryList()
+    getAllGiftLists()
   }, [])
 
   const getChatMemberByUID = async (page: number, pageSize: number) => {
     let result = await getChatMemberByUserID(userID, page, pageSize)
     setChatMemberList(result)
+  }
+
+  const getAllGiftCategoryList = async () => {
+    let result = await getAllGiftsCategory()
+    setGiftCategoriesList(result)
+  }
+
+  const getAllGiftLists = async () => {
+    let result = await getAllGifts()
+    setGiftList(result)
   }
 
   const nextgetMember = () => {
@@ -83,7 +101,7 @@ const Chat: FC = () => {
                       <>
                         <div
                           key={index}
-                          className='d-flex flex-stack py-4'
+                          className='d-flex flex-stack py-4 hover-effect'
                           onClick={() => getRoom(member)}
                         >
                           <div className='d-flex align-items-center'>
@@ -105,19 +123,31 @@ const Chat: FC = () => {
                                 {member.usersDetail.fullName}
                               </a>
                               <div className='fw-bold text-gray-400'>
-                                {member?.messageDetail?.message}
+                                {/* {member?.messageDetail?.message} */}
+                                {member?.messageDetail?.type === 'gift' &&
+                                  member?.messageDetail?.type}
+                                {member?.messageDetail?.type === 'media' &&
+                                  member?.messageDetail?.type}
+                                {(member?.messageDetail?.type === 'message' ||
+                                  member?.messageDetail?.type === 'credit') &&
+                                  member?.messageDetail?.message}
                               </div>
                             </div>
                           </div>
 
                           <div className='d-flex flex-column align-items-end ms-2'>
                             <span className='text-muted fs-7 mb-1'>
-                              {calculateTimeDifference(member?.messageDetail?.createdAt)}
+                              {calculateTimeDifferenceForChatMessage(
+                                member?.messageDetail?.createdAt
+                              )}
+                            </span>
+                            <span className='badge badge-circle badge-light-success me-2'>
+                              {member?.unreadMessageCount}
                             </span>
                           </div>
                         </div>
 
-                        <div className='separator separator-dashed d-none'></div>
+                        <div className='separator separator-dashed'></div>
                       </>
                     )
                   })}
@@ -130,7 +160,11 @@ const Chat: FC = () => {
       <div className='flex-lg-row-fluid ms-lg-7 ms-xl-10'>
         <div className='card' id='kt_chat_messenger'>
           {receiverUserDetails !== undefined ? (
-            <ChatInner receiverUserDetails={receiverUserDetails} />
+            <ChatInner
+              receiverUserDetails={receiverUserDetails}
+              giftCategoriesList={giftCategoriesList}
+              giftList={giftList}
+            />
           ) : (
             <div className='card-header h-600px' id='kt_chat_messenger_header '></div>
           )}
