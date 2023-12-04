@@ -15,8 +15,8 @@ const UserInfoCell: FC<Props> = ({user}) => (
     <div className='symbol symbol-circle symbol-50px overflow-visible me-3'>
       <img
         src={
-          `https://preview.keenthemes.com/metronic8/react/demo1//media/avatars/300-6.jpg` ||
-          `${process.env.REACT_APP_SERVER_URL}/${user.profileImage}`
+          `${process.env.REACT_APP_SERVER_URL}/${user?.profileImage}` ||
+          `https://preview.keenthemes.com/metronic8/react/demo1//media/avatars/300-6.jpg`
         }
         alt={user.userName}
         width='50px'

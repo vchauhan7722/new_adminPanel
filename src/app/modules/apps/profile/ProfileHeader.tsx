@@ -22,8 +22,8 @@ const ProfileHeader = (props) => {
                 <div className='symbol symbol-100px symbol-lg-160px symbol-fixed position-relative'>
                   <img
                     src={
-                      toAbsoluteUrl('/media/avatars/300-1.jpg') ||
-                      `${process.env.REACT_APP_SERVER_URL}/${user.profileImage}`
+                      `${process.env.REACT_APP_SERVER_URL}/${user.profileImage}` ||
+                      toAbsoluteUrl('/media/avatars/300-1.jpg')
                     }
                     alt='ProfileImage'
                   />{' '}
@@ -171,7 +171,9 @@ const ProfileHeader = (props) => {
                       <div className='border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3'>
                         <div className='d-flex align-items-center'>
                           <KTIcon iconName='arrow-up' className='fs-3 text-success me-2' />
-                          <div className='fs-2 fw-bolder'>{user.popularDays + ' days'}</div>
+                          <div className='fs-2 fw-bolder'>
+                            {(user.popularDays === null ? 0 : user.popularDays) + ' days'}
+                          </div>
                         </div>
 
                         <div className='fw-bold fs-6 text-gray-400'>
@@ -182,7 +184,9 @@ const ProfileHeader = (props) => {
                       <div className='border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3'>
                         <div className='d-flex align-items-center'>
                           <KTIcon iconName='arrow-down' className='fs-3 text-danger me-2' />
-                          <div className='fs-2 fw-bolder'>{user.spotLightDays + ' days'}</div>
+                          <div className='fs-2 fw-bolder'>
+                            {(user.spotLightDays === null ? 0 : user.spotLightDays) + ' days'}
+                          </div>
                         </div>
 
                         <div className='fw-bold fs-6 text-gray-400'>

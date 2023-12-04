@@ -1,6 +1,6 @@
 import React from 'react'
 import {useIntl} from 'react-intl'
-import {DateWithTimeFormatter} from '../../../../../utils/Utils'
+import {DateTimeFormatter, DateWithTimeFormatter} from '../../../../../utils/Utils'
 
 export function Overview(props: any) {
   const {user} = props
@@ -75,7 +75,7 @@ export function Overview(props: any) {
             <label className='col-lg-4 fw-bold text-muted'>Birth Date</label>
 
             <div className='col-lg-8 fv-row'>
-              <span className='fw-bold fs-6'>{user.gender.name}</span>
+              <span className='fw-bold fs-6'>{DateTimeFormatter(user.birthDate)}</span>
             </div>
           </div>
 
@@ -118,7 +118,15 @@ export function Overview(props: any) {
             return (
               <>
                 <div className='row mb-3'>
-                  <div className='col-lg-1'>{index + 1}</div>
+                  <div className='col-lg-1'>
+                    <img
+                      alt='Pic'
+                      src={`${process.env.REACT_APP_SERVER_URL}/${questionAnswer.questionData.icon}`}
+                      width='16px'
+                      height='16px'
+                      className='me-2'
+                    />
+                  </div>
                   <div className='col-lg-5'>
                     <span className='mb-5 fs-6 fw-bold text-muted'>
                       {questionAnswer.questionData.question}

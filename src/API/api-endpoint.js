@@ -429,15 +429,25 @@ export const removeUserInterest = async (userID, interestId) => {
 export const addQuestions = async (question,order,inputType,genderId,questionIcon) => {
   try {
     let accessToken = localStorage.getItem('accessToken')
-    
+    console.log(typeof genderId)
     let formdata = new FormData()
-    formdata = {
-      question: question,
-      order:order,
-      inputType:inputType,
-      genderId: parseInt(genderId),
-      questionIcon: questionIcon
+    if(genderId === 0){
+      formdata = {
+        question: question,
+        order:order,
+        inputType:inputType, 
+        questionIcon: questionIcon
+      }
+    }else{
+      formdata = {
+        question: question,
+        order:order,
+        inputType:inputType,
+        genderId: parseInt(genderId),
+        questionIcon: questionIcon
+      }
     }
+    
 
     const apiUrl = `${APIURL}/api/v1/masters/questions`
 
@@ -856,6 +866,31 @@ export const sendCreditInChat = async (senderID,receiverId,credit) => {
     const apiUrl = `${APIURL}/api/v1/users/${senderID}/send/credit`
 
     let response = await axios.post(apiUrl,formData, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+/*for story */
+
+export const getAllUserStory = async (userId) => {
+ 
+  try {
+    
+    let accessToken = localStorage.getItem('accessToken')  
+
+    const apiUrl = `${APIURL}/api/v1/users/1/stories/view/${userId}`
+
+    let response = await axios.get(apiUrl, {
       headers: {
         'Content-Type': `application/json`,
         'x-access-token': accessToken

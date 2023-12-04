@@ -4,6 +4,22 @@ import PluginData from '../plugins/PluginsData'
 import clsx from 'clsx'
 import {useIntl} from 'react-intl'
 import ProfileQuestionsAndInterest from './Componants/ProfileQuestionsAndInterest'
+import {PageLink, PageTitle} from '../../../../_metronic/layout/core'
+
+const usersBreadcrumbs: Array<PageLink> = [
+  {
+    title: 'Plugins',
+    path: '/plugins',
+    isSeparator: false,
+    isActive: false,
+  },
+  {
+    title: '',
+    path: '',
+    isSeparator: true,
+    isActive: false,
+  },
+]
 
 const Plugins = () => {
   const intl = useIntl()
@@ -12,6 +28,9 @@ const Plugins = () => {
 
   return (
     <>
+      <PageTitle breadcrumbs={usersBreadcrumbs}>
+        {intl.formatMessage({id: 'MENU.PLUGINS'})}
+      </PageTitle>
       {selectedPlugins.length === 0 && (
         <KTCardBody className='py-4 card'>
           <div className='table-responsive'>

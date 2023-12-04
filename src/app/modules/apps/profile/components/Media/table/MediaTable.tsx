@@ -1,7 +1,20 @@
-import React from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {useEffect, useState} from 'react'
 import {KTCardBody} from '../../../../../../../_metronic/helpers'
+import {getAllUserStory} from '../../../../../../../API/api-endpoint'
 
 const MediaTable = () => {
+  const userId = localStorage.getItem('userId')
+  const [userStoryList, setUserStoryList] = useState([])
+
+  useEffect(() => {
+    getAllUserStoryList()
+  }, [])
+
+  const getAllUserStoryList = async () => {
+    let result = await getAllUserStory(userId)
+    setUserStoryList(result.data)
+  }
   return (
     <KTCardBody className='py-4 card'>
       <div className='table-responsive'>
@@ -22,76 +35,84 @@ const MediaTable = () => {
             </tr>
           </thead>
           <tbody className='text-gray-600 '>
-            <tr>
-              <td>
-                <div className='d-flex align-items-center '>
-                  <div className='symbol symbol-50px overflow-visible me-3'>
-                    <img
-                      src={`https://preview.keenthemes.com/metronic8/react/demo1//media/avatars/300-6.jpg`}
-                      alt='icon'
-                      width='50px'
-                      height='50px'
-                    />
-                  </div>
-                </div>
-              </td>
-              <td>
-                <div className='text-muted fw-semibold fs-6'>22 jun 2023 04:21am</div>
-              </td>
-              <td>
-                <span>Public</span>
-              </td>
-              <td>
-                <span>236</span>
-              </td>
-              <td>
-                <span>20/405</span>
-              </td>
-              <td>
-                <span>5000</span>
-              </td>
-              <td>
-                <span>Visible</span>
-              </td>
-              <td>
-                <div>
-                  <button
-                    className='btn btn-sm'
-                    data-kt-menu-trigger='click'
-                    data-kt-menu-placement='bottom-end'
-                    data-kt-menu-flip='top-end'
-                  >
-                    <i className='fa-solid fa-ellipsis-vertical text-black fa-xl' />
-                  </button>
-                  <div
-                    className='menu menu-sub menu-sub-dropdown w-150px py-4 menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold'
-                    data-kt-menu='true'
-                  >
-                    {/* begin::Menu item */}
-                    <div className='menu-item px-3'>
-                      <a className='menu-link px-3'>Story Price</a>
-                    </div>
-                    {/* end::Menu item */}
+            {userStoryList !== undefined &&
+              userStoryList.map((story: any, index: any) => {
+                return (
+                  <tr key={index}>
+                    <td>
+                      <div className='d-flex align-items-center '>
+                        <div className='symbol symbol-50px overflow-visible me-3'>
+                          <img
+                            src={
+                              `${process.env.REACT_APP_SERVER_URL}/${story.media}` ||
+                              `https://preview.keenthemes.com/metronic8/react/demo1//media/avatars/300-6.jpg`
+                            }
+                            alt='icon'
+                            width='50px'
+                            height='50px'
+                          />
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div className='text-muted fw-semibold fs-6'>22 jun 2023 04:21am</div>
+                    </td>
+                    <td>
+                      <span>Public</span>
+                    </td>
+                    <td>
+                      <span>236</span>
+                    </td>
+                    <td>
+                      <span>20/405</span>
+                    </td>
+                    <td>
+                      <span>5000</span>
+                    </td>
+                    <td>
+                      <span>Visible</span>
+                    </td>
+                    <td>
+                      <div>
+                        <button
+                          className='btn btn-sm'
+                          data-kt-menu-trigger='click'
+                          data-kt-menu-placement='bottom-end'
+                          data-kt-menu-flip='top-end'
+                        >
+                          <i className='fa-solid fa-ellipsis-vertical text-black fa-xl' />
+                        </button>
+                        <div
+                          className='menu menu-sub menu-sub-dropdown w-150px py-4 menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold'
+                          data-kt-menu='true'
+                        >
+                          {/* begin::Menu item */}
+                          <div className='menu-item px-3'>
+                            <a className='menu-link px-3'>Story Price</a>
+                          </div>
+                          {/* end::Menu item */}
 
-                    {/* begin::Menu item */}
-                    <div className='menu-item px-3'>
-                      <a className='menu-link px-3' data-kt-users-table-filter='delete_row'>
-                        Delete
-                      </a>
-                    </div>
-                    {/* end::Menu item */}
+                          {/* begin::Menu item */}
+                          <div className='menu-item px-3'>
+                            <a className='menu-link px-3' data-kt-users-table-filter='delete_row'>
+                              Delete
+                            </a>
+                          </div>
+                          {/* end::Menu item */}
 
-                    {/* begin::Menu item */}
-                    <div className='menu-item px-3'>
-                      <a className='menu-link px-3' data-kt-users-table-filter='delete_row'>
-                        ReUpload to story
-                      </a>
-                    </div>
-                    {/* end::Menu item */}
-                  </div>
-                </div>
-              </td>
-            </tr>
+                          {/* begin::Menu item */}
+                          <div className='menu-item px-3'>
+                            <a className='menu-link px-3' data-kt-users-table-filter='delete_row'>
+                              ReUpload to story
+                            </a>
+                          </div>
+                          {/* end::Menu item */}
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })}
           </tbody>
         </table>
       </div>

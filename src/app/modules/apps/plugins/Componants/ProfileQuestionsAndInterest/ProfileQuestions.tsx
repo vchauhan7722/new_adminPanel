@@ -31,6 +31,8 @@ const Questions = () => {
   const [currentFile, setCurrentFile] = useState('')
   const [getQuestionFlag, setGetQuestionFlag] = useState(1)
   const [currentAnswer, setCurrentAnswer] = useState<any>([])
+  const [currentImageTempPath, setCurrentImageTempPath] = useState<any>('')
+  const [isImageUploaded, setisImageUploaded] = useState<any>(false)
   const [questionFormValue, setQuetionFormValue] = useState({
     question: '',
     order: 0,
@@ -78,6 +80,7 @@ const Questions = () => {
       setCurrentFile('')
       setGetQuestionFlag(getQuestionFlag + 1)
       ToastUtils({type: 'success', message: 'Questions Was Added'})
+      setisImageUploaded(false)
     } else {
       ToastUtils({type: 'error', message: 'Questions Was Not Added'})
     }
@@ -140,9 +143,10 @@ const Questions = () => {
   }
 
   const handleIconChange = (event: any) => {
-    //console.log('index', index)
+    setisImageUploaded(true)
     const fileUploaded = event.target.files[0]
-    console.log('fileUploaded', fileUploaded)
+    var tmppath = URL.createObjectURL(event.target.files[0])
+    setCurrentImageTempPath(tmppath)
     // const updatedTableData = [...tableData]
     // updatedTableData[index]['icon'] = fileUploaded
     // setTableData(updatedTableData)
@@ -321,21 +325,30 @@ const Questions = () => {
           ))}
           <tr>
             <td>
-              <button
-                className='btn btn-light'
-                type='button'
-                onClick={() => hiddenCurrentFileInput.current.click()}
-              >
-                <i className='fa-solid fa-upload'></i>
-              </button>
-              <input
-                type='file'
-                name='icon'
-                onChange={(event) => handleIconChange(event)}
-                ref={hiddenCurrentFileInput}
-                style={{display: 'none'}}
-                accept='image/*'
-              />
+              {isImageUploaded ? (
+                <div className='symbol symbol-50px overflow-visible me-3'>
+                  <img src={currentImageTempPath} alt='Icon' width='50px' height='50px' />
+                </div>
+              ) : (
+                <>
+                  <button
+                    className='btn btn-light'
+                    type='button'
+                    onClick={() => hiddenCurrentFileInput.current.click()}
+                  >
+                    <i className='fa-solid fa-upload'></i>
+                  </button>
+                  <input
+                    type='file'
+                    name='icon'
+                    onChange={(event) => handleIconChange(event)}
+                    ref={hiddenCurrentFileInput}
+                    style={{display: 'none'}}
+                    accept='image/*'
+                  />
+                </>
+              )}
+
               {/* <div className='symbol symbol-50px overflow-visible me-3'>
                 <img
                   src={`${process.env.REACT_APP_SERVER_URL}/${row.icon}`}

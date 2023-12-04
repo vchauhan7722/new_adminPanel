@@ -46,7 +46,9 @@ const ChatInner = (props: any) => {
   }
 
   useEffect(() => {
+    console.log(receiverUserDetails)
     getchatList()
+    console.log(receiverUserDetails?.chatRoomId, receiverUserDetails?.chatId)
     socket.emit('join_room', receiverUserDetails?.chatRoomId, receiverUserDetails?.chatId)
   }, [])
 
@@ -86,20 +88,23 @@ const ChatInner = (props: any) => {
     }
   }, [socket])
 
-  // useEffect(() => {
-  //   socket.on('gift_message', (newMessage) => {
-  //     let messages = JSON.parse(sessionStorage.getItem('messageList') || '')
-  //     const oldMessage = [...messages]
-  //     oldMessage.push(newMessage)
-  //     sessionStorage.setItem('messageList', JSON.stringify(oldMessage))
-  //     setMessageList(oldMessage)
-  //   })
+  useEffect(() => {
+    socket.on('gift_message', (newMessage) => {
+      console.log('gift_message inside ', newMessage.data)
+      //newMessage.type = 'gift'
+      console.log('gift_message', newMessage.data)
+      let messages = JSON.parse(sessionStorage.getItem('messageList') || '')
+      const oldMessage = [...messages]
+      oldMessage.push(newMessage.data)
+      sessionStorage.setItem('messageList', JSON.stringify(oldMessage))
+      setMessageList(oldMessage)
+    })
 
-  //   // Clean up the WebSocket connection when the component unmounts
-  //   return () => {
-  //     socket.close()
-  //   }
-  // }, [socket])
+    // Clean up the WebSocket connection when the component unmounts
+    return () => {
+      socket.close()
+    }
+  }, [socket])
 
   useEffect(() => {
     scrollToBottom()
@@ -111,6 +116,7 @@ const ChatInner = (props: any) => {
 
   const sendMessage = () => {
     if (message.length !== 0) {
+      console.log('receiverUserDetails.userId', receiverUserDetails.userId)
       socket.emit('chat_message', {
         message: message,
         senderId: receiverUserDetails.userId,
@@ -169,7 +175,15 @@ const ChatInner = (props: any) => {
   }
 
   const sendCredit = async () => {
-    let result = await sendCreditInChat(receiverUserDetails.userId, currentUserId, creditToSend)
+    //let result = await sendCreditInChat(receiverUserDetails.userId, currentUserId, creditToSend)
+    socket.emit('send_credit', {
+      senderId: receiverUserDetails.userId,
+      receiverId: currentUserId,
+      type: 'credit',
+      message: creditToSend,
+      chatRoomId: receiverUserDetails.chatRoomId,
+      chatId: receiverUserDetails.chatId,
+    })
   }
 
   const onEnterPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -228,30 +242,32 @@ const ChatInner = (props: any) => {
               alt='Pic'
               src={
                 toAbsoluteUrl(`/media/avatars/300-5.jpg`) ||
-                `${process.env.REACT_APP_SERVER_URL}/${receiverUserDetails?.usersDetail?.profileImage}`
+                `${process.env.REACT_APP_SERVER_URL}/${receiverUserDetails?.profileImage}`
               }
             />
           </div>
           <div className='d-flex justify-content-center flex-column me-1'>
             <a href='#' className='fs-4 fw-bolder text-gray-900 text-hover-primary me-1 mb-1 lh-1'>
-              {receiverUserDetails?.usersDetail?.fullName}
+              {receiverUserDetails?.fullName}
             </a>
-            {receiverUserDetails?.usersDetail?.isOnline && (
+            {receiverUserDetails?.isOnline == '1' && (
               <div className='mb-0 lh-1'>
                 <span className='badge badge-success badge-circle w-10px h-10px me-1'></span>
                 <span className='fs-7 fw-bold text-gray-400'>Active</span>
               </div>
             )}
           </div>
-          <div className='ms-3'>
-            <img
-              alt='Pic'
-              src={toAbsoluteUrl(`/media/logos/Premiuim.png`)}
-              width='17px'
-              height='17px'
-            />
-            <span className='text-muted fs-7 ms-3'>Get</span>
-          </div>
+          {receiverUserDetails?.isPremium == '1' && (
+            <div className='ms-3'>
+              <img
+                alt='Pic'
+                src={toAbsoluteUrl(`/media/logos/Premiuim.png`)}
+                width='17px'
+                height='17px'
+              />
+            </div>
+          )}
+
           <div className='ms-3'>
             <img
               alt='Pic'
@@ -259,9 +275,7 @@ const ChatInner = (props: any) => {
               width='17px'
               height='17px'
             />
-            <span className='text-muted fs-7 ms-3'>
-              {receiverUserDetails?.usersDetail?.totalCredit}
-            </span>
+            <span className='text-muted fs-7 ms-3'>{receiverUserDetails?.totalCredit}</span>
           </div>
         </div>
 
@@ -282,16 +296,19 @@ const ChatInner = (props: any) => {
               height='20px'
             />
           </div>
-          <div className='me-n3'>
-            <button
-              className='btn btn-sm btn-icon btn-active-light-primary'
-              data-kt-menu-trigger='click'
-              data-kt-menu-placement='bottom-end'
-              data-kt-menu-flip='top-end'
-            >
-              <i className='bi bi-three-dots fs-2'></i>
-            </button>
-            <Dropdown1 />
+          <div className='d-flex my-4'>
+            <div className='me-0'>
+              <div className='dropdown'>
+                <button className='dropbtn'>
+                  <i className='bi bi-three-dots fs-3'></i>
+                </button>
+                <div className='dropdown-content'>
+                  <span>Like Profile</span>
+                  <span>Pin Profile</span>
+                  <span>Clear All Messages</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -411,14 +428,14 @@ const ChatInner = (props: any) => {
                                   <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start mb-3'>
                                     <img
                                       alt='Pic'
-                                      src={`${process.env.REACT_APP_SERVER_URL}/${message.giftDetail.icon}`}
+                                      src={`${process.env.REACT_APP_SERVER_URL}/${message?.giftDetail?.icon}`}
                                       width='50px'
                                       height='50px'
                                     />
                                   </span>
 
                                   <span className='text-muted fs-9 me-2'>
-                                    {TimeFormatter(message.updatedAt)}
+                                    {TimeFormatter(message?.giftDetail?.updatedAt)}
                                   </span>
                                 </div>
                               </>
@@ -428,13 +445,13 @@ const ChatInner = (props: any) => {
                                   <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start '>
                                     <img
                                       alt='Pic'
-                                      src={`${process.env.REACT_APP_SERVER_URL}/${message.giftDetail.icon}`}
+                                      src={`${process.env.REACT_APP_SERVER_URL}/${message?.giftDetail?.icon}`}
                                       width='50px'
                                       height='50px'
                                     />
                                   </span>
                                   <span className='text-muted fs-9'>
-                                    {TimeFormatter(message.updatedAt)}
+                                    {TimeFormatter(message?.giftDetail?.updatedAt)}
                                   </span>
                                 </div>
                               </>
@@ -549,11 +566,11 @@ const ChatInner = (props: any) => {
         </div>
 
         <div
-          className='card-footer pt-4'
+          className='card-footer pt-4 p-0'
           id={isDrawer ? 'kt_drawer_chat_messenger_footer' : 'kt_chat_messenger_footer'}
         >
           <div className='d-flex flex-stack mt-2'>
-            <div className='d-flex align-items-center '>
+            <div className='d-flex align-items-center mb-14'>
               <button
                 className='btn btn-sm btn-icon btn-active-light-primary me-1'
                 type='button'
@@ -576,7 +593,7 @@ const ChatInner = (props: any) => {
             &nbsp;
             <textarea
               className='form-control form-control-flush mb-3' // border-1 border
-              rows={1}
+              rows={3}
               data-kt-element='input'
               placeholder='Type a message'
               value={message}
@@ -585,12 +602,12 @@ const ChatInner = (props: any) => {
               onKeyDown={onEnterPress}
             ></textarea>
             <button
-              className='btn btn-primary ms-7'
+              className='btn btn-primary ms-7 mb-14'
               //type='button'
               //data-kt-element='send'
               onClick={() => sendMessage()}
             >
-              <i className='fa-solid fa-paper-plane'></i>
+              <i className='fa-solid fa-paper-plane fa-2xl'></i>
             </button>
           </div>
         </div>

@@ -52,10 +52,13 @@ const Chat: FC = () => {
   }
 
   const getRoom = (memberDetails: any) => {
-    setReceiverUserDetails(undefined)
-    setTimeout(() => {
-      setReceiverUserDetails(memberDetails)
-    }, 500)
+    if (memberDetails !== receiverUserDetails) {
+      //when selected user and chatinner side is not same
+      setReceiverUserDetails(undefined)
+      setTimeout(() => {
+        setReceiverUserDetails(memberDetails)
+      }, 500)
+    }
   }
 
   return (
@@ -110,7 +113,7 @@ const Chat: FC = () => {
                                 alt='Pic'
                                 src={
                                   toAbsoluteUrl('/media/avatars/300-5.jpg') ||
-                                  `${process.env.REACT_SERVER_URL}/${member.usersDetail.profileImage}`
+                                  `${process.env.REACT_SERVER_URL}/${member.profileImage}`
                                 }
                               />
                             </div>
@@ -120,10 +123,9 @@ const Chat: FC = () => {
                                 href='#'
                                 className='fs-5 fw-bolder text-gray-900 text-hover-primary mb-2'
                               >
-                                {member.usersDetail.fullName}
+                                {member.fullName}
                               </a>
                               <div className='fw-bold text-gray-400'>
-                                {/* {member?.messageDetail?.message} */}
                                 {member?.messageDetail?.type === 'gift' &&
                                   member?.messageDetail?.type}
                                 {member?.messageDetail?.type === 'media' &&
@@ -141,9 +143,11 @@ const Chat: FC = () => {
                                 member?.messageDetail?.createdAt
                               )}
                             </span>
-                            <span className='badge badge-circle badge-light-success me-2'>
-                              {member?.unreadMessageCount}
-                            </span>
+                            <div>
+                              <span className='badge badge-circle badge-light-success me-2'>
+                                {member?.unreadMessageCount}
+                              </span>
+                            </div>
                           </div>
                         </div>
 

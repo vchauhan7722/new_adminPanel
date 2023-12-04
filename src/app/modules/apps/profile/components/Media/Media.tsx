@@ -8,6 +8,7 @@ const Media = (props: any) => {
   const {user} = props
 
   const [userProfileMedia, setUserProfileMedia] = useState(user.userProfileImages)
+  const [selectedImage, setSelectedImage] = useState('')
 
   const userId = localStorage.getItem('userId')
 
@@ -39,18 +40,23 @@ const Media = (props: any) => {
 
       <div>
         <div className='p-5'>
-          <div className='card-header border-0 row column-gap-1'>
+          <div className='card-header border-0 row'>
             {userProfileMedia
               .filter((media: any) => media.status === true)
               .map((userMedia: any, index: any) => {
                 return (
-                  <div className='col-2' key={index}>
-                    <div className='position-relative'>
+                  <div className={userProfileMedia.length >= 6 ? 'col-1' : 'col-2'} key={index}>
+                    <div
+                      className='position-relative'
+                      onClick={() => setSelectedImage(userMedia.media)}
+                    >
                       <img
                         alt='Pic'
                         src={`${process.env.REACT_APP_SERVER_URL}/${userMedia.media}`}
-                        width='192'
-                        height='189'
+                        width={userProfileMedia.length >= 6 ? '100' : '192'}
+                        height={userProfileMedia.length >= 6 ? '99' : '189'}
+                        // width='192'
+                        // height='189'
                         className='rounded'
                       />
                       <span className='position-absolute top-0 start-100'>
@@ -117,6 +123,30 @@ const Media = (props: any) => {
       <div className='p-6'>
         <MediaTable />
       </div>
+      {/* <div className='modal fade' tabIndex={-1} id='full_width_image_modal'>
+        <div className='modal-dialog'>
+          <div className='modal-content'>
+            <div className='modal-header'>
+              <div
+                className='btn btn-icon btn-sm btn-active-light-primary ms-2'
+                data-bs-dismiss='modal'
+                aria-label='Close'
+              >
+                <i className='fa-solid fa-xmark'></i>
+              </div>
+            </div>
+            <div className='modal-body'>
+              <img
+                alt='Pic'
+                src={`${process.env.REACT_APP_SERVER_URL}/${selectedImage}`}
+                width='450'
+                height='449'
+                className='rounded'
+              />
+            </div>
+          </div>
+        </div>
+      </div> */}
     </div>
   )
 }
