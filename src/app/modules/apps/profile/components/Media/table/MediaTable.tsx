@@ -2,6 +2,7 @@
 import React, {useEffect, useState} from 'react'
 import {KTCardBody} from '../../../../../../../_metronic/helpers'
 import {getAllUserStory} from '../../../../../../../API/api-endpoint'
+import {DateWithTimeFormatter} from '../../../../../../../utils/Utils'
 
 const MediaTable = () => {
   const userId = localStorage.getItem('userId')
@@ -13,7 +14,8 @@ const MediaTable = () => {
 
   const getAllUserStoryList = async () => {
     let result = await getAllUserStory(userId)
-    setUserStoryList(result.data)
+    console.log('story result', result)
+    setUserStoryList(result)
   }
   return (
     <KTCardBody className='py-4 card'>
@@ -55,22 +57,26 @@ const MediaTable = () => {
                       </div>
                     </td>
                     <td>
-                      <div className='text-muted fw-semibold fs-6'>22 jun 2023 04:21am</div>
+                      <div className='text-muted fw-semibold fs-6'>
+                        {DateWithTimeFormatter(story?.startTime)}
+                      </div>
                     </td>
                     <td>
-                      <span>Public</span>
+                      <span>{story?.isPrivate ? 'private' : 'public'}</span>
                     </td>
                     <td>
-                      <span>236</span>
+                      <span>{story?.totalViews}</span>
                     </td>
                     <td>
-                      <span>20/405</span>
+                      <span>
+                        {story?.totalGift}/{story?.totalGiftCredit}
+                      </span>
                     </td>
                     <td>
-                      <span>5000</span>
+                      <span>{story?.totalCredit}</span>
                     </td>
                     <td>
-                      <span>Visible</span>
+                      <span>{story?.status ? 'visible' : 'Not Visible'}</span>
                     </td>
                     <td>
                       <div>

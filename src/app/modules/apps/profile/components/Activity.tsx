@@ -1,13 +1,50 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {useIntl} from 'react-intl'
+import {getUserActivityWithPagination} from '../../../../../API/api-endpoint'
+import {calculateTimeDifferenceForActivity} from '../../../../../utils/Utils'
+import Pagination from 'react-bootstrap/Pagination'
+import clsx from 'clsx'
+import CustomPagination from '../../../../../utils/Pagination'
 
 const Activity = (props) => {
+  const userId = localStorage.getItem('userId')
   const intl = useIntl()
   const [tabValue, setTabValue] = useState('all')
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
+  const [totalPage, setTotalPage] = useState(0)
+  const [activePage, setActivePage] = useState(1)
+  const [activityList, setActivityList] = useState([])
+
+  const [activityCount, setActivityCount] = useState(0)
 
   const handleChange = (tabName) => {
     setTabValue(tabName)
   }
+
+  useEffect(() => {
+    if (tabValue === 'all') {
+      getActivitiesList(page, pageSize, '')
+    } else {
+      getActivitiesList(page, pageSize, tabValue)
+    }
+  }, [tabValue])
+
+  const getActivitiesList = async (page: number, pageSize: number, type: any) => {
+    let result = await getUserActivityWithPagination(page, pageSize, type, userId)
+    console.log(result)
+    if (result.status === 200) {
+      setActivityList(result.data)
+      setTotalPage(result?.totalPage)
+      setActivityCount(result?.count)
+    }
+  }
+
+  const getPagination = (page: any, pageSize: any) => {
+    let type = tabValue === 'all' ? '' : tabValue
+    getActivitiesList(page, pageSize, type)
+  }
+
   return (
     <div className='card '>
       <div className='card-title pt-8 px-9'>
@@ -26,6 +63,7 @@ const Activity = (props) => {
                   onClick={() => handleChange('all')}
                 >
                   {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.ACTIVITY.All'})}
+                  {tabValue === 'all' && ` (${activityCount})`}
                 </div>
               </li>
               <li className='nav-item'>
@@ -36,6 +74,7 @@ const Activity = (props) => {
                   onClick={() => handleChange('system')}
                 >
                   {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.ACTIVITY.SYSTEM'})}
+                  {tabValue === 'system' && ` (${activityCount})`}
                 </div>
               </li>
               <li className='nav-item'>
@@ -46,6 +85,7 @@ const Activity = (props) => {
                   onClick={() => handleChange('chat')}
                 >
                   {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.CHAT'})}
+                  {tabValue === 'chat' && ` (${activityCount})`}
                 </div>
               </li>
               <li className='nav-item'>
@@ -56,6 +96,7 @@ const Activity = (props) => {
                   onClick={() => handleChange('videocall')}
                 >
                   {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.VIDEOCALL'})}
+                  {tabValue === 'videocall' && ` (${activityCount})`}
                 </div>
               </li>
               <li className='nav-item'>
@@ -66,26 +107,30 @@ const Activity = (props) => {
                   onClick={() => handleChange('undo-profile')}
                 >
                   {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.ACTIVITY.UNDOPROFILE'})}
+                  {tabValue === 'undo-profile' && ` (${activityCount})`}
                 </div>
               </li>
               <li className='nav-item'>
                 <div
                   className={
-                    `nav-link text-active-primary me-6 ` + (tabValue === 'like' && 'active')
+                    `nav-link text-active-primary me-6 ` + (tabValue === 'like-profile' && 'active')
                   }
-                  onClick={() => handleChange('like')}
+                  onClick={() => handleChange('like-profile')}
                 >
                   {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.ACTIVITY.LIKE'})}
+                  {tabValue === 'like-profile' && ` (${activityCount})`}
                 </div>
               </li>
               <li className='nav-item'>
                 <div
                   className={
-                    `nav-link text-active-primary me-6 ` + (tabValue === 'visit' && 'active')
+                    `nav-link text-active-primary me-6 ` +
+                    (tabValue === 'visit-profile' && 'active')
                   }
-                  onClick={() => handleChange('visit')}
+                  onClick={() => handleChange('visit-profile')}
                 >
                   {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.ACTIVITY.VISIT'})}
+                  {tabValue === 'visit-profile' && ` (${activityCount})`}
                 </div>
               </li>
               <li className='nav-item'>
@@ -96,6 +141,7 @@ const Activity = (props) => {
                   onClick={() => handleChange('match')}
                 >
                   {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.ACTIVITY.MATCH'})}
+                  {tabValue === 'match' && ` (${activityCount})`}
                 </div>
               </li>
             </ul>
@@ -130,108 +176,71 @@ const Activity = (props) => {
               id='kt_table_customers_logs'
             >
               <tbody>
-                <tr>
-                  <td className='min-w-70px'>
-                    <div className='badge badge-light-success'>200 OK</div>
-                  </td>
+                {activityList !== undefined &&
+                  activityList
+                    //.filter((activity: any) => activity.type !== 'credit-hisory')
+                    .map((activity: any, index: number) => {
+                      return (
+                        <tr key={index}>
+                          <td className='min-w-70px'>
+                            <div
+                              className={clsx(
+                                'badge badge-light-success',
+                                activity?.type === 'visit-profile' && 'badge-light-danger',
+                                activity?.type === 'like-profile' && 'badge-light-success',
+                                activity?.type === 'chat' && 'badge-light-info',
+                                activity?.type === 'videoCall' && 'badge-light-primary',
+                                activity?.type === 'undo-profile' && 'badge-light-light',
+                                activity?.type === 'system' && 'badge-light-warning',
+                                activity?.type === 'match' && 'badge-light-dark'
+                              )}
+                            >
+                              {activity?.type}
+                            </div>
+                          </td>
 
-                  <td>POST /v1/invoices/in_7239_8635/payment</td>
+                          <td>
+                            {`${activity?.userData?.fullName} ${activity?.description} ${activity?.receiverData?.fullName}`}
+                          </td>
 
-                  <td className='pe-0 text-end min-w-200px'>6:05 pm, 21 Feb 2023 </td>
-                </tr>
-                <tr>
-                  <td className='min-w-70px'>
-                    <div className='badge badge-light-success'>200 OK</div>
-                  </td>
-
-                  <td>POST /v1/invoices/in_7239_8635/payment</td>
-
-                  <td className='pe-0 text-end min-w-200px'>6:05 pm, 21 Feb 2023 </td>
-                </tr>
-                <tr>
-                  <td className='min-w-70px'>
-                    <div className='badge badge-light-success'>200 OK</div>
-                  </td>
-
-                  <td>POST /v1/invoices/in_7239_8635/payment</td>
-
-                  <td className='pe-0 text-end min-w-200px'>6:05 pm, 21 Feb 2023 </td>
-                </tr>
-                <tr>
-                  <td className='min-w-70px'>
-                    <div className='badge badge-light-success'>200 OK</div>
-                  </td>
-
-                  <td>POST /v1/invoices/in_7239_8635/payment</td>
-
-                  <td className='pe-0 text-end min-w-200px'>6:05 pm, 21 Feb 2023 </td>
-                </tr>
-                <tr>
-                  <td className='min-w-70px'>
-                    <div className='badge badge-light-success'>200 OK</div>
-                  </td>
-
-                  <td>POST /v1/invoices/in_7239_8635/payment</td>
-
-                  <td className='pe-0 text-end min-w-200px'>6:05 pm, 21 Feb 2023 </td>
-                </tr>
-                <tr>
-                  <td className='min-w-70px'>
-                    <div className='badge badge-light-success'>200 OK</div>
-                  </td>
-
-                  <td>POST /v1/invoices/in_7239_8635/payment</td>
-
-                  <td className='pe-0 text-end min-w-200px'>6:05 pm, 21 Feb 2023 </td>
-                </tr>
-                <tr>
-                  <td className='min-w-70px'>
-                    <div className='badge badge-light-success'>200 OK</div>
-                  </td>
-
-                  <td>POST /v1/invoices/in_7239_8635/payment</td>
-
-                  <td className='pe-0 text-end min-w-200px'>6:05 pm, 21 Feb 2023 </td>
-                </tr>
-                <tr>
-                  <td className='min-w-70px'>
-                    <div className='badge badge-light-success'>200 OK</div>
-                  </td>
-
-                  <td>POST /v1/invoices/in_7239_8635/payment</td>
-
-                  <td className='pe-0 text-end min-w-200px'>6:05 pm, 21 Feb 2023 </td>
-                </tr>
-                <tr>
-                  <td className='min-w-70px'>
-                    <div className='badge badge-light-success'>200 OK</div>
-                  </td>
-
-                  <td>POST /v1/invoices/in_7239_8635/payment</td>
-
-                  <td className='pe-0 text-end min-w-200px'>6:05 pm, 21 Feb 2023 </td>
-                </tr>
-                <tr>
-                  <td className='min-w-70px'>
-                    <div className='badge badge-light-success'>200 OK</div>
-                  </td>
-
-                  <td>POST /v1/invoices/in_7239_8635/payment</td>
-
-                  <td className='pe-0 text-end min-w-200px'>6:05 pm, 21 Feb 2023 </td>
-                </tr>
-                <tr>
-                  <td className='min-w-70px'>
-                    <div className='badge badge-light-success'>200 OK</div>
-                  </td>
-
-                  <td>POST /v1/invoices/in_7239_8635/payment</td>
-
-                  <td className='pe-0 text-end min-w-200px'>6:05 pm, 21 Feb 2023 </td>
-                </tr>
+                          <td className='pe-0 text-end min-w-200px'>
+                            {calculateTimeDifferenceForActivity(activity?.createdAt)}
+                          </td>
+                        </tr>
+                      )
+                    })}
               </tbody>
             </table>
           </div>
+        </div>
+        <div className='card-footer'>
+          {activityList.length !== 0 && (
+            <CustomPagination
+              page={page}
+              pageSize={pageSize}
+              setPageSize={setPageSize}
+              totalPage={totalPage}
+              setTotalPage={setTotalPage}
+              activePage={activePage}
+              setActivePage={setActivePage}
+              cb={getPagination}
+            />
+          )}
+
+          {/* <Pagination>
+            {Array.from({length: totalPage}).map((page: any, index: any) => {
+              return (
+                <Pagination.Item
+                  key={index}
+                  active={activePage === index + 1}
+                  onClick={() => updatePage(index + 1)}
+                >
+                  {index + 1}
+                </Pagination.Item>
+              )
+            })}
+           
+          </Pagination> */}
         </div>
       </div>
     </div>

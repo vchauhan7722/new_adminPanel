@@ -2,20 +2,7 @@
 import clsx from 'clsx'
 import {useQueryResponseLoading, useQueryResponsePagination} from '../../core/QueryResponseProvider'
 import {useQueryRequest} from '../../core/QueryRequestProvider'
-import {PaginationState} from '../../../../../../../_metronic/helpers'
-import {useMemo, useState} from 'react'
-
-const mappedLabel = (label: string): string => {
-  if (label === '&laquo; Previous') {
-    return 'Previous'
-  }
-
-  if (label === 'Next &raquo;') {
-    return 'Next'
-  }
-
-  return label
-}
+import {useState} from 'react'
 
 const UsersListPagination = () => {
   const pagination = useQueryResponsePagination()
@@ -54,72 +41,6 @@ const UsersListPagination = () => {
 
     updateState({page: 1, items_per_page: e.target.value})
   }
-
-  // const PAGINATION_PAGES_COUNT = pagination.total_page || 10
-  // const sliceLinks = (pagination?: any) => {
-  //   console.log('37', pagination?.links)
-  //   if (!pagination?.links?.length) {
-  //     return []
-  //   }
-
-  //   console.log('41', pagination?.links)
-
-  //   let scopedLinks = [...pagination.links]
-
-  //   let pageLinks: Array<{
-  //     label: string
-  //     active: boolean
-  //     url: string | null
-  //     page: number | null
-  //   }> = []
-  //   let previousLink: {label: string; active: boolean; url: string | null; page: number | null} =
-  //     scopedLinks.shift()!
-  //   let nextLink: {label: string; active: boolean; url: string | null; page: number | null} =
-  //     scopedLinks.pop()!
-
-  //   const halfOfPagesCount = Math.floor(PAGINATION_PAGES_COUNT / 2)
-
-  //   pageLinks.push(previousLink)
-
-  //   if (
-  //     pagination.page <= Math.round(PAGINATION_PAGES_COUNT / 2) ||
-  //     scopedLinks.length <= PAGINATION_PAGES_COUNT
-  //   ) {
-  //     pageLinks = [...pageLinks, ...scopedLinks.slice(0, PAGINATION_PAGES_COUNT)]
-  //   }
-
-  //   if (
-  //     pagination.page > scopedLinks.length - halfOfPagesCount &&
-  //     scopedLinks.length > PAGINATION_PAGES_COUNT
-  //   ) {
-  //     pageLinks = [
-  //       ...pageLinks,
-  //       ...scopedLinks.slice(scopedLinks.length - PAGINATION_PAGES_COUNT, scopedLinks.length),
-  //     ]
-  //   }
-
-  //   if (
-  //     !(
-  //       pagination.page <= Math.round(PAGINATION_PAGES_COUNT / 2) ||
-  //       scopedLinks.length <= PAGINATION_PAGES_COUNT
-  //     ) &&
-  //     !(pagination.page > scopedLinks.length - halfOfPagesCount)
-  //   ) {
-  //     pageLinks = [
-  //       ...pageLinks,
-  //       ...scopedLinks.slice(
-  //         pagination.page - 1 - halfOfPagesCount,
-  //         pagination.page + halfOfPagesCount
-  //       ),
-  //     ]
-  //   }
-
-  //   pageLinks.push(nextLink)
-
-  //   return pageLinks
-  // }
-
-  // const paginationLinks = useMemo(() => sliceLinks(pagination), [pagination])
 
   return (
     <div className='row'>

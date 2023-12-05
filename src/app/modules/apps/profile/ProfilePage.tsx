@@ -12,6 +12,7 @@ import {getUserpProfileDetailsUsingUserID} from '../../../../API/api-endpoint'
 import {useState, useEffect} from 'react'
 import {Chat} from './components/Chat'
 import Media from './components/Media/Media'
+import Credit from './components/Credit'
 
 const profileBreadCrumbs: Array<PageLink> = [
   {
@@ -160,7 +161,7 @@ const ProfilePage = () => {
               <PageTitle breadcrumbs={profileBreadCrumbs}>
                 {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.CREDIT'})}
               </PageTitle>
-              <div>Credit</div>
+              <Credit />
             </>
           }
         />

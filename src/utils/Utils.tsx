@@ -62,6 +62,21 @@ export const calculateTimeDifferenceForChatMessage = (givenTime: any) => {
   }
 }
 
+export const calculateTimeDifferenceForActivity = (givenTime: any) => {
+  const currentTime = new Date()
+  const pastTime = new Date(givenTime)
+  const timeDifferenceInMilliseconds = currentTime.getTime() - pastTime.getTime()
+  const timeDifferenceInSeconds = timeDifferenceInMilliseconds / 1000
+  const timeDifferenceInMinutes = timeDifferenceInSeconds / 60
+  const timeDifferenceInHours = timeDifferenceInMinutes / 60
+
+  if (timeDifferenceInHours >= 24) {
+    return moment(pastTime).format('hh:mm a DD-MMM-YYYY')
+  } else {
+    return moment(pastTime).format('hh:mm a')
+  }
+}
+
 export const oldCalculateDateTimeDifference = (pastDateString: any) => {
   const currentDate = new Date()
   const pastDate = new Date(pastDateString)

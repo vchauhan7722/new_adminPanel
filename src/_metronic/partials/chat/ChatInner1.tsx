@@ -44,7 +44,7 @@ const ChatInner = (props: any) => {
   }
 
   useEffect(() => {
-    getchatList()
+    //getchatList()
     //socket.emit('join_room', receiverUserDetails?.chatRoomId, receiverUserDetails?.chatId)
   }, [])
 
