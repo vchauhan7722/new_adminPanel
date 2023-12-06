@@ -30,7 +30,8 @@ const profileBreadCrumbs: Array<PageLink> = [
 ]
 
 const ProfilePage = () => {
-  const [userDetails, setUserDetails] = useState()
+  const [userDetails, setUserDetails] = useState<any>()
+  const [userProfilePercentage, setUserProfilePercentage] = useState<any>()
   const [userUpdateFlag, setUserUpdateFlag] = useState({count: 1})
 
   const intl = useIntl()
@@ -43,7 +44,8 @@ const ProfilePage = () => {
 
   const getUserDetails = async () => {
     let user_details = await getUserpProfileDetailsUsingUserID(UserID)
-    setUserDetails(user_details)
+    setUserProfilePercentage(user_details.profileCompletePer)
+    setUserDetails(user_details.data)
   }
 
   return userDetails === undefined ? (
@@ -57,7 +59,7 @@ const ProfilePage = () => {
       <Route
         element={
           <>
-            <ProfileHeader user={userDetails} />
+            <ProfileHeader user={userDetails} userProfilePercentage={userProfilePercentage} />
             <Outlet />
           </>
         }

@@ -79,40 +79,20 @@ const MediaTable = () => {
                       <span>{story?.status ? 'visible' : 'Not Visible'}</span>
                     </td>
                     <td>
-                      <div>
-                        <button
-                          className='btn btn-sm'
-                          data-kt-menu-trigger='click'
-                          data-kt-menu-placement='bottom-end'
-                          data-kt-menu-flip='top-end'
-                        >
-                          <i className='fa-solid fa-ellipsis-vertical text-black fa-xl' />
-                        </button>
-                        <div
-                          className='menu menu-sub menu-sub-dropdown w-150px py-4 menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold'
-                          data-kt-menu='true'
-                        >
-                          {/* begin::Menu item */}
-                          <div className='menu-item px-3'>
-                            <a className='menu-link px-3'>Story Price</a>
+                      <div className='d-flex my-4'>
+                        <div className='d-flex my-4'>
+                          <div className='me-0'>
+                            <div className='dropdown'>
+                              <button className='dropbtn'>
+                                <i className='bi bi-three-dots fs-3'></i>
+                              </button>
+                              <div className='dropdown-content'>
+                                <span>Like Profile</span>
+                                <span>Pin Profile</span>
+                                <span>Clear All Messages</span>
+                              </div>
+                            </div>
                           </div>
-                          {/* end::Menu item */}
-
-                          {/* begin::Menu item */}
-                          <div className='menu-item px-3'>
-                            <a className='menu-link px-3' data-kt-users-table-filter='delete_row'>
-                              Delete
-                            </a>
-                          </div>
-                          {/* end::Menu item */}
-
-                          {/* begin::Menu item */}
-                          <div className='menu-item px-3'>
-                            <a className='menu-link px-3' data-kt-users-table-filter='delete_row'>
-                              ReUpload to story
-                            </a>
-                          </div>
-                          {/* end::Menu item */}
                         </div>
                       </div>
                     </td>

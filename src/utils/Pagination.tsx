@@ -12,6 +12,9 @@ const CustomPagination = (props) => {
   useEffect(() => {
     if (totalPage < 5) {
       setEndPagetoShow(totalPage)
+      setPageLimit(totalPage)
+    } else {
+      setPageLimit(5)
     }
   }, [totalPage])
 
@@ -78,7 +81,6 @@ const CustomPagination = (props) => {
       )}
 
       {Array.from({length: pageLimit}).map((page: any, index: any) => {
-        console.log('endpageToshow', endpageToshow)
         return (
           <Pagination.Item
             key={index}
@@ -101,20 +103,3 @@ const CustomPagination = (props) => {
 }
 
 export default CustomPagination
-{
-  /* <Pagination.First />
-    <Pagination.Prev />
-    <Pagination.Item>{1}</Pagination.Item>
-    <Pagination.Ellipsis />
-
-    <Pagination.Item>{10}</Pagination.Item>
-    <Pagination.Item>{11}</Pagination.Item>
-    <Pagination.Item active>{12}</Pagination.Item>
-    <Pagination.Item>{13}</Pagination.Item>
-    <Pagination.Item disabled>{14}</Pagination.Item>
-
-    <Pagination.Ellipsis />
-    <Pagination.Item>{20}</Pagination.Item>
-    <Pagination.Next />
-    <Pagination.Last /> */
-}

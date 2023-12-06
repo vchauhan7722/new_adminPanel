@@ -4,13 +4,45 @@ import {KTIcon, toAbsoluteUrl} from '../../../../_metronic/helpers'
 import {Link, useLocation} from 'react-router-dom'
 import {useIntl} from 'react-intl'
 import Accordion from 'react-bootstrap/Accordion'
+// import WebSocket from 'ws'
+import {useEffect, useState} from 'react'
+import {ws} from '../../../../socketconfig'
 
 const ProfileHeader = (props) => {
-  const {user} = props
+  const {user, userProfilePercentage} = props
+
   const location = useLocation()
   const intl = useIntl()
 
   let UserID = localStorage.getItem('userId')
+
+  const [socket, setSocket] = useState<any>(null)
+  const [connectionStatus, setConnectionStatus] = useState('Disconnected')
+
+  useEffect(() => {
+    // Replace 'wss://backend.profun.live' with your actual backend WebSocket URL
+    const ws = new WebSocket('wss://live-stream-phjd.onrender.com/')
+
+    ws.onopen = () => {
+      console.log('connected')
+      setConnectionStatus('Connected')
+    }
+
+    ws.onclose = () => {
+      console.log('disconnected')
+      setConnectionStatus('Disconnected')
+    }
+
+    ws.onmessage = (data) => {
+      console.log('data', data.data)
+    }
+
+    setSocket(ws)
+
+    return () => {
+      ws.close()
+    }
+  }, [])
 
   return (
     <Accordion defaultActiveKey='0' className='mb-5'>
@@ -200,13 +232,13 @@ const ProfileHeader = (props) => {
                             <span className='fw-bold fs-6 text-gray-400 me-4'>
                               Profile Completion
                             </span>
-                            <span className='fw-bolder fs-6'>50%</span>
+                            <span className='fw-bolder fs-6'>{userProfilePercentage}%</span>
                           </div>
                           <div className='h-5px w-100 bg-light mb-3'>
                             <div
                               className='bg-success rounded h-5px'
                               role='progressbar'
-                              style={{width: '70%'}}
+                              style={{width: `${userProfilePercentage}%`}}
                             ></div>
                           </div>
                         </div>

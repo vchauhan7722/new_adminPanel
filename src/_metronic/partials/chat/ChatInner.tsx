@@ -3,7 +3,7 @@
 import {FC, useEffect, useState, useRef} from 'react'
 import clsx from 'clsx'
 import {toAbsoluteUrl, defaultMessages, defaultUserInfos, UserInfoModel} from '../../helpers'
-import socket from '../../../config'
+import socket from '../../../socketconfig'
 import {getMessagesByUserID, sendCreditInChat} from '../../../API/api-endpoint'
 import {Dropdown1} from '../content/dropdown/Dropdown1'
 import {DateTimeFormatter, GetIDFromURL, TimeFormatter, sortData} from '../../../utils/Utils'

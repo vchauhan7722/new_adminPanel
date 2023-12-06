@@ -4,6 +4,7 @@ import {DateTimeFormatter, DateWithTimeFormatter} from '../../../../../utils/Uti
 
 export function Overview(props: any) {
   const {user} = props
+
   const intl = useIntl()
 
   console.log(user)
@@ -91,7 +92,12 @@ export function Overview(props: any) {
             <label className='col-lg-4 fw-bold text-muted'>Bio</label>
 
             <div className='col-lg-8 fv-row'>
-              <span className='fw-bold fs-6'>{user.bio}</span>
+              <span className='fw-bold fs-6'>
+                {user.bio === null
+                  ? `Hi, i am ${user?.fullName}, ${user?.age} years old and i am
+              from ${user?.city} ${user?.country}`
+                  : user.bio}
+              </span>
             </div>
           </div>
 

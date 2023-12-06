@@ -229,7 +229,7 @@ export const getUserpProfileDetailsUsingUserID = async userID => {
       }
     })
 
-    return response.data.data
+    return response.data
   } catch (error) {
     console.log(error.message)
 

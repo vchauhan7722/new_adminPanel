@@ -3,11 +3,17 @@ import {useIntl} from 'react-intl'
 import {KTCardBody} from '../../../../../_metronic/helpers'
 import {getUserCreditsHistoryWithPagination} from '../../../../../API/api-endpoint'
 import {DateWithTimeFormatter} from '../../../../../utils/Utils'
+import CustomPagination from '../../../../../utils/Pagination'
 
 const Credit = () => {
   const userId = localStorage.getItem('userId')
-  const [tabValue, setTabValue] = useState('all')
   const intl = useIntl()
+
+  const [tabValue, setTabValue] = useState('all')
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
+  const [totalPage, setTotalPage] = useState(0)
+  const [activePage, setActivePage] = useState(1)
 
   const handleChange = (tabName) => {
     setTabValue(tabName)
@@ -17,15 +23,21 @@ const Credit = () => {
 
   useEffect(() => {
     if (tabValue === 'all') {
-      getAllUserCreditList('')
+      getAllUserCreditList(page, pageSize, '')
     } else {
-      getAllUserCreditList(tabValue)
+      getAllUserCreditList(page, pageSize, tabValue)
     }
   }, [tabValue])
 
-  const getAllUserCreditList = async (type) => {
-    let result = await getUserCreditsHistoryWithPagination(userId, 1, 100, type)
+  const getAllUserCreditList = async (page: any, pageSize: any, type: any) => {
+    let result = await getUserCreditsHistoryWithPagination(userId, page, pageSize, type)
     setUserCreditList(result.data)
+    setTotalPage(result?.totalPage)
+  }
+
+  const getPagination = (page: any, pageSize: any) => {
+    let type = tabValue === 'all' ? '' : tabValue
+    getAllUserCreditList(page, pageSize, type)
   }
 
   return (
@@ -116,7 +128,20 @@ const Credit = () => {
             </div>
           </KTCardBody>
         </div>
-        <div className='card-footer'></div>
+        <div className='card-footer'>
+          {userCreditList.length !== 0 && (
+            <CustomPagination
+              page={page}
+              pageSize={pageSize}
+              setPageSize={setPageSize}
+              totalPage={totalPage}
+              setTotalPage={setTotalPage}
+              activePage={activePage}
+              setActivePage={setActivePage}
+              cb={getPagination}
+            />
+          )}
+        </div>
       </div>
     </div>
   )

@@ -16,7 +16,7 @@ const Activity = (props) => {
   const [activePage, setActivePage] = useState(1)
   const [activityList, setActivityList] = useState([])
 
-  const [activityCount, setActivityCount] = useState(0)
+  const [activityCount, setActivityCount] = useState([])
 
   const handleChange = (tabName) => {
     setTabValue(tabName)
@@ -32,11 +32,10 @@ const Activity = (props) => {
 
   const getActivitiesList = async (page: number, pageSize: number, type: any) => {
     let result = await getUserActivityWithPagination(page, pageSize, type, userId)
-    console.log(result)
     if (result.status === 200) {
-      setActivityList(result.data)
+      setActivityList(result.data.activities)
       setTotalPage(result?.totalPage)
-      setActivityCount(result?.count)
+      setActivityCount(result?.data.allActivityCount[0])
     }
   }
 
@@ -54,17 +53,17 @@ const Activity = (props) => {
       <div className=''>
         <div className='card-header border-0'>
           <div className='d-flex overflow-auto h-55px'>
-            <ul className='nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bolder flex-nowrap'>
+            <ul className='nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-6 fw-bold flex-nowrap'>
               <li className='nav-item'>
-                <div
+                <p
                   className={
                     `nav-link text-active-primary me-6 ` + (tabValue === 'all' && 'active')
                   }
                   onClick={() => handleChange('all')}
                 >
                   {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.ACTIVITY.All'})}
-                  {tabValue === 'all' && ` (${activityCount})`}
-                </div>
+                  {`(${activityCount['totalActivityCount'] || 0})`}
+                </p>
               </li>
               <li className='nav-item'>
                 <div
@@ -74,7 +73,7 @@ const Activity = (props) => {
                   onClick={() => handleChange('system')}
                 >
                   {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.ACTIVITY.SYSTEM'})}
-                  {tabValue === 'system' && ` (${activityCount})`}
+                  {`(${activityCount['system'] || 0})`}
                 </div>
               </li>
               <li className='nav-item'>
@@ -85,7 +84,7 @@ const Activity = (props) => {
                   onClick={() => handleChange('chat')}
                 >
                   {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.CHAT'})}
-                  {tabValue === 'chat' && ` (${activityCount})`}
+                  {`(${activityCount['chat'] || 0})`}
                 </div>
               </li>
               <li className='nav-item'>
@@ -96,7 +95,7 @@ const Activity = (props) => {
                   onClick={() => handleChange('videocall')}
                 >
                   {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.VIDEOCALL'})}
-                  {tabValue === 'videocall' && ` (${activityCount})`}
+                  {`(${activityCount['videocall'] || 0})`}
                 </div>
               </li>
               <li className='nav-item'>
@@ -107,7 +106,7 @@ const Activity = (props) => {
                   onClick={() => handleChange('undo-profile')}
                 >
                   {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.ACTIVITY.UNDOPROFILE'})}
-                  {tabValue === 'undo-profile' && ` (${activityCount})`}
+                  {`(${activityCount['undo-profile'] || 0})`}
                 </div>
               </li>
               <li className='nav-item'>
@@ -118,7 +117,7 @@ const Activity = (props) => {
                   onClick={() => handleChange('like-profile')}
                 >
                   {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.ACTIVITY.LIKE'})}
-                  {tabValue === 'like-profile' && ` (${activityCount})`}
+                  {`(${activityCount['like-profile'] || 0})`}
                 </div>
               </li>
               <li className='nav-item'>
@@ -130,7 +129,7 @@ const Activity = (props) => {
                   onClick={() => handleChange('visit-profile')}
                 >
                   {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.ACTIVITY.VISIT'})}
-                  {tabValue === 'visit-profile' && ` (${activityCount})`}
+                  {`(${activityCount['visit-profile'] || 0})`}
                 </div>
               </li>
               <li className='nav-item'>
@@ -141,13 +140,13 @@ const Activity = (props) => {
                   onClick={() => handleChange('match')}
                 >
                   {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.ACTIVITY.MATCH'})}
-                  {tabValue === 'match' && ` (${activityCount})`}
+                  {`(${activityCount['match'] || 0})`}
                 </div>
               </li>
             </ul>
           </div>
 
-          <div className='card-toolbar'>
+          <div className='card-toolbar mb-9'>
             <select
               className='form-select form-select-sm form-select-solid w-125px '
               data-control='select2'
@@ -159,13 +158,6 @@ const Activity = (props) => {
               <option value='3'>12 Hours</option>
               <option value='4'>24 Hours</option>
             </select>
-            <button type='button' className='btn btn-sm btn-light-primary ms-2'>
-              <i className='ki-duotone ki-cloud-download fs-3'>
-                <span className='path1'></span>
-                <span className='path2'></span>
-              </i>
-              Download Report
-            </button>
           </div>
         </div>
 
