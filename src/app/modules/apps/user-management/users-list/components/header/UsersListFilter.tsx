@@ -238,11 +238,12 @@ const UsersListFilter = () => {
                       data-allow-clear='true'
                       data-kt-user-table-filter='gender'
                       data-hide-search='true'
-                      defaultValue={'1'}
+                      defaultValue=""
                       name='gender'
                       value={formValue.gender}
                       onChange={(e) => handleChange(e)}
                     >
+                      <option value=''>All gender</option>
                       <option value='1'>Male</option>
                       <option value='2'>Female</option>
                     </select>

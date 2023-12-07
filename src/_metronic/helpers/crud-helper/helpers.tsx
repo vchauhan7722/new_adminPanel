@@ -34,9 +34,9 @@ function stringifyRequestQuery(state: QueryState): string {
   let pageSize = paginationUpdate[1].split('=')
   let finalPaginationString = paginationUpdate[0] + '&pageSize=' + pageSize[1]
 
-  console.log(
-    [finalPaginationString, finalSortingString, search, filter].filter((f) => f).join('&')
-  )
+  // console.log(
+  //   [finalPaginationString, finalSortingString, search, filter].filter((f) => f).join('&')
+  // )
   return [finalPaginationString, finalSortingString, search, filter].filter((f) => f).join('&')
   //.toLowerCase()
 }
@@ -83,7 +83,7 @@ function groupingOnSelect(
 function groupingOnSelectAll<T>(
   isAllSelected: boolean,
   setSelected: Dispatch<SetStateAction<Array<ID>>>,
-  data?: Array<T & {id?: ID}>
+  data?: Array<T & {userId?: ID}>
 ) {
   if (isAllSelected) {
     setSelected([])
@@ -93,8 +93,7 @@ function groupingOnSelectAll<T>(
   if (!data || !data.length) {
     return
   }
-
-  setSelected(data.filter((item) => item.id).map((item) => item.id))
+  setSelected(data.filter((item) => item.userId).map((item) => item.userId))
 }
 
 // Hook

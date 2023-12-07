@@ -4,19 +4,21 @@ import {useQueryResponseLoading, useQueryResponsePagination} from '../../core/Qu
 import {useQueryRequest} from '../../core/QueryRequestProvider'
 import {useState} from 'react'
 import {Pagination} from 'react-bootstrap'
+import ReactPaginate from 'react-paginate'
 
 const UsersListPagination = () => {
   const pagination = useQueryResponsePagination()
   const isLoading = useQueryResponseLoading()
   const {updateState} = useQueryRequest()
   const [activePage, setActivePage] = useState(1)
-  const [pageSize, setPageSize] = useState<any>(10)
+  const [pageSize, setPageSize] = useState<any>(100)
 
-  const updatePage = (page: number | undefined | null) => {
-    if (!page || isLoading || pagination.page === page) {
+  const updatePage = ({selected: selectedPage}) => {
+    if (!selectedPage || isLoading || pagination.page === selectedPage) {
       return
     }
-    setActivePage(page)
+    setActivePage(selectedPage)
+    let page = selectedPage
     updateState({page, items_per_page: pageSize})
   }
 
@@ -54,7 +56,7 @@ const UsersListPagination = () => {
               className='form-select h-30px mt-2'
               data-kt-select2='true'
               data-allow-clear='true'
-              defaultValue='10'
+              defaultValue='100'
               style={{padding: '0.5rem 2rem 0.5rem 1rem'}}
               onChange={(e) => updatePageSize(e)}
             >
@@ -65,7 +67,7 @@ const UsersListPagination = () => {
             </select>
           </div>
 
-          <div className='d-flex mt-2'>
+          <div className='d-flex mt-2 justify-content-between'>
             <div className='w-25 me-5'>
               <input
                 //placeholder='Birthdate'
@@ -78,34 +80,7 @@ const UsersListPagination = () => {
               />
             </div>
             <div>
-              {/* <Pagination>
-                <Pagination.First onClick={() => updatePage(1)} />
-                {startpageToshow !== 1 && (
-                  <>
-                    <Pagination.Ellipsis onClick={() => updatePage(1)} />
-                  </>
-                )}
-
-                {Array.from({length: pageLimit}).map((page: any, index: any) => {
-                  return (
-                    <Pagination.Item
-                      key={index}
-                      active={activePageNumber === index + startpageToshow}
-                      onClick={() => updatePage(index + startpageToshow)}
-                    >
-                      {index + startpageToshow}
-                    </Pagination.Item>
-                  )
-                })}
-
-                {endpageToshow !== totalPage && (
-                  <>
-                    <Pagination.Ellipsis onClick={() => updateNextPageNumber()} />
-                  </>
-                )}
-                <Pagination.Last onClick={() => updatePage(pagination.total_page)} />
-              </Pagination> */}
-              <ul className='pagination'>
+              {/* <ul className='pagination'>
                 <li
                   className={clsx('page-item', {
                     disabled: isLoading || pagination.page === 1,
@@ -149,7 +124,26 @@ const UsersListPagination = () => {
                     Last
                   </a>
                 </li>
-              </ul>
+              </ul> */}
+              <ReactPaginate
+                previousLabel={'Previous'}
+                nextLabel={'Next'}
+                pageCount={pagination?.total_page || 1}
+                onPageChange={updatePage}
+                pageRangeDisplayed={3}
+                marginPagesDisplayed={1}
+                pageClassName='page-item'
+                pageLinkClassName='page-link'
+                previousClassName='page-item'
+                previousLinkClassName='page-link'
+                nextClassName='page-item'
+                nextLinkClassName='page-link'
+                breakLabel='...'
+                breakClassName='page-item'
+                breakLinkClassName='page-link'
+                containerClassName='pagination'
+                activeClassName='active'
+              />
             </div>
           </div>
         </div>

@@ -10,16 +10,16 @@ const Credit = () => {
   const intl = useIntl()
 
   const [tabValue, setTabValue] = useState('all')
-  const [page, setPage] = useState(1)
-  const [pageSize, setPageSize] = useState(10)
+
+  const [pageSize, setPageSize] = useState(100)
   const [totalPage, setTotalPage] = useState(0)
-  const [activePage, setActivePage] = useState(1)
+  const [userCreditList, setUserCreditList] = useState([])
+
+  const page = 1
 
   const handleChange = (tabName) => {
     setTabValue(tabName)
   }
-
-  const [userCreditList, setUserCreditList] = useState([])
 
   useEffect(() => {
     if (tabValue === 'all') {
@@ -131,13 +131,10 @@ const Credit = () => {
         <div className='card-footer'>
           {userCreditList.length !== 0 && (
             <CustomPagination
-              page={page}
               pageSize={pageSize}
               setPageSize={setPageSize}
               totalPage={totalPage}
               setTotalPage={setTotalPage}
-              activePage={activePage}
-              setActivePage={setActivePage}
               cb={getPagination}
             />
           )}

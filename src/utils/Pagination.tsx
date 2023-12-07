@@ -1,104 +1,131 @@
+import clsx from 'clsx'
 import React, {useEffect, useState} from 'react'
 import Pagination from 'react-bootstrap/Pagination'
+import ReactPaginate from 'react-paginate'
+
+const datatablefooter = {
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+}
+
+const datatableshowing = {
+  color: '#6b6c72',
+}
+
+const pagination = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  listStyle: 'none',
+  cursor: 'pointer',
+
+  padding: '10px',
+  border: '1px solid transparent',
+  color: '#505050',
+}
+
+const paginationLink = {
+  fontWeight: 'bold',
+}
+
+const paginationActive = {
+  color: '#505050',
+  border: '1px solid #cacaca',
+  background: 'linear-gradient(to bottom,#fff 0,#eaeaea 100%)',
+}
+
+const paginationDisabled = {
+  color: '#cacaca',
+}
 
 const CustomPagination = (props) => {
-  const {pageSize, setPageSize, totalPage, setTotalPage, activePage, setActivePage, cb} = props
+  const {pageSize, setPageSize, totalPage, cb} = props
 
-  const [startpageToshow, setStartPagetoShow] = useState(1)
-  const [endpageToshow, setEndPagetoShow] = useState(5)
-  const [pageLimit, setPageLimit] = useState(5)
-  const [activePageNumber, setActivePageNumber] = useState(activePage)
+  const [page, setPage] = useState<any>(1)
 
-  useEffect(() => {
-    if (totalPage < 5) {
-      setEndPagetoShow(totalPage)
-      setPageLimit(totalPage)
-    } else {
-      setPageLimit(5)
-    }
-  }, [totalPage])
+  // const [startpageToshow, setStartPagetoShow] = useState(1)
+  // const [endpageToshow, setEndPagetoShow] = useState(5)
+  // const [pageLimit, setPageLimit] = useState(5)
+  // const [activePageNumber, setActivePageNumber] = useState(activePage)
 
-  const updatePage = (page) => {
-    setActivePageNumber(page)
+  // useEffect(() => {
+  //   if (totalPage < 5) {
+  //     setEndPagetoShow(totalPage)
+  //     setPageLimit(totalPage)
+  //   } else {
+  //     setPageLimit(5)
+  //   }
+  // }, [totalPage])
+
+  const updatePage = ({selected: selectedPage}) => {
+    //setActivePageNumber(selectedPage)
+    setPage(parseInt(selectedPage))
+    cb(parseInt(selectedPage), pageSize)
+  }
+
+  const updatePageSize = (e) => {
+    setPageSize(e.target.value)
+    cb(page, e.target.value)
+  }
+
+  const pageJump = (page) => {
+    setPage(parseInt(page))
     cb(parseInt(page), pageSize)
-  }
-
-  const updatePreviousPageNumber = () => {
-    console.log(totalPage >= startpageToshow, totalPage, startpageToshow, endpageToshow)
-    if (totalPage >= startpageToshow && startpageToshow !== 1) {
-      setPageLimit(5)
-      setStartPagetoShow(startpageToshow - 5)
-      setEndPagetoShow(endpageToshow - 5)
-    }
-  }
-
-  const updateNextPageNumber = () => {
-    if (totalPage >= endpageToshow) {
-      let endPageNumber = totalPage - endpageToshow
-      if (endPageNumber > 5) {
-        setPageLimit(5)
-        setStartPagetoShow(endpageToshow + 1)
-        setEndPagetoShow(endpageToshow + 5)
-      } else {
-        setPageLimit(endPageNumber)
-        setStartPagetoShow(endpageToshow + 1)
-        setEndPagetoShow(endpageToshow + endPageNumber)
-      }
-    }
-  }
-
-  const gotoFirstPage = (page: any) => {
-    setStartPagetoShow(1)
-    setEndPagetoShow(5)
-    setActivePageNumber(page)
-    cb(parseInt(page), pageSize)
-  }
-
-  const gotoLastPage = (page: any) => {
-    let endPageNumber = totalPage - endpageToshow
-    if (endPageNumber > 5) {
-      setStartPagetoShow(totalPage - 5)
-      setEndPagetoShow(totalPage)
-      setPageLimit(5)
-      setActivePageNumber(page)
-      cb(parseInt(page), pageSize)
-    } else {
-      setStartPagetoShow(endPageNumber)
-      setEndPagetoShow(endPageNumber + 5)
-      setPageLimit(endPageNumber)
-      setActivePageNumber(page)
-      cb(parseInt(page), pageSize)
-    }
   }
 
   return (
-    <Pagination>
-      <Pagination.First onClick={() => gotoFirstPage(1)} />
-      {startpageToshow !== 1 && (
-        <>
-          <Pagination.Ellipsis onClick={() => updatePreviousPageNumber()} />
-        </>
-      )}
-
-      {Array.from({length: pageLimit}).map((page: any, index: any) => {
-        return (
-          <Pagination.Item
-            key={index}
-            active={activePageNumber === index + startpageToshow}
-            onClick={() => updatePage(index + startpageToshow)}
-          >
-            {index + startpageToshow}
-          </Pagination.Item>
-        )
-      })}
-
-      {endpageToshow !== totalPage && (
-        <>
-          <Pagination.Ellipsis onClick={() => updateNextPageNumber()} />
-        </>
-      )}
-      <Pagination.Last onClick={() => gotoLastPage(totalPage)} />
-    </Pagination>
+    <div className='d-flex justify-content-between'>
+      <div>
+        <select
+          className='form-select h-30px mt-2'
+          data-kt-select2='true'
+          data-allow-clear='true'
+          defaultValue='100'
+          style={{padding: '0.5rem 2rem 0.5rem 1rem'}}
+          onChange={(e) => updatePageSize(e)}
+        >
+          <option value='10'>10</option>
+          <option value='30'>30</option>
+          <option value='50'>50</option>
+          <option value='100'>100</option>
+        </select>
+      </div>
+      <div className='d-flex mt-2'>
+        {/* <div className='w-25 me-5'>
+          <input
+            //placeholder='Birthdate'
+            type='number'
+            name='pageJump'
+            className={clsx('form-control h-30px ms-2 ')}
+            autoComplete='off'
+            onChange={(e) => pageJump(e.target.value)}
+            defaultValue={1}
+          />
+        </div> */}
+        <div>
+          <ReactPaginate
+            previousLabel={'Previous'}
+            nextLabel={'Next'}
+            pageCount={totalPage}
+            onPageChange={updatePage}
+            pageRangeDisplayed={3}
+            marginPagesDisplayed={1}
+            pageClassName='page-item'
+            pageLinkClassName='page-link'
+            previousClassName='page-item'
+            previousLinkClassName='page-link'
+            nextClassName='page-item'
+            nextLinkClassName='page-link'
+            breakLabel='...'
+            breakClassName='page-item'
+            breakLinkClassName='page-link'
+            containerClassName='pagination'
+            activeClassName='active'
+          />
+        </div>
+      </div>
+    </div>
   )
 }
 

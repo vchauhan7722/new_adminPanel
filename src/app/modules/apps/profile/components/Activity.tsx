@@ -10,11 +10,10 @@ const Activity = (props) => {
   const userId = localStorage.getItem('userId')
   const intl = useIntl()
   const [tabValue, setTabValue] = useState('all')
-  const [page, setPage] = useState(1)
-  const [pageSize, setPageSize] = useState(10)
+  const [pageSize, setPageSize] = useState(100)
   const [totalPage, setTotalPage] = useState(0)
-  const [activePage, setActivePage] = useState(1)
   const [activityList, setActivityList] = useState([])
+  const page = 1
 
   const [activityCount, setActivityCount] = useState([])
 
@@ -208,13 +207,9 @@ const Activity = (props) => {
         <div className='card-footer'>
           {activityList.length !== 0 && (
             <CustomPagination
-              page={page}
               pageSize={pageSize}
               setPageSize={setPageSize}
               totalPage={totalPage}
-              setTotalPage={setTotalPage}
-              activePage={activePage}
-              setActivePage={setActivePage}
               cb={getPagination}
             />
           )}
