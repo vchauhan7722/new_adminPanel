@@ -49,7 +49,7 @@ export type QueryRequestContextProps = {
 export const initialQueryState: QueryState = {
   page: 1,
   items_per_page: 10,
-  total_page:1
+  total_page:1,
 }
 
 export const initialQueryRequest: QueryRequestContextProps = {

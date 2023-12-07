@@ -22,15 +22,23 @@ function stringifyRequestQuery(state: QueryState): string {
     ? Object.entries(state.filter as Object)
         .filter((obj) => isNotEmpty(obj[1]))
         .map((obj) => {
-          return `filter_${obj[0]}=${obj[1]}`
+          return `${obj[0]}=${obj[1]}` //return `filter_${obj[0]}=${obj[1]}`
         })
         .join('&')
     : ''
 
-  return [pagination, sort, search, filter]
-    .filter((f) => f)
-    .join('&')
-    .toLowerCase()
+  let sortUpdate = sort.split('&')
+  let orderWith = sortUpdate[0].split('=')
+  let finalSortingString = sort.length === 0 ? '' : 'orderBy=' + orderWith[1] + '&' + sortUpdate[1]
+  let paginationUpdate = pagination.split('&')
+  let pageSize = paginationUpdate[1].split('=')
+  let finalPaginationString = paginationUpdate[0] + '&pageSize=' + pageSize[1]
+
+  console.log(
+    [finalPaginationString, finalSortingString, search, filter].filter((f) => f).join('&')
+  )
+  return [finalPaginationString, finalSortingString, search, filter].filter((f) => f).join('&')
+  //.toLowerCase()
 }
 
 function parseRequestQuery(query: string): QueryState {

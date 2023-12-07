@@ -38,7 +38,7 @@ const usersColumns: ReadonlyArray<Column<User>> = [
         tooltipTitle='Last Activity'
       />
     ),
-    id: 'lastActivity',
+    id: 'updatedAt',
     Cell: ({...props}) => (
       <div className='text-center '>
         <div className='badge badge-light fw-bolder'>
@@ -56,7 +56,7 @@ const usersColumns: ReadonlyArray<Column<User>> = [
         tooltipTitle='Credits'
       />
     ),
-    id: 'credits',
+    id: 'totalCredit',
     Cell: ({...props}) => (
       <div className='  text-center'>
         <div className='badge badge-light fw-bolder'>
@@ -110,7 +110,7 @@ const usersColumns: ReadonlyArray<Column<User>> = [
       />
     ),
     //accessor: 'country',
-    id: 'location',
+    id: 'city',
     Cell: ({...props}) => (
       <div
         data-toggle='tooltip'
@@ -141,7 +141,7 @@ const usersColumns: ReadonlyArray<Column<User>> = [
         tooltipTitle='Joining Date'
       />
     ),
-    id: 'joiningDate',
+    id: 'createdAt',
     Cell: ({...props}) => (
       <div className='text-center'>
         {moment(props.data[props.row.index]?.updatedAt).format('DD MMM YY ')}

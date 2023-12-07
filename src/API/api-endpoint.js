@@ -3,14 +3,15 @@ import axios from 'axios'
 let APIURL = process.env.REACT_APP_SERVER_URL //NEXT_PUBLIC_PRODUCTION_SERVER_URL
 
 //manage users section
-export const getAllUser = async paginationModel => {
+export const getAllUser = async (query) => {
   try {
     let accessToken = localStorage.getItem('accessToken')
-    let pageModel = paginationModel.split('&')
-    let page = pageModel[0].split('=')[1]
-    let pageSize = pageModel[1].split('=')[1]
+    // let pageModel = paginationModel.split('&')
+    // let page = pageModel[0].split('=')[1]
+    // let pageSize = pageModel[1].split('=')[1]
 
-    const apiUrl = `${APIURL}/api/v1/users?page=${page}&pageSize=${pageSize}`
+    //const apiUrl = `${APIURL}/api/v1/users?page=${page}&pageSize=${pageSize}`
+    const apiUrl = `${APIURL}/api/v1/users?${query}`
 
     let response = await axios.get(apiUrl, {
       headers: {

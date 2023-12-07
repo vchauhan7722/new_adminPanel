@@ -3,19 +3,21 @@ import clsx from 'clsx'
 import {useQueryResponseLoading, useQueryResponsePagination} from '../../core/QueryResponseProvider'
 import {useQueryRequest} from '../../core/QueryRequestProvider'
 import {useState} from 'react'
+import {Pagination} from 'react-bootstrap'
 
 const UsersListPagination = () => {
   const pagination = useQueryResponsePagination()
   const isLoading = useQueryResponseLoading()
   const {updateState} = useQueryRequest()
   const [activePage, setActivePage] = useState(1)
+  const [pageSize, setPageSize] = useState<any>(10)
 
   const updatePage = (page: number | undefined | null) => {
     if (!page || isLoading || pagination.page === page) {
       return
     }
     setActivePage(page)
-    updateState({page, items_per_page: 10})
+    updateState({page, items_per_page: pageSize})
   }
 
   const pageJump = (page: any) => {
@@ -30,14 +32,15 @@ const UsersListPagination = () => {
       return
     }
     setActivePage(page)
-    updateState({page, items_per_page: 10})
+    updateState({page, items_per_page: pageSize})
   }
 
   const updatePageSize = (e: any) => {
     if (isLoading || pagination.items_per_page === e.target.value) {
       return
     }
-    console.log(e.target.value)
+
+    setPageSize(e.target.value)
 
     updateState({page: 1, items_per_page: e.target.value})
   }
@@ -61,6 +64,7 @@ const UsersListPagination = () => {
               <option value='100'>100</option>
             </select>
           </div>
+
           <div className='d-flex mt-2'>
             <div className='w-25 me-5'>
               <input
@@ -74,6 +78,33 @@ const UsersListPagination = () => {
               />
             </div>
             <div>
+              {/* <Pagination>
+                <Pagination.First onClick={() => updatePage(1)} />
+                {startpageToshow !== 1 && (
+                  <>
+                    <Pagination.Ellipsis onClick={() => updatePage(1)} />
+                  </>
+                )}
+
+                {Array.from({length: pageLimit}).map((page: any, index: any) => {
+                  return (
+                    <Pagination.Item
+                      key={index}
+                      active={activePageNumber === index + startpageToshow}
+                      onClick={() => updatePage(index + startpageToshow)}
+                    >
+                      {index + startpageToshow}
+                    </Pagination.Item>
+                  )
+                })}
+
+                {endpageToshow !== totalPage && (
+                  <>
+                    <Pagination.Ellipsis onClick={() => updateNextPageNumber()} />
+                  </>
+                )}
+                <Pagination.Last onClick={() => updatePage(pagination.total_page)} />
+              </Pagination> */}
               <ul className='pagination'>
                 <li
                   className={clsx('page-item', {

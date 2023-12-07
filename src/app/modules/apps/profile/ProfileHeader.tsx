@@ -4,9 +4,7 @@ import {KTIcon, toAbsoluteUrl} from '../../../../_metronic/helpers'
 import {Link, useLocation} from 'react-router-dom'
 import {useIntl} from 'react-intl'
 import Accordion from 'react-bootstrap/Accordion'
-// import WebSocket from 'ws'
 import {useEffect, useState} from 'react'
-import {ws} from '../../../../socketconfig'
 
 const ProfileHeader = (props) => {
   const {user, userProfilePercentage} = props
@@ -15,34 +13,6 @@ const ProfileHeader = (props) => {
   const intl = useIntl()
 
   let UserID = localStorage.getItem('userId')
-
-  const [socket, setSocket] = useState<any>(null)
-  const [connectionStatus, setConnectionStatus] = useState('Disconnected')
-
-  useEffect(() => {
-    // Replace 'wss://backend.profun.live' with your actual backend WebSocket URL
-    const ws = new WebSocket('wss://live-stream-phjd.onrender.com/')
-
-    ws.onopen = () => {
-      console.log('connected')
-      setConnectionStatus('Connected')
-    }
-
-    ws.onclose = () => {
-      console.log('disconnected')
-      setConnectionStatus('Disconnected')
-    }
-
-    ws.onmessage = (data) => {
-      console.log('data', data.data)
-    }
-
-    setSocket(ws)
-
-    return () => {
-      ws.close()
-    }
-  }, [])
 
   return (
     <Accordion defaultActiveKey='0' className='mb-5'>
