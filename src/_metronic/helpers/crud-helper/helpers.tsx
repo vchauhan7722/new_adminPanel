@@ -34,9 +34,9 @@ function stringifyRequestQuery(state: QueryState): string {
   let pageSize = paginationUpdate[1].split('=')
   let finalPaginationString = paginationUpdate[0] + '&pageSize=' + pageSize[1]
 
-  // console.log(
-  //   [finalPaginationString, finalSortingString, search, filter].filter((f) => f).join('&')
-  // )
+  console.log(
+    [finalPaginationString, finalSortingString, search, filter].filter((f) => f).join('&')
+  )
   return [finalPaginationString, finalSortingString, search, filter].filter((f) => f).join('&')
   //.toLowerCase()
 }

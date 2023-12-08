@@ -24,12 +24,12 @@ const UsersListFilter = () => {
     country: '',
     state: '',
     city: '',
-    isOnline: false,
-    isPremium: false,
-    isVerify: false,
-    isWithStory: false,
-    isfromReffral: false,
-    completeProfile: true,
+    isOnline: '',
+    isPremium: '',
+    isVerify: '',
+    isWithStory: '',
+    isfromReffral: '',
+    completeProfile: '',
   })
   const [allCountryList, setallCountryList] = useState<Array<any> | undefined>([])
   const [allStateList, setallStateList] = useState<Array<any> | undefined>([])
@@ -201,7 +201,7 @@ const UsersListFilter = () => {
                   </div> */}
                   <div className='col-lg-4'>
                     <label className='form-label fs-6 fw-bold'>
-                      {intl.formatMessage({id: 'USERMANAGEMENT.FILTER.REGISTERDATE'})}
+                      {intl.formatMessage({id: 'USERMANAGEMENT.FILTER.STARTREGISTERDATE'})}
                     </label>
                     <input
                       type='date'
@@ -216,7 +216,7 @@ const UsersListFilter = () => {
                 <div className='row p-4'>
                   <div className='col-lg-4'>
                     <label className='form-label fs-6 fw-bold'>
-                      {intl.formatMessage({id: 'USERMANAGEMENT.FILTER.REGISTERDATE'})}
+                      {intl.formatMessage({id: 'USERMANAGEMENT.FILTER.ENDREGISTERDATE'})}
                     </label>
                     <input
                       type='date'
@@ -238,7 +238,7 @@ const UsersListFilter = () => {
                       data-allow-clear='true'
                       data-kt-user-table-filter='gender'
                       data-hide-search='true'
-                      defaultValue=""
+                      defaultValue=''
                       name='gender'
                       value={formValue.gender}
                       onChange={(e) => handleChange(e)}

@@ -379,8 +379,6 @@ const EditProfile = (props) => {
                   <option value=''></option>
                   <option value={1}>Male</option>
                   <option value={2}>Female</option>
-                  <option value={3}>Lesibian</option>
-                  <option value={4}>Gay</option>
                 </select>
               </div>
             </div>

@@ -95,7 +95,7 @@ const usersColumns: ReadonlyArray<Column<User>> = [
         )}
         &nbsp;
         {props.data[props.row.index]?.isSpotlightUser && (
-          <i className='text-primary fa-regular fa-star fa-2xl'></i>
+          <i class='text-primary fa-solid fa-fire-flame-curved fa-2xl'></i>
         )}
       </div>
     ),

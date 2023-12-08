@@ -608,7 +608,7 @@ export const updateUserQuestionAnswerForProfile = async (userID, questionID,answ
       answerId : answerID
     }
 
-    const apiUrl = `${APIURL}/api/v1/users/${userID}/questions/${questionID}`
+    const apiUrl = `${APIURL}/api/v1/users/${userID}/questions`
 
     let response = await axios.put(apiUrl, formdata,{
       headers: {
@@ -701,12 +701,59 @@ export const updateMediaActionForUserMedia = async (userID, mediaID, type,typeVa
 export const removeMediaActionForUserMedia = async (userID, mediaID) => {
   try {
     let accessToken = localStorage.getItem('accessToken')
-
+    
     const apiUrl = `${APIURL}/api/v1/users/${userID}/delete/media/${mediaID}/admin`
 
     let response = await axios.delete(apiUrl, {
       headers: {
         'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const createMediaActionForUserMedia = async (fileData,userID) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+
+    let formData = new FormData()
+    formData = {
+      profileMedia : fileData,
+      mediaTypes : [{mediaType:"photo"}]  
+    }
+    
+    const apiUrl = `${APIURL}/api/v1/users/${userID}/upload/profiles`
+
+    let response = await axios.post(apiUrl,formData, {
+      headers: {
+        'Content-Type': `multipart/form-data;`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const setMediaAsAStoryForUserMedia = async (userID,mediaId) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')  
+    
+    const apiUrl = `${APIURL}/api/v1/users/${userID}/media/${mediaId}/upload/story`
+
+    let response = await axios.post(apiUrl,{},{
+      headers: {
         'x-access-token': accessToken
       }
     })
@@ -899,6 +946,111 @@ export const getAllUserStory = async (userId) => {
     })
 
     return response.data.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const CreateUserStory = async (fileData,userId) => {
+  try {
+
+    let formData = new FormData()
+    formData = {
+      media : fileData,
+      mediaType : fileData.type.split('/')[0]
+    }
+    
+    let accessToken = localStorage.getItem('accessToken')  
+    
+    const apiUrl = `${APIURL}/api/v1/users/${userId}/stories`
+
+    let response = await axios.post(apiUrl,formData,{
+      headers: {
+        'Content-Type': `multipart/form-data;`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const deleteUserStory = async (userId,mediaId) => {
+  try { 
+    let accessToken = localStorage.getItem('accessToken')  
+    
+    const apiUrl = `${APIURL}/api/v1/users/${userId}/stories/${mediaId}`
+
+    let response = await axios.delete(apiUrl,{
+      headers: {
+        'Content-Type': `multipart/form-data;`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const UpdateUserStory = async (storyCredit,userId,storyId) => {
+  try {
+    storyCredit = parseInt(storyCredit)
+    let formData = new FormData()
+    if(storyCredit !== 0){
+      formData = {
+        isPrivate: true,
+        storyCredit: storyCredit
+      }
+    }else{
+      formData = {
+        storyCredit: storyCredit
+      }
+    }
+    
+    
+    let accessToken = localStorage.getItem('accessToken')  
+    
+    const apiUrl = `${APIURL}/api/v1/users/${userId}/stories/${storyId}`
+
+    let response = await axios.put(apiUrl,formData,{
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const ReUploadUserStory = async (userId,storyId) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')  
+    
+    const apiUrl = `${APIURL}/api/v1/users/${userId}/stories/${storyId}/re-upload`
+
+    let response = await axios.post(apiUrl,{},{
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
   } catch (error) {
     console.log(error.message)
 
