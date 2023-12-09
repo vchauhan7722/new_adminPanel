@@ -5,6 +5,7 @@ import clsx from 'clsx'
 import {useIntl} from 'react-intl'
 import ProfileQuestionsAndInterest from './Componants/ProfileQuestionsAndInterest'
 import {PageLink, PageTitle} from '../../../../_metronic/layout/core'
+import {Link, Route, Routes} from 'react-router-dom'
 
 const usersBreadcrumbs: Array<PageLink> = [
   {
@@ -85,14 +86,16 @@ const Plugins = () => {
                         </span>
                       </td>
                       <td colSpan={2}>
-                        <button
-                          className='btn btn-sm btn-light'
-                          data-kt-menu-dismiss='true'
-                          onClick={() => setSelectedPlugins(plugin.name)}
-                        >
-                          <i className='fa-solid fa-gear'></i>
-                          Setting
-                        </button>
+                        <Link to={`/plugins/${plugin.path}`}>
+                          <button
+                            className='btn btn-sm btn-light'
+                            data-kt-menu-dismiss='true'
+                            onClick={() => setSelectedPlugins(plugin.name)}
+                          >
+                            <i className='fa-solid fa-gear'></i>
+                            Setting
+                          </button>
+                        </Link>
                       </td>
                     </tr>
                   )
@@ -103,7 +106,19 @@ const Plugins = () => {
         </KTCardBody>
       )}
 
-      {selectedPlugins === 'Profile questions and Interest' && <ProfileQuestionsAndInterest />}
+      <Routes>
+        <Route
+          path='/question_answer_plugin'
+          element={
+            <>
+              <PageTitle>Questions and Answers</PageTitle>
+              <ProfileQuestionsAndInterest />
+            </>
+          }
+        />
+      </Routes>
+
+      {/* {selectedPlugins === 'Profile questions and Interest' && <ProfileQuestionsAndInterest />} */}
     </>
   )
 }

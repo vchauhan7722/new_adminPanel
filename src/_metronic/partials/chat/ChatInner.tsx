@@ -4,7 +4,7 @@ import {FC, useEffect, useState, useRef} from 'react'
 import clsx from 'clsx'
 import {toAbsoluteUrl, defaultMessages, defaultUserInfos, UserInfoModel} from '../../helpers'
 import socket from '../../../socketconfig'
-import {getMessagesByUserID, sendCreditInChat} from '../../../API/api-endpoint'
+import {getMessagesByUserID, pinOrLikeChatMember, sendCreditInChat} from '../../../API/api-endpoint'
 import {Dropdown1} from '../content/dropdown/Dropdown1'
 import {DateTimeFormatter, GetIDFromURL, TimeFormatter, sortData} from '../../../utils/Utils'
 import {Link, useLocation} from 'react-router-dom'
@@ -27,7 +27,6 @@ const ChatInner = (props: any) => {
   const [pageSize, setPageSize] = useState<any>(100)
   const [selectedGiftCategory, setSelectedGiftCategory] = useState<any>('all')
   const [selectedGift, setSelectedGift] = useState<any>(undefined)
-  const [file, setFile] = useState<any>(undefined)
   const [creditToSend, setCreditToSend] = useState<any>(1)
 
   const dates = new Set()
@@ -46,9 +45,9 @@ const ChatInner = (props: any) => {
   }
 
   useEffect(() => {
-    console.log(receiverUserDetails)
+    //console.log(receiverUserDetails)
     getchatList()
-    console.log(receiverUserDetails?.chatRoomId, receiverUserDetails?.chatId)
+    //console.log(receiverUserDetails?.chatRoomId, receiverUserDetails?.chatId)
     socket.emit('join_room', receiverUserDetails?.chatRoomId, receiverUserDetails?.chatId)
   }, [])
 
@@ -229,6 +228,18 @@ const ChatInner = (props: any) => {
     //setFile(fileUploaded)
   }
 
+  const updateChatmember = async (action) => {
+    // currentUserId , roomID ,chatmemberID , action
+    let result = await pinOrLikeChatMember(
+      currentUserId,
+      receiverUserDetails?.userId,
+      receiverUserDetails?.chatRoomId,
+      action
+    )
+    if (result.status === 200) {
+    }
+  }
+
   return messageList === undefined ? (
     <div>Loading</div>
   ) : (
@@ -303,9 +314,9 @@ const ChatInner = (props: any) => {
                   <i className='bi bi-three-dots fs-3'></i>
                 </button>
                 <div className='dropdown-content'>
-                  <span>Like Profile</span>
-                  <span>Pin Profile</span>
-                  <span>Clear All Messages</span>
+                  <span onClick={() => updateChatmember('like')}>Like Profile</span>
+                  <span onClick={() => updateChatmember('pin')}>Pin Profile</span>
+                  {/* <span>Clear All Messages</span> */}
                 </div>
               </div>
             </div>

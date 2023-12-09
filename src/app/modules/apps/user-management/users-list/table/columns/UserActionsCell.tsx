@@ -3,12 +3,13 @@ import {FC, useEffect} from 'react'
 import {MenuComponent} from '../../../../../../../_metronic/assets/ts/components'
 import {ID} from '../../../../../../../_metronic/helpers'
 import {useListView} from '../../core/ListViewProvider'
+import {Link} from 'react-router-dom'
 
 type Props = {
-  id: ID
+  userId: ID
 }
 
-const UserActionsCell: FC<Props> = ({id}) => {
+const UserActionsCell: FC<Props> = ({userId}) => {
   const {setItemIdForUpdate} = useListView()
   // const {query} = useQueryResponse()
   // const queryClient = useQueryClient()
@@ -18,7 +19,7 @@ const UserActionsCell: FC<Props> = ({id}) => {
   }, [])
 
   const openEditModal = () => {
-    setItemIdForUpdate(id)
+    setItemIdForUpdate(userId)
   }
 
   // const deleteItem = useMutation(() => deleteUser(id), {
@@ -59,34 +60,36 @@ const UserActionsCell: FC<Props> = ({id}) => {
         data-kt-menu='true'
       >
         {/* begin::Menu item */}
-        <div className='menu-item px-3'>
+        {/* <div className='menu-item px-3'>
           <a className='menu-link px-3' onClick={openEditModal}>
             Open a live Profile
           </a>
-        </div>
+        </div> */}
         {/* end::Menu item */}
 
         {/* begin::Menu item */}
         <div className='menu-item px-3'>
-          <a
+          <Link
             className='menu-link px-3'
             data-kt-users-table-filter='delete_row'
             onClick={() => deleteItem()}
+            to={`/apps/users-profile/edit-profile/${userId}`}
           >
             Edit Account
-          </a>
+          </Link>
         </div>
         {/* end::Menu item */}
 
         {/* begin::Menu item */}
         <div className='menu-item px-3'>
-          <a
+          <Link
             className='menu-link px-3'
             data-kt-users-table-filter='delete_row'
             onClick={() => deleteItem()}
+            to={`/apps/users-profile/media/${userId}`}
           >
             Edit Media Files
-          </a>
+          </Link>
         </div>
         {/* end::Menu item */}
 

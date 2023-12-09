@@ -788,6 +788,7 @@ export const getUserCreditsHistoryWithPagination = async (userID, page, pageSize
 }
 
 export const UpdateUserDetailsByUID = async (UID, newUserData) => {
+  try {
   let accessToken = localStorage.getItem('accessToken')
   let formdata = new FormData()
   formdata = {
@@ -813,7 +814,55 @@ export const UpdateUserDetailsByUID = async (UID, newUserData) => {
     }
   })
 
-  return response.data
+    return response.data
+  } catch (error) { 
+    return error.response.data
+  }
+  
+}
+
+export const UpdateVerifyStatusByUID = async (UID, flag) => {
+  try {
+  let accessToken = localStorage.getItem('accessToken')
+  let formdata = new FormData()
+  formdata = {
+    isVerify: flag,
+  }
+
+  const apiUrl = `${APIURL}/api/v1/users/update/${UID}`
+
+  let response = await axios.put(apiUrl, formdata, {
+    headers: {
+      'Content-Type': `application/json`,
+      'x-access-token': accessToken
+    }
+  })
+
+    return response.data
+  } catch (error) { 
+    return error.response.data
+  }
+  
+}
+
+export const UpdateSpotlightStatusByUID = async (UID) => {
+  try {
+  let accessToken = localStorage.getItem('accessToken')
+ 
+  const apiUrl = `${APIURL}/api/v1/users/${UID}/update/spotlight?fromWeb=true`
+
+  let response = await axios.put(apiUrl, {}, {
+    headers: {
+      'Content-Type': `application/json`,
+      'x-access-token': accessToken
+    }
+  })
+
+    return response.data
+  } catch (error) { 
+    return error.response.data
+  }
+  
 }
 
 /*For Chats */
@@ -903,7 +952,6 @@ export const getAllGiftsCategory = async () => {
 
 export const sendCreditInChat = async (senderID,receiverId,credit) => {
   try {
-    console.log("api endpoint",senderID,receiverId,credit)
     let accessToken = localStorage.getItem('accessToken')
     let formData = new FormData()
     formData = {
@@ -921,6 +969,37 @@ export const sendCreditInChat = async (senderID,receiverId,credit) => {
     })
 
     return response.data.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const pinOrLikeChatMember = async (userID,roomID,chatMemberID,action) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+    let formdata;
+    if(action === 'pin'){
+      formdata = {
+        pin : true, 
+      }
+    }else if(action === 'like'){
+      formdata = {
+        like : true
+      }
+    }
+    
+    const apiUrl = `${APIURL}/api/v1/communications/chat/users/${userID}/chatroom/${roomID}/chatMember/${chatMemberID}`
+  
+    let response = await axios.put(apiUrl, formdata, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+  
+    return response.data
   } catch (error) {
     console.log(error.message)
 

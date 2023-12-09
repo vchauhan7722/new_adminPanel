@@ -14,12 +14,15 @@ import {
 } from '../../../../../API/api-endpoint'
 import '../../../../../_metronic/assets/css/react-phone-number-input.css'
 import ToastUtils from '../../../../../utils/ToastUtils'
+import PhoneInput from 'react-phone-input-2'
+import 'react-phone-input-2/lib/style.css'
 
 const EditProfile = (props) => {
   const {user, setUserUpdateFlag, userUpdateFlag} = props
   const intl = useIntl()
   let userID = localStorage.getItem('userId')
 
+  const [isAnyProfileChanges, setisAnyProfileChanges] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [suggestions, setSuggestions] = useState([])
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1)
@@ -131,20 +134,17 @@ const EditProfile = (props) => {
   }
 
   const handleProfileChange = (e) => {
+    setisAnyProfileChanges(true)
     let name = e.target.name
     let value = e.target.value
-    if (name === 'mobileNo') {
-      if (value > 10) {
-        ToastUtils({type: 'error', message: 'Please Enter 10 Digit Mobile'})
-      } else {
-        setProfileDetailsFormValue({...profileDetailsFormValue, [name]: value})
-      }
-    } else if (name !== 'countryCode') {
-      setProfileDetailsFormValue({...profileDetailsFormValue, [name]: value})
-    } else {
-      let newValue = value.substring(1, value.length)
-      setProfileDetailsFormValue({...profileDetailsFormValue, [name]: newValue})
-    }
+    // let newValue = value.substring(1, value.length)
+    setProfileDetailsFormValue({...profileDetailsFormValue, [name]: value})
+    // if (name !== 'countryCode') {
+    //   setProfileDetailsFormValue({...profileDetailsFormValue, [name]: value})
+    // } else {
+    //   let newValue = value.substring(1, value.length)
+    //   setProfileDetailsFormValue({...profileDetailsFormValue, [name]: newValue})
+    // }
   }
 
   const handleChangeQuestions = async (e, questionID) => {
@@ -159,22 +159,32 @@ const EditProfile = (props) => {
       if (result.status === 200) {
         setUserUpdateFlag(userUpdateFlag + 1)
         ToastUtils({type: 'success', message: 'Answer Is Updated'})
+      } else {
+        ToastUtils({type: 'error', message: 'Something Went Wrong'})
       }
     } else {
       let result = await createUserQuestionAnswerForProfile(userID, questionID, answerId)
       if (result.status === 200) {
         setUserUpdateFlag(userUpdateFlag + 1)
         ToastUtils({type: 'success', message: 'Question Is Created With Answer'})
+      } else {
+        ToastUtils({type: 'error', message: 'Something Went Wrong'})
       }
     }
   }
 
   const updateProfile = async () => {
-    console.log(profileDetailsFormValue)
-    let result = await UpdateUserDetailsByUID(userID, profileDetailsFormValue)
-    if (result.status === 200) {
-      setUserUpdateFlag(userUpdateFlag + 1)
-      ToastUtils({type: 'success', message: 'Profile Update SuccessFully'})
+    if (profileDetailsFormValue?.mobileNo.length !== 10) {
+      ToastUtils({type: 'error', message: 'Enter 10 digits Number Only'})
+    } else {
+      let result = await UpdateUserDetailsByUID(userID, profileDetailsFormValue)
+      if (result.status === 200) {
+        setUserUpdateFlag(userUpdateFlag + 1)
+        ToastUtils({type: 'success', message: 'Profile Update SuccessFully'})
+        setisAnyProfileChanges(false)
+      } else {
+        ToastUtils({type: 'error', message: result.message})
+      }
     }
   }
 
@@ -261,9 +271,9 @@ const EditProfile = (props) => {
 
             <div className='row mb-6'>
               <label className='col-lg-4 required fw-bold fs-6 mt-3'>Mobile No</label>
-              <div className='col-lg-3'>
+              <div className='col-lg-8'>
                 {/* begin::Input */}
-                <input
+                {/* <input
                   placeholder='Country Code'
                   type='text'
                   name='countryCode'
@@ -271,19 +281,22 @@ const EditProfile = (props) => {
                   autoComplete='off'
                   value={'+' + profileDetailsFormValue?.countryCode}
                   onChange={(e) => handleProfileChange(e)}
-                />
-                {/* end::Input */}
-              </div>
-              <div className='col-lg-5'>
-                {/* begin::Input */}
-                <input
-                  placeholder='Mobile No'
-                  type='number'
-                  name='mobileNo'
-                  className={clsx('form-control form-control-solid mb-3 mb-lg-0')}
-                  autoComplete='off'
-                  value={profileDetailsFormValue?.mobileNo}
-                  onChange={(e) => handleProfileChange(e)}
+                /> */}
+                <PhoneInput
+                  country={'in'}
+                  value={profileDetailsFormValue?.countryCode + profileDetailsFormValue?.mobileNo}
+                  onChange={(phone: string, country: any) => {
+                    if (phone.length !== 0) {
+                      const reducedPhone = phone.replace(country.dialCode, '')
+                      setProfileDetailsFormValue({
+                        ...profileDetailsFormValue,
+                        ['countryCode']: country.dialCode,
+                        ['mobileNo']: reducedPhone,
+                      })
+                      setisAnyProfileChanges(true)
+                    }
+                  }}
+                  inputClass='w-100'
                 />
                 {/* end::Input */}
               </div>
@@ -391,11 +404,26 @@ const EditProfile = (props) => {
                   name='bio'
                   className={clsx('form-control form-control-solid mb-3 mb-lg-0')}
                   autoComplete='off'
+                  rows={5}
                   value={profileDetailsFormValue?.bio}
                   onChange={(e) => handleProfileChange(e)}
                 />
 
                 {/* end::Input */}
+              </div>
+            </div>
+
+            <div className='row mt-9'>
+              <div className='col-3'></div>
+              <div className='col-6'>
+                <button
+                  type='submit'
+                  className={!isAnyProfileChanges ? 'btn btn-secondary' : 'btn btn-primary'}
+                  onClick={updateProfile}
+                  disabled={!isAnyProfileChanges}
+                >
+                  Save Changes
+                </button>
               </div>
             </div>
           </div>
@@ -417,7 +445,7 @@ const EditProfile = (props) => {
                       defaultValue={getDefaultValueOfAnswer(q.questionId)}
                       onChange={(e) => handleChangeQuestions(e, q.questionId)}
                     >
-                      <option value='-'>select Option</option>
+                      <option value=''>select Option</option>
                       {q.answers.map((a: any, index: any) => {
                         return (
                           <option key={index} value={a.answerId}>
@@ -443,7 +471,7 @@ const EditProfile = (props) => {
               return (
                 <div
                   key={index}
-                  className='badge bg-primary text-center text-white me-3 mb-5 fs-6  fw-bold'
+                  className='badge bg-primary text-center text-white me-3 mb-5 fs-6  fw-bold pointer'
                   onClick={() => removeUserInterestInList(interest.interestId)}
                 >
                   {interest.interests.name}
@@ -461,7 +489,7 @@ const EditProfile = (props) => {
                   <>
                     <div
                       key={index}
-                      className='text-center me-3 mb-5 fs-6 fw-bold badge badge-light'
+                      className='text-center me-3 mb-5 fs-6 fw-bold badge badge-light pointer'
                       onClick={() => addUserInterestInList(interest.interestId, interest.name)}
                     >
                       {interest.name}
@@ -470,12 +498,6 @@ const EditProfile = (props) => {
                 )
               })}
           </div>
-        </div>
-
-        <div className='card-footer d-flex justify-content-start p-4'>
-          <button type='submit' className='btn btn-primary' onClick={updateProfile}>
-            Save Changes
-          </button>
         </div>
       </div>
     </div>

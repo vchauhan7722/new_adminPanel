@@ -40,6 +40,7 @@
     "socicon": "3.0.5",
     "socket.io-client": "^4.7.2",
     "sweetalert2": "^11.10.1",
+    "yet-another-react-lightbox": "^3.15.6",
     "yup": "^1.0.0"
   },
   "devDependencies": {

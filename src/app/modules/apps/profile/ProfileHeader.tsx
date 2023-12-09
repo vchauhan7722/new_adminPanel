@@ -5,14 +5,42 @@ import {Link, useLocation} from 'react-router-dom'
 import {useIntl} from 'react-intl'
 import Accordion from 'react-bootstrap/Accordion'
 import {useEffect, useState} from 'react'
+import {UpdateSpotlightStatusByUID, UpdateVerifyStatusByUID} from '../../../../API/api-endpoint'
+import ToastUtils from '../../../../utils/ToastUtils'
 
 const ProfileHeader = (props) => {
-  const {user, userProfilePercentage} = props
+  const {user, userProfilePercentage, setUserUpdateFlag, userUpdateFlag} = props
 
   const location = useLocation()
   const intl = useIntl()
 
   let UserID = localStorage.getItem('userId')
+
+  const verifyUser = async () => {
+    let result = await UpdateVerifyStatusByUID(UserID, !user?.isVerify)
+    if (result.status === 200) {
+      setUserUpdateFlag(userUpdateFlag + 1)
+      ToastUtils({
+        type: 'success',
+        message: !user?.isVerify ? 'User is Verified' : 'User Verification is Removed',
+      })
+    } else {
+      ToastUtils({type: 'error', message: 'Something Went Wrong'})
+    }
+  }
+
+  const addTospotlight = async () => {
+    let result = await UpdateSpotlightStatusByUID(UserID)
+    if (result.status === 200) {
+      setUserUpdateFlag(userUpdateFlag + 1)
+      ToastUtils({
+        type: 'success',
+        message: 'Spotlight is added',
+      })
+    } else {
+      ToastUtils({type: 'error', message: 'Something Went Wrong'})
+    }
+  }
 
   return (
     <Accordion defaultActiveKey='0' className='mb-5'>
@@ -42,8 +70,25 @@ const ProfileHeader = (props) => {
                       <a href='#' className='text-gray-800 text-hover-primary fs-2 fw-bolder me-1'>
                         {user.fullName}
                       </a>
-
-                      {user.isVerify && <KTIcon iconName='verify' className='fs-1 text-primary' />}
+                      {/* {user.isVerify && <KTIcon iconName='verify' className='fs-1 text-primary' />}
+                      {user.isSpotlightUser && (
+                        <KTIcon iconName='verify' className='fs-1 text-primary' />
+                      )}
+                      {user.isSpotlightUser && (
+                        <KTIcon iconName='verify' className='fs-1 text-primary' />
+                      )} */}
+                      &nbsp;
+                      {user?.isPremium && <i className='text-primary fa-solid fa-award fa-2xl'></i>}
+                      &nbsp;
+                      {user?.isPopular && (
+                        <i className='text-primary fa-regular fa-star fa-2xl'></i>
+                      )}
+                      &nbsp;
+                      {user?.isSpotlightUser && (
+                        <i className='text-primary fa-solid fa-fire-flame-curved fa-2xl'></i>
+                      )}{' '}
+                      &nbsp;
+                      {user?.isVerify && <i className='text-primary bi bi-patch-check fa-2xl'></i>}
                     </div>
 
                     <div className='d-flex flex-wrap fw-bold fs-6 mb-4 pe-2'>
@@ -80,16 +125,20 @@ const ProfileHeader = (props) => {
                         data-kt-menu='true'
                       >
                         {/* begin::Menu item */}
-                        <div className='menu-item px-3'>
+                        {/* <div className='menu-item px-3'>
                           <a className='menu-link px-3'>Open a live Profile</a>
-                        </div>
+                        </div> */}
                         {/* end::Menu item */}
 
                         {/* begin::Menu item */}
                         <div className='menu-item px-3'>
-                          <a className='menu-link px-3' data-kt-users-table-filter='delete_row'>
+                          <Link
+                            className='menu-link px-3'
+                            data-kt-users-table-filter='delete_row'
+                            to={`/apps/users-profile/edit-profile/${UserID}`}
+                          >
                             Edit Account
-                          </a>
+                          </Link>
                         </div>
                         {/* end::Menu item */}
 
@@ -102,19 +151,21 @@ const ProfileHeader = (props) => {
                         {/* end::Menu item */}
 
                         {/* begin::Menu item */}
-                        <div className='menu-item px-3'>
+                        <div className='menu-item px-3' onClick={() => verifyUser()}>
                           <a className='menu-link px-3' data-kt-users-table-filter='delete_row'>
-                            Verify User
+                            {user?.isVerify ? 'Remove Verification' : 'Verify User'}
                           </a>
                         </div>
                         {/* end::Menu item */}
 
                         {/* begin::Menu item */}
-                        <div className='menu-item px-3'>
-                          <a className='menu-link px-3' data-kt-users-table-filter='delete_row'>
-                            Add To Spotlight
-                          </a>
-                        </div>
+                        {!user?.isSpotlightUser && (
+                          <div className='menu-item px-3' onClick={() => addTospotlight()}>
+                            <a className='menu-link px-3' data-kt-users-table-filter='delete_row'>
+                              Add To Spotlight
+                            </a>
+                          </div>
+                        )}
                         {/* end::Menu item */}
 
                         {/* begin::Menu item */}
@@ -232,8 +283,8 @@ const ProfileHeader = (props) => {
                 </div>
               </div>
             </div>
-
-            <div className='d-flex overflow-auto '>
+            {/*overflow-auto */}
+            <div className='d-flex'>
               <ul className='nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bolder flex-nowrap'>
                 <li className='nav-item'>
                   <Link

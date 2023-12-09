@@ -1,43 +1,6 @@
 import clsx from 'clsx'
 import React, {useEffect, useState} from 'react'
-import Pagination from 'react-bootstrap/Pagination'
 import ReactPaginate from 'react-paginate'
-
-const datatablefooter = {
-  display: 'flex',
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-}
-
-const datatableshowing = {
-  color: '#6b6c72',
-}
-
-const pagination = {
-  display: 'flex',
-  justifyContent: 'space-between',
-  listStyle: 'none',
-  cursor: 'pointer',
-
-  padding: '10px',
-  border: '1px solid transparent',
-  color: '#505050',
-}
-
-const paginationLink = {
-  fontWeight: 'bold',
-}
-
-const paginationActive = {
-  color: '#505050',
-  border: '1px solid #cacaca',
-  background: 'linear-gradient(to bottom,#fff 0,#eaeaea 100%)',
-}
-
-const paginationDisabled = {
-  color: '#cacaca',
-}
 
 const CustomPagination = (props) => {
   const {pageSize, setPageSize, totalPage, cb} = props
@@ -59,9 +22,10 @@ const CustomPagination = (props) => {
   // }, [totalPage])
 
   const updatePage = ({selected: selectedPage}) => {
+    //console.log('selectedPage', selectedPage)
     //setActivePageNumber(selectedPage)
-    setPage(parseInt(selectedPage))
-    cb(parseInt(selectedPage), pageSize)
+    setPage(parseInt(selectedPage + 1))
+    cb(parseInt(selectedPage + 1), pageSize)
   }
 
   const updatePageSize = (e) => {

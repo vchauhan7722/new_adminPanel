@@ -3,7 +3,27 @@ import {useIntl} from 'react-intl'
 import {KTCardBody} from '../../../../../_metronic/helpers'
 import {getUserCreditsHistoryWithPagination} from '../../../../../API/api-endpoint'
 import {DateWithTimeFormatter} from '../../../../../utils/Utils'
-import CustomPagination from '../../../../../utils/Pagination'
+import CustomPagination from '../../../../../_metronic/partials/componants/Pagination'
+
+let creditFilter = [
+  {name: 'Like', value: 'like', type: 'debit', flag: 'all'},
+  {name: 'Undo profile', value: 'undo_profile', type: 'debit', flag: 'all'},
+  {name: 'Message', value: 'message', type: 'credit', flag: 'all'},
+  {name: 'Message', value: 'message', type: 'debit', flag: ''},
+  {name: 'Video call', value: 'video_call', type: 'credit', flag: 'all'},
+  {name: 'Video call', value: 'video_call', type: 'debit', flag: ''},
+  {name: 'Gift', value: 'gift', type: 'credit', flag: 'all'},
+  {name: 'Gift', value: 'gift', type: 'debit', flag: ''},
+  {name: 'Live stream', value: 'live_stream', type: 'credit', flag: 'all'},
+  {name: 'Live stream', value: 'live_stream', type: 'debit', flag: ''},
+  {name: 'Story', value: 'story', type: 'credit', flag: 'all'},
+  {name: 'Story', value: 'story', type: 'debit', flag: ''},
+  {name: 'Reels', value: 'reels', type: 'credit', flag: 'all'},
+  {name: 'Reels', value: 'reels', type: 'debit', flag: ''},
+  {name: 'Send credit', value: 'send_credit', type: 'debit', flag: 'all'},
+  {name: 'Receive credit', value: 'receive_credit', type: 'credit', flag: 'all'},
+  {name: 'Spotlight', value: 'spotlight', type: 'debit', flag: 'all'},
+]
 
 const Credit = () => {
   const userId = localStorage.getItem('userId')
@@ -14,6 +34,7 @@ const Credit = () => {
   const [pageSize, setPageSize] = useState(100)
   const [totalPage, setTotalPage] = useState(0)
   const [userCreditList, setUserCreditList] = useState([])
+  const [filterValue, setFilterValue] = useState('')
 
   const page = 1
 
@@ -36,19 +57,51 @@ const Credit = () => {
   }
 
   const getPagination = (page: any, pageSize: any) => {
+    if (page === 0 || page === 1) {
+      page = 1
+    }
     let type = tabValue === 'all' ? '' : tabValue
     getAllUserCreditList(page, pageSize, type)
   }
 
   return (
     <div className='card '>
-      <div className='card-title pt-8 px-9'>
-        <h2>{intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.CREDIT'})}</h2>
+      <div className='card-title pt-8 px-9 d-flex justify-content-between'>
+        <div>
+          <h2>{intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.CREDIT'})}</h2>
+        </div>
+        <div>
+          <select
+            className='form-select form-select-solid fw-bolder'
+            data-kt-select2='true'
+            data-placeholder='Select option'
+            data-allow-clear='true'
+            data-kt-user-table-filter='filter'
+            data-hide-search='true'
+            name='filter'
+            defaultValue=''
+            value={filterValue}
+            onChange={(e) => setFilterValue(e.target.value)}
+          >
+            <option value=''>Select Filter</option>
+            {creditFilter
+              .filter((filter) =>
+                tabValue !== 'all' ? filter.type === tabValue : filter.flag === 'all'
+              )
+              .map((filter, index) => {
+                return (
+                  <option key={index} value={filter.value}>
+                    {filter.name}
+                  </option>
+                )
+              })}
+          </select>
+        </div>
       </div>
 
       <div className=''>
         <div className='card-header border-0'>
-          <div className='d-flex overflow-auto h-55px'>
+          <div className='d-flex overflow-auto h-55px '>
             <ul className='nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bolder flex-nowrap'>
               <li className='nav-item'>
                 <div
@@ -94,31 +147,40 @@ const Credit = () => {
                 <thead>
                   <tr className='text-start text-muted fw-bolder fs-7 text-uppercase gs-0'>
                     <td>Description</td>
+                    {tabValue !== 'debit' && <td>Credit</td>}
+                    {tabValue !== 'credit' && <td>Debit</td>}
                     <td>Date</td>
-                    <td>Type</td>
                   </tr>
                 </thead>
                 <tbody className='text-gray-600 '>
-                  {userCreditList.length !== 0 &&
+                  {userCreditList?.length !== 0 &&
+                    userCreditList !== undefined &&
                     userCreditList.map((credit: any, index: any) => {
                       return (
                         <tr key={index}>
                           <td>
                             <div className='text-muted fw-semibold fs-6'>
                               <div className='d-flex flex-column'>
-                                <span className='fw-bolder text-gray-800 text-hover-primary mb-1'>
-                                  {credit.credit} Credits
-                                </span>
-
                                 <span className='text-gray-500 fw-bold'>{credit.description}</span>
                               </div>
                             </div>
                           </td>
+                          {tabValue !== 'debit' && (
+                            <td>
+                              <p className='text-success fw-semibold fs-6 mb-1'>
+                                {credit.creditType !== 'debit' ? credit.credit + ' Credits' : '-'}{' '}
+                              </p>
+                            </td>
+                          )}
+                          {tabValue !== 'credit' && (
+                            <td>
+                              <p className='text-danger fw-semibold fs-6  mb-1'>
+                                {credit.creditType !== 'credit' ? credit.credit + ' Credits' : '-'}
+                              </p>
+                            </td>
+                          )}
                           <td>
                             <span>{DateWithTimeFormatter(credit?.createdAt)}</span>
-                          </td>
-                          <td>
-                            <span>{credit?.creditType}</span>
                           </td>
                         </tr>
                       )

@@ -10,6 +10,8 @@ import {
 import ToastUtils from '../../../../../../utils/ToastUtils'
 import {waitForDebugger} from 'inspector'
 import clsx from 'clsx'
+import Lightbox from 'yet-another-react-lightbox'
+import 'yet-another-react-lightbox/styles.css'
 
 const Media = (props: any) => {
   const {user} = props
@@ -20,6 +22,10 @@ const Media = (props: any) => {
   const [selectedImage, setSelectedImage] = useState({id: 0})
   const [getUpdatedStory, setGetUpdatedStory] = useState(1)
   const [isMediaUploaded, setisMediaUploaded] = useState<any>(false)
+  const [openLightBox, setOpenLightBox] = React.useState(false)
+  // const [lightBoxArray, setLightBoxArray] = useState<any>([])
+
+  const lightBoxArray: any = []
 
   const userId = localStorage.getItem('userId')
 
@@ -86,6 +92,14 @@ const Media = (props: any) => {
     fileInput?.click()
   }
 
+  const handleaddMediaforLightbox = (url: string) => {
+    let PhotoObject = {
+      src: url,
+    }
+    //let oldLightBoxArray = [...lightBoxArray]
+    lightBoxArray.push(PhotoObject)
+  }
+
   return (
     <div className='card '>
       <div className='card-title pt-8 px-9 d-flex justify-content-between'>
@@ -119,11 +133,24 @@ const Media = (props: any) => {
             {userProfileMedia
               .filter((media) => media.status === true)
               .map((userMedia: any, index: any) => {
+                // let url = `${process.env.REACT_APP_SERVER_URL}/${userMedia.media}`
+                // let PhotoObject = {
+                //   src: url,
+                // }
+                // let oldLightBoxArray = [...lightBoxArray]
+                // oldLightBoxArray.push(PhotoObject)
+                // setLightBoxArray(oldLightBoxArray)
+                handleaddMediaforLightbox(`${process.env.REACT_APP_SERVER_URL}/${userMedia.media}`)
+
                 return (
                   <div className={userProfileMedia.length >= 6 ? 'col-1' : 'col-2'} key={index}>
                     <div
                       className='position-relative'
-                      onClick={() => setSelectedImage(userMedia.media)}
+                      onClick={() => {
+                        setOpenLightBox(true)
+                        setSelectedImage(userMedia.media)
+                      }}
+
                       // data-bs-toggle='modal'
                       // data-bs-target='#full_width_image_modal'
                     >
@@ -151,14 +178,15 @@ const Media = (props: any) => {
                             data-kt-menu='true'
                           >
                             {/* begin::Menu item */}
-                            <div
-                              className='menu-item px-3'
-                              onClick={() => ActionsOnMedia('profile', userMedia.id)}
-                            >
-                              <a className='menu-link px-3'>Set profile</a>
-                            </div>
+                            {!userMedia.isProfileImage && (
+                              <div
+                                className='menu-item px-3'
+                                onClick={() => ActionsOnMedia('profile', userMedia.id)}
+                              >
+                                <a className='menu-link px-3'>Set profile</a>
+                              </div>
+                            )}
                             {/* end::Menu item */}
-
                             {/* begin::Menu item */}
                             <div
                               className='menu-item px-3'
@@ -167,7 +195,6 @@ const Media = (props: any) => {
                               <a className='menu-link px-3'>Set private</a>
                             </div>
                             {/* end::Menu item */}
-
                             {/* begin::Menu item */}
                             <div className='menu-item px-3'>
                               <a
@@ -178,7 +205,6 @@ const Media = (props: any) => {
                               </a>
                             </div>
                             {/* end::Menu item */}
-
                             {/* begin::Menu item */}
                             <div
                               className='menu-item px-3'
@@ -204,6 +230,8 @@ const Media = (props: any) => {
       <div className='p-6'>
         <MediaTable setGetUpdatedStory={setGetUpdatedStory} getUpdatedStory={getUpdatedStory} />
       </div>
+      <Lightbox open={openLightBox} close={() => setOpenLightBox(false)} slides={lightBoxArray} />
+
       <div className='modal fade' tabIndex={-1} id='full_width_image_modal'>
         <div className='modal-dialog'>
           <div className='modal-content'>
@@ -233,44 +261,17 @@ const Media = (props: any) => {
                             key={index}
                           >
                             <img
-                              src={`${process.env.REACT_APP_SERVER_URL}/${userMedia.media}`}
+                              src={
+                                userMedia.mediaType === 'photo'
+                                  ? `${process.env.REACT_APP_SERVER_URL}/${userMedia.media}`
+                                  : `${process.env.REACT_APP_SERVER_URL}/${userMedia.thumb}`
+                              }
                               className=' w-100 '
                               alt='...'
                             />
                           </div>
                         )
                       })}
-                  {/* <div className={clsx('carousel-item active')}>
-                    <img
-                      src={toAbsoluteUrl('/media/stock/900x600/45.jpg')}
-                      className=' w-100 '
-                      alt='...'
-                    />
-                  </div>
-                  <div className={clsx('carousel-item')}>
-                    <img
-                      src={toAbsoluteUrl('/media/stock/900x600/45.jpg')}
-                      className=' w-100 '
-                      alt='...'
-                    />
-                  </div>
-                  <div className={clsx('carousel-item')}>
-                    <img
-                      src={toAbsoluteUrl('/media/stock/900x600/45.jpg')}
-                      className=' w-100 '
-                      alt='...'
-                    />
-                  </div> */}
-
-                  {/* <div className='carousel-item active'>
-                    <img src='...' className='d-block w-100' alt='...' />
-                  </div>
-                  <div className='carousel-item'>
-                    <img src='...' className='d-block w-100' alt='...' />
-                  </div>
-                  <div className='carousel-item'>
-                    <img src='...' className='d-block w-100' alt='...' />
-                  </div> */}
                 </div>
                 <button
                   className='carousel-control-prev'

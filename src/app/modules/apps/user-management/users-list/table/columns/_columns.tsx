@@ -160,7 +160,7 @@ const usersColumns: ReadonlyArray<Column<User>> = [
       />
     ),
     id: 'actions',
-    Cell: ({...props}) => <UserActionsCell id={props.data[props.row.index].id} />,
+    Cell: ({...props}) => <UserActionsCell userId={props.data[props.row.index].userId} />,
   },
 ]
 

@@ -19,7 +19,7 @@ const UsersListFilter = () => {
     endAge: 45,
     startDate: '', //new Date().toLocaleDateString('en-CA')
     endDate: '', //new Date().toLocaleDateString('en-CA')
-    gender: '1',
+    gender: '',
     orderBy: '',
     country: '',
     state: '',
@@ -49,17 +49,17 @@ const UsersListFilter = () => {
       endAge: 45,
       startDate: '', //new Date().toLocaleDateString('en-CA')
       endDate: '', //new Date().toLocaleDateString('en-CA')
-      gender: '2',
+      gender: '',
       orderBy: '',
       country: '',
       state: '',
       city: '',
-      isOnline: false,
-      isPremium: false,
-      isVerify: false,
-      isWithStory: false,
-      isfromReffral: false,
-      completeProfile: true,
+      isOnline: '',
+      isPremium: '',
+      isVerify: '',
+      isWithStory: '',
+      isfromReffral: '',
+      completeProfile: '',
     })
   }
 
@@ -79,6 +79,7 @@ const UsersListFilter = () => {
     updateState({
       filter: formValue,
       ...initialQueryState,
+      page: 1,
     })
   }
 
@@ -238,7 +239,7 @@ const UsersListFilter = () => {
                       data-allow-clear='true'
                       data-kt-user-table-filter='gender'
                       data-hide-search='true'
-                      defaultValue=''
+                      //defaultValue=''
                       name='gender'
                       value={formValue.gender}
                       onChange={(e) => handleChange(e)}

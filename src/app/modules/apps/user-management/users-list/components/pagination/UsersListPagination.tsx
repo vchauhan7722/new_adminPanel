@@ -3,7 +3,6 @@ import clsx from 'clsx'
 import {useQueryResponseLoading, useQueryResponsePagination} from '../../core/QueryResponseProvider'
 import {useQueryRequest} from '../../core/QueryRequestProvider'
 import {useState} from 'react'
-import {Pagination} from 'react-bootstrap'
 import ReactPaginate from 'react-paginate'
 
 const UsersListPagination = () => {
@@ -131,6 +130,7 @@ const UsersListPagination = () => {
                 pageCount={pagination?.total_page || 1}
                 onPageChange={updatePage}
                 pageRangeDisplayed={3}
+                disableInitialCallback={true}
                 marginPagesDisplayed={1}
                 pageClassName='page-item'
                 pageLinkClassName='page-link'

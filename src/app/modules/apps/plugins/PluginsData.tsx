@@ -6,6 +6,7 @@ const PluginData = [
     type: 'Software',
     description: 'Customize your users profile with your own custom questions and interest system',
     status: 'Active',
+    path: 'question_answer_plugin',
   },
 ]
 

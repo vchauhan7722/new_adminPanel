@@ -43,9 +43,7 @@ export function Overview(props: any) {
             <label className='col-lg-4 fw-bold text-muted'>Email</label>
 
             <div className='col-lg-8'>
-              <a href='#' className='fw-bold fs-6 text-dark text-hover-primary'>
-                {user.email}
-              </a>
+              <span className='fw-bold fs-6 text-dark text-hover-primary'>{user.email}</span>
             </div>
           </div>
 
@@ -93,7 +91,7 @@ export function Overview(props: any) {
 
             <div className='col-lg-8 fv-row'>
               <span className='fw-bold fs-6'>
-                {user.bio === null
+                {user.bio === null || user.bio.length === 0 || user.bio === undefined
                   ? `Hi, i am ${user?.fullName}, ${user?.age} years old and i am
               from ${user?.city} ${user?.country}`
                   : user.bio}
@@ -127,7 +125,7 @@ export function Overview(props: any) {
                   <div className='col-lg-1'>
                     <img
                       alt='Pic'
-                      src={`${process.env.REACT_APP_SERVER_URL}/${questionAnswer.questionData.icon}`}
+                      src={`${process.env.REACT_APP_SERVER_URL}/${questionAnswer?.questionData?.icon}`}
                       width='16px'
                       height='16px'
                       className='me-2'
@@ -135,11 +133,13 @@ export function Overview(props: any) {
                   </div>
                   <div className='col-lg-5'>
                     <span className='mb-5 fs-6 fw-bold text-muted'>
-                      {questionAnswer.questionData.question}
+                      {questionAnswer?.questionData?.question}
                     </span>
                   </div>
                   <div className='col-lg-6'>
-                    <span className='mb-5 fw-normal fs-6'>{questionAnswer.answerData.answer}</span>
+                    <span className='mb-5 fw-normal fs-6'>
+                      {questionAnswer?.answerData?.answer}
+                    </span>
                   </div>
                 </div>
               </>
@@ -153,7 +153,7 @@ export function Overview(props: any) {
             return (
               <>
                 <div className='badge badge-light text-center me-3 mb-5 fs-6  fw-bold'>
-                  {interest.interests.name}
+                  {interest?.interests?.name}
                 </div>{' '}
               </>
             )

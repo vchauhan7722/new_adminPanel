@@ -23,7 +23,7 @@ export function ScrollTop() {
   }
 
   const scrollTop = () => {
-    ScrollTopComponent.goTop()
+    // ScrollTopComponent.goTop()
   }
 
   const updateHeaderSticky = () => {

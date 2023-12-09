@@ -4,7 +4,7 @@ import {getUserActivityWithPagination} from '../../../../../API/api-endpoint'
 import {calculateTimeDifferenceForActivity} from '../../../../../utils/Utils'
 import Pagination from 'react-bootstrap/Pagination'
 import clsx from 'clsx'
-import CustomPagination from '../../../../../utils/Pagination'
+import CustomPagination from '../../../../../_metronic/partials/componants/Pagination'
 
 const Activity = (props) => {
   const userId = localStorage.getItem('userId')
@@ -39,6 +39,9 @@ const Activity = (props) => {
   }
 
   const getPagination = (page: any, pageSize: any) => {
+    if (page === 0 || page === 1) {
+      page = 1
+    }
     let type = tabValue === 'all' ? '' : tabValue
     getActivitiesList(page, pageSize, type)
   }

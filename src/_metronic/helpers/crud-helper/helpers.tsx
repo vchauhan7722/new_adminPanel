@@ -32,6 +32,10 @@ function stringifyRequestQuery(state: QueryState): string {
   let finalSortingString = sort.length === 0 ? '' : 'orderBy=' + orderWith[1] + '&' + sortUpdate[1]
   let paginationUpdate = pagination.split('&')
   let pageSize = paginationUpdate[1].split('=')
+  let page = paginationUpdate[0].split('=')
+  //console.log(page[1])
+  let pageNumber = page[1] !== '0' ? JSON.stringify(parseInt(page[1]) + 1) : '1'
+  //let finalPaginationString = 'page=' + pageNumber + '&pageSize=' + pageSize[1]
   let finalPaginationString = paginationUpdate[0] + '&pageSize=' + pageSize[1]
 
   console.log(

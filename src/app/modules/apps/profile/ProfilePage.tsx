@@ -59,7 +59,12 @@ const ProfilePage = () => {
       <Route
         element={
           <>
-            <ProfileHeader user={userDetails} userProfilePercentage={userProfilePercentage} />
+            <ProfileHeader
+              user={userDetails}
+              userProfilePercentage={userProfilePercentage}
+              setUserUpdateFlag={setUserUpdateFlag}
+              userUpdateFlag={userUpdateFlag}
+            />
             <Outlet />
           </>
         }
