@@ -114,6 +114,7 @@ const ProfilePage = () => {
                 {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.CHAT'})}
               </PageTitle>
               <Chat />
+              {/* <h1>Chat</h1> */}
             </>
           }
         />

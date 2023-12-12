@@ -4,17 +4,31 @@ import {FC, useEffect, useState, useRef} from 'react'
 import clsx from 'clsx'
 import {toAbsoluteUrl, defaultMessages, defaultUserInfos, UserInfoModel} from '../../helpers'
 import socket from '../../../socketconfig'
-import {getMessagesByUserID, pinOrLikeChatMember, sendCreditInChat} from '../../../API/api-endpoint'
+import {
+  getMessagesByUserID,
+  pinOrLikeChatMember,
+  sendCreditInChat,
+  sendMessageUsingApi,
+} from '../../../API/api-endpoint'
 import {Dropdown1} from '../content/dropdown/Dropdown1'
 import {DateTimeFormatter, GetIDFromURL, TimeFormatter, sortData} from '../../../utils/Utils'
 import {Link, useLocation} from 'react-router-dom'
+import ToastUtils from '../../../utils/ToastUtils'
+import Pusher from 'pusher-js'
 
 type Props = {
   isDrawer?: boolean
 }
 
 const ChatInner = (props: any) => {
-  const {isDrawer = false, receiverUserDetails, giftCategoriesList, giftList} = props
+  const {
+    isDrawer = false,
+    receiverUserDetails,
+    giftCategoriesList,
+    giftList,
+    setActionFlag,
+    actionFlag,
+  } = props
 
   const messagesEndRef = useRef<any>(null)
   const hiddenFileInput = useRef<HTMLInputElement>(document.createElement('input'))
@@ -53,7 +67,7 @@ const ChatInner = (props: any) => {
 
   useEffect(() => {
     socket.on('chat_message', (newMessage) => {
-      console.log('new message Received', newMessage)
+      //console.log('new message Received', newMessage)
       // const new_message = {
       //   chatId: receiverUserDetails.chatId,
       //   chatRoomId: receiverUserDetails.chatRoomId,
@@ -89,9 +103,9 @@ const ChatInner = (props: any) => {
 
   useEffect(() => {
     socket.on('gift_message', (newMessage) => {
-      console.log('gift_message inside ', newMessage.data)
+      //console.log('gift_message inside ', newMessage.data)
       //newMessage.type = 'gift'
-      console.log('gift_message', newMessage.data)
+      //console.log('gift_message', newMessage.data)
       let messages = JSON.parse(sessionStorage.getItem('messageList') || '')
       const oldMessage = [...messages]
       oldMessage.push(newMessage.data)
@@ -109,53 +123,102 @@ const ChatInner = (props: any) => {
     scrollToBottom()
   }, [messageList])
 
+  useEffect(() => {
+    // Initialize Pusher with your credentials
+    const pusher = new Pusher('169d6a51c82901425372', {
+      cluster: 'ap2',
+      //encrypted: true,
+    })
+    // setPusher1(pusher)
+
+    // Subscribe to the 'chat' channel
+    const channel = pusher.subscribe(`chat_${receiverUserDetails.chatRoomId}`)
+    //setChannel1(channel)
+
+    // Bind to the 'new-message' event
+    channel.bind('message', (data) => {
+      console.log('recevied msg', data)
+      // Update the messages state with the new message
+      //setMessages((prevMessages) => [...prevMessages, data.message])
+      let messages = JSON.parse(sessionStorage.getItem('messageList') || '')
+      const oldMessage = [...messages]
+      oldMessage.push(data)
+      sessionStorage.setItem('messageList', JSON.stringify(oldMessage))
+      setMessageList(oldMessage)
+    })
+
+    // Cleanup function to unsubscribe when the component unmounts
+    return () => {
+      channel.unbind()
+      pusher.unsubscribe(`chat_${receiverUserDetails.chatRoomId}`)
+    }
+  }, [])
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({behavior: 'smooth'})
   }
 
-  const sendMessage = () => {
-    if (message.length !== 0) {
-      console.log('receiverUserDetails.userId', receiverUserDetails.userId)
-      socket.emit('chat_message', {
-        message: message,
-        senderId: receiverUserDetails.userId,
-        receiverId: currentUserId,
-        type: 'text',
-        chatRoomId: receiverUserDetails.chatRoomId,
-        chatId: receiverUserDetails.chatId,
-      })
+  // const sendMessage = () => {
+  //   if (message.length !== 0) {
+  //     console.log('receiverUserDetails.userId', receiverUserDetails.userId)
+  //     socket.emit('chat_message', {
+  //       message: message,
+  //       senderId: receiverUserDetails.userId,
+  //       receiverId: currentUserId,
+  //       type: 'text',
+  //       chatRoomId: receiverUserDetails.chatRoomId,
+  //       chatId: receiverUserDetails.chatId,
+  //     })
 
+  //     setMessage('')
+  //     const element = window.document.getElementById('chatInput')
+  //     if (element !== null) {
+  //       element.autofocus = true
+  //     }
+  //   }
+
+  //   // const newMessage = {
+  //   //   chatId: receiverUserDetails.chatId,
+  //   //   chatRoomId: receiverUserDetails.chatRoomId,
+  //   //   senderId: currentUserId,
+  //   //   receiverId: receiverUserDetails.userId,
+  //   //   giftId: null,
+  //   //   videoCallId: null,
+  //   //   message: message,
+  //   //   type: 'text',
+  //   //   isRead: false,
+  //   //   deletedBySender: false,
+  //   //   deletedByReceiver: false,
+  //   //   status: true,
+  //   //   createdBy: currentUserId,
+  //   //   updatedBy: currentUserId,
+  //   //   createdAt: new Date(),
+  //   //   updatedAt: new Date(),
+  //   //   videoCallDetail: null,
+  //   // }
+  //   // let messages = JSON.parse(sessionStorage.getItem('messageList') || '')
+  //   // const oldMessage = [...messages]
+  //   // oldMessage.push(newMessage)
+  //   // sessionStorage.setItem('messageList', JSON.stringify(oldMessage))
+  //   // setMessageList(oldMessage)
+  // }
+
+  const sendMessage = async () => {
+    let result = await sendMessageUsingApi(
+      message,
+      receiverUserDetails.userId,
+      currentUserId,
+      receiverUserDetails.chatRoomId,
+      receiverUserDetails.chatId
+    )
+    if (result.status === 200) {
+      // let messages = JSON.parse(sessionStorage.getItem('messageList') || '')
+      // const oldMessage = [...messages]
+      // oldMessage.push(result.data)
+      // sessionStorage.setItem('messageList', JSON.stringify(oldMessage))
+      // setMessageList(oldMessage)
       setMessage('')
-      const element = window.document.getElementById('chatInput')
-      if (element !== null) {
-        element.autofocus = true
-      }
     }
-
-    // const newMessage = {
-    //   chatId: receiverUserDetails.chatId,
-    //   chatRoomId: receiverUserDetails.chatRoomId,
-    //   senderId: currentUserId,
-    //   receiverId: receiverUserDetails.userId,
-    //   giftId: null,
-    //   videoCallId: null,
-    //   message: message,
-    //   type: 'text',
-    //   isRead: false,
-    //   deletedBySender: false,
-    //   deletedByReceiver: false,
-    //   status: true,
-    //   createdBy: currentUserId,
-    //   updatedBy: currentUserId,
-    //   createdAt: new Date(),
-    //   updatedAt: new Date(),
-    //   videoCallDetail: null,
-    // }
-    // let messages = JSON.parse(sessionStorage.getItem('messageList') || '')
-    // const oldMessage = [...messages]
-    // oldMessage.push(newMessage)
-    // sessionStorage.setItem('messageList', JSON.stringify(oldMessage))
-    // setMessageList(oldMessage)
   }
 
   const sendGift = () => {
@@ -228,15 +291,24 @@ const ChatInner = (props: any) => {
     //setFile(fileUploaded)
   }
 
-  const updateChatmember = async (action) => {
+  const updateChatmember = async (action: string) => {
     // currentUserId , roomID ,chatmemberID , action
+    let currentActionValue = action === 'pin' ? !receiverUserDetails.pin : !receiverUserDetails.like
     let result = await pinOrLikeChatMember(
       currentUserId,
-      receiverUserDetails?.userId,
       receiverUserDetails?.chatRoomId,
-      action
+      receiverUserDetails?.chatId,
+      action,
+      currentActionValue
     )
+
     if (result.status === 200) {
+      //ToastUtils({type: 'success', message: 'Pin Or Like Success'})
+      //setisMediaUploaded(false)
+      setActionFlag(actionFlag + 1)
+    } else {
+      ToastUtils({type: 'error', message: 'Error in User pin or like'})
+      //setisMediaUploaded(false)
     }
   }
 
@@ -313,9 +385,13 @@ const ChatInner = (props: any) => {
                 <button className='dropbtn'>
                   <i className='bi bi-three-dots fs-3'></i>
                 </button>
-                <div className='dropdown-content'>
-                  <span onClick={() => updateChatmember('like')}>Like Profile</span>
-                  <span onClick={() => updateChatmember('pin')}>Pin Profile</span>
+                <div className='dropdown-content w-100'>
+                  <span onClick={() => updateChatmember('like')}>
+                    {receiverUserDetails.like === 1 ? 'Unlike Profile' : 'Like Profile'}
+                  </span>
+                  <span onClick={() => updateChatmember('pin')}>
+                    {receiverUserDetails.pin === 1 ? 'UnPin Profile' : 'Pin Profile'}
+                  </span>
                   {/* <span>Clear All Messages</span> */}
                 </div>
               </div>
@@ -349,6 +425,7 @@ const ChatInner = (props: any) => {
             .sort((a: any, b: any) => {
               return sortData(a.updatedAt, b.updatedAt)
             })
+            //.reverse()
             .map((message: any, index: any) => {
               //const userInfo = userInfos[message.user]
               const userType = currentUserId !== message.receiverId

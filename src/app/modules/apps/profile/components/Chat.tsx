@@ -18,6 +18,7 @@ const Chat: FC = () => {
   const [receiverUserDetails, setReceiverUserDetails] = useState<any>(undefined)
   const [giftCategoriesList, setGiftCategoriesList] = useState<any>([])
   const [giftList, setGiftList] = useState<any>([])
+  const [actionFlag, setActionFlag] = useState<any>(0)
 
   let userID = localStorage.getItem('userId')
 
@@ -25,11 +26,12 @@ const Chat: FC = () => {
     getChatMemberByUID(page, pageSize)
     getAllGiftCategoryList()
     getAllGiftLists()
-  }, [])
+  }, [actionFlag])
 
   const getChatMemberByUID = async (page: number, pageSize: number) => {
     let result = await getChatMemberByUserID(userID, page, pageSize)
     setChatMemberList(result)
+    setReceiverUserDetails(undefined)
   }
 
   const getAllGiftCategoryList = async () => {
@@ -143,7 +145,16 @@ const Chat: FC = () => {
                                 member?.messageDetail?.createdAt
                               )}
                             </span>
+
                             <div>
+                              <span>
+                                {member?.pin === 1 && (
+                                  <i className='fa-solid fa-thumbtack me-3'></i>
+                                )}
+                              </span>
+                              <span>
+                                {member?.like === 1 && <i className='fa-solid fa-heart me-3'></i>}
+                              </span>
                               <span className='badge badge-circle badge-light-success me-2'>
                                 {member?.unreadMessageCount}
                               </span>
@@ -168,6 +179,8 @@ const Chat: FC = () => {
               receiverUserDetails={receiverUserDetails}
               giftCategoriesList={giftCategoriesList}
               giftList={giftList}
+              setActionFlag={setActionFlag}
+              actionFlag={actionFlag}
             />
           ) : (
             <div className='card-header h-600px' id='kt_chat_messenger_header '></div>

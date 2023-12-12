@@ -5,7 +5,11 @@ import {Link, useLocation} from 'react-router-dom'
 import {useIntl} from 'react-intl'
 import Accordion from 'react-bootstrap/Accordion'
 import {useEffect, useState} from 'react'
-import {UpdateSpotlightStatusByUID, UpdateVerifyStatusByUID} from '../../../../API/api-endpoint'
+import {
+  UpdatePopularStatusByUID,
+  UpdateSpotlightStatusByUID,
+  UpdateVerifyStatusByUID,
+} from '../../../../API/api-endpoint'
 import ToastUtils from '../../../../utils/ToastUtils'
 
 const ProfileHeader = (props) => {
@@ -15,6 +19,9 @@ const ProfileHeader = (props) => {
   const intl = useIntl()
 
   let UserID = localStorage.getItem('userId')
+
+  const [popularDays, setPopularDays] = useState(0)
+  const [spotlightDays, setspotlightDays] = useState(0)
 
   const verifyUser = async () => {
     let result = await UpdateVerifyStatusByUID(UserID, !user?.isVerify)
@@ -29,13 +36,29 @@ const ProfileHeader = (props) => {
     }
   }
 
-  const addTospotlight = async () => {
-    let result = await UpdateSpotlightStatusByUID(UserID)
+  const addToSpotlight = async () => {
+    let result = await UpdateSpotlightStatusByUID(UserID, spotlightDays)
     if (result.status === 200) {
       setUserUpdateFlag(userUpdateFlag + 1)
       ToastUtils({
         type: 'success',
-        message: 'Spotlight is added',
+        message: `User is added in Spotlight For ${spotlightDays} days`,
+      })
+    } else {
+      ToastUtils({type: 'error', message: 'Something Went Wrong'})
+    }
+  }
+
+  const setAsPopular = async () => {
+    let isPopular = user.isPopular ? false : true
+    let result = await UpdatePopularStatusByUID(UserID, popularDays, isPopular)
+    if (result.status === 200) {
+      setUserUpdateFlag(userUpdateFlag + 1)
+      ToastUtils({
+        type: 'success',
+        message: user.isPopular
+          ? 'User is removed from popular List'
+          : `User is added in Popular For ${popularDays} days`,
       })
     } else {
       ToastUtils({type: 'error', message: 'Something Went Wrong'})
@@ -132,6 +155,22 @@ const ProfileHeader = (props) => {
 
                         {/* begin::Menu item */}
                         <div className='menu-item px-3'>
+                          <a className='menu-link px-3' data-kt-users-table-filter='delete_row'>
+                            Add/Update Credit
+                          </a>
+                        </div>
+                        {/* end::Menu item */}
+
+                        {/* begin::Menu item */}
+                        <div className='menu-item px-3'>
+                          <a className='menu-link px-3' data-kt-users-table-filter='delete_row'>
+                            Add/Update Premium
+                          </a>
+                        </div>
+                        {/* end::Menu item */}
+
+                        {/* begin::Menu item */}
+                        <div className='menu-item px-3'>
                           <Link
                             className='menu-link px-3'
                             data-kt-users-table-filter='delete_row'
@@ -143,9 +182,13 @@ const ProfileHeader = (props) => {
                         {/* end::Menu item */}
 
                         {/* begin::Menu item */}
-                        <div className='menu-item px-3'>
+                        <div
+                          className='menu-item px-3'
+                          data-bs-toggle='modal'
+                          data-bs-target='#kt_modal_2'
+                        >
                           <a className='menu-link px-3' data-kt-users-table-filter='delete_row'>
-                            Set as Populer
+                            {!user.isPopular ? 'Set as Popular' : 'Remove From Popular'}
                           </a>
                         </div>
                         {/* end::Menu item */}
@@ -160,7 +203,11 @@ const ProfileHeader = (props) => {
 
                         {/* begin::Menu item */}
                         {!user?.isSpotlightUser && (
-                          <div className='menu-item px-3' onClick={() => addTospotlight()}>
+                          <div
+                            className='menu-item px-3'
+                            data-bs-toggle='modal'
+                            data-bs-target='#kt_modal_1'
+                          >
                             <a className='menu-link px-3' data-kt-users-table-filter='delete_row'>
                               Add To Spotlight
                             </a>
@@ -421,6 +468,149 @@ const ProfileHeader = (props) => {
                   </Link>
                 </li>
               </ul>
+            </div>
+          </div>
+        </div>
+        <div className='modal fade' tabIndex={-1} id='kt_modal_1'>
+          <div className='modal-dialog'>
+            <div className='modal-content'>
+              <div className='modal-header'>
+                <h5 className='modal-title'>Add To Spotlight</h5>
+                <div
+                  className='btn btn-icon btn-sm btn-active-light-primary ms-2'
+                  data-bs-dismiss='modal'
+                  aria-label='Close'
+                >
+                  <i className='fa-solid fa-xmark'></i>
+                </div>
+              </div>
+              <div className='modal-body'>
+                <input
+                  placeholder='Enter Days'
+                  type='number'
+                  className={'form-control form-control-solid mb-3 mb-lg-0'}
+                  autoComplete='off'
+                  value={spotlightDays}
+                  onChange={(e) => setspotlightDays(parseInt(e.target.value))}
+                />
+              </div>
+              <div className='modal-footer'>
+                <button type='button' className='btn btn-light' data-bs-dismiss='modal'>
+                  Close
+                </button>
+                <button
+                  type='button'
+                  className='btn btn-primary'
+                  data-bs-dismiss='modal'
+                  onClick={addToSpotlight}
+                >
+                  Add To Spotlight
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className='modal fade' tabIndex={-1} id='kt_modal_2'>
+          <div className='modal-dialog'>
+            <div className='modal-content'>
+              <div className='modal-header'>
+                <h5 className='modal-title'>Add To Popular</h5>
+                <div
+                  className='btn btn-icon btn-sm btn-active-light-primary ms-2'
+                  data-bs-dismiss='modal'
+                  aria-label='Close'
+                >
+                  <i className='fa-solid fa-xmark'></i>
+                </div>
+              </div>
+              <div className='modal-body'>
+                {user.isPopular ? (
+                  'Current Left Days ' + user?.popularDays
+                ) : (
+                  <input
+                    placeholder='Enter Days'
+                    type='number'
+                    className={'form-control form-control-solid mb-3 mb-lg-0'}
+                    autoComplete='off'
+                    value={popularDays}
+                    onChange={(e) => setPopularDays(parseInt(e.target.value))}
+                  />
+                )}
+                {/* <input
+                  placeholder='Enter Days'
+                  type='number'
+                  className={'form-control form-control-solid mb-3 mb-lg-0'}
+                  autoComplete='off'
+                  value={popularDays}
+                  onChange={(e) => setPopularDays(parseInt(e.target.value))}
+                /> */}
+              </div>
+              <div className='modal-footer'>
+                <button type='button' className='btn btn-light' data-bs-dismiss='modal'>
+                  Close
+                </button>
+                <button
+                  type='button'
+                  className='btn btn-primary'
+                  data-bs-dismiss='modal'
+                  onClick={setAsPopular}
+                >
+                  {user.isPopular ? 'Remove Popular' : 'Add To Popular'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className='modal fade' tabIndex={-1} id='kt_modal_3'>
+          <div className='modal-dialog'>
+            <div className='modal-content'>
+              <div className='modal-header'>
+                <h5 className='modal-title'>Add/Update Credits</h5>
+                <div
+                  className='btn btn-icon btn-sm btn-active-light-primary ms-2'
+                  data-bs-dismiss='modal'
+                  aria-label='Close'
+                >
+                  <i className='fa-solid fa-xmark'></i>
+                </div>
+              </div>
+              <div className='modal-body'>
+                {user.isPopular ? (
+                  'Current Left Days ' + user?.popularDays
+                ) : (
+                  <input
+                    placeholder='Enter Days'
+                    type='number'
+                    className={'form-control form-control-solid mb-3 mb-lg-0'}
+                    autoComplete='off'
+                    value={popularDays}
+                    onChange={(e) => setPopularDays(parseInt(e.target.value))}
+                  />
+                )}
+                {/* <input
+                  placeholder='Enter Days'
+                  type='number'
+                  className={'form-control form-control-solid mb-3 mb-lg-0'}
+                  autoComplete='off'
+                  value={popularDays}
+                  onChange={(e) => setPopularDays(parseInt(e.target.value))}
+                /> */}
+              </div>
+              <div className='modal-footer'>
+                <button type='button' className='btn btn-light' data-bs-dismiss='modal'>
+                  Close
+                </button>
+                <button
+                  type='button'
+                  className='btn btn-primary'
+                  data-bs-dismiss='modal'
+                  onClick={setAsPopular}
+                >
+                  {user.isPopular ? 'Remove Popular' : 'Add To Popular'}
+                </button>
+              </div>
             </div>
           </div>
         </div>

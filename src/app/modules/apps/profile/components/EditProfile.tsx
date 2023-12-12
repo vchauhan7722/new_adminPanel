@@ -6,6 +6,7 @@ import {
   UpdateUserDetailsByUID,
   addUserInterest,
   createUserQuestionAnswerForProfile,
+  deleteUserQuestionAnswerForProfile,
   getAllInterest,
   getCitiesBYSearch,
   getUserQuestionAnswerForProfile,
@@ -147,28 +148,44 @@ const EditProfile = (props) => {
     // }
   }
 
-  const handleChangeQuestions = async (e, questionID) => {
+  const handleChangeQuestions = async (e: any, questionID: any) => {
     const matchedAnswerIds = selectedListQuestionList.filter(
       (item) => item.questionId === questionID
     )
 
     let answerId = parseInt(e.target.value)
-
-    if (matchedAnswerIds.length !== 0) {
-      let result = await updateUserQuestionAnswerForProfile(userID, questionID, answerId)
+    if (e.target.value.length === 0) {
+      let userQuestionID = matchedAnswerIds[0].userQuestionId
+      let result = await deleteUserQuestionAnswerForProfile(
+        userID,
+        questionID,
+        answerId,
+        userQuestionID
+      )
+      console.log('result', result)
       if (result.status === 200) {
         setUserUpdateFlag(userUpdateFlag + 1)
-        ToastUtils({type: 'success', message: 'Answer Is Updated'})
+        ToastUtils({type: 'success', message: 'User Question Was Deleted'})
       } else {
         ToastUtils({type: 'error', message: 'Something Went Wrong'})
       }
     } else {
-      let result = await createUserQuestionAnswerForProfile(userID, questionID, answerId)
-      if (result.status === 200) {
-        setUserUpdateFlag(userUpdateFlag + 1)
-        ToastUtils({type: 'success', message: 'Question Is Created With Answer'})
+      if (matchedAnswerIds.length !== 0) {
+        let result = await updateUserQuestionAnswerForProfile(userID, questionID, answerId)
+        if (result.status === 200) {
+          setUserUpdateFlag(userUpdateFlag + 1)
+          ToastUtils({type: 'success', message: 'Answer Is Updated'})
+        } else {
+          ToastUtils({type: 'error', message: 'Something Went Wrong'})
+        }
       } else {
-        ToastUtils({type: 'error', message: 'Something Went Wrong'})
+        let result = await createUserQuestionAnswerForProfile(userID, questionID, answerId)
+        if (result.status === 200) {
+          setUserUpdateFlag(userUpdateFlag + 1)
+          ToastUtils({type: 'success', message: 'Question Is Created With Answer'})
+        } else {
+          ToastUtils({type: 'error', message: 'Something Went Wrong'})
+        }
       }
     }
   }

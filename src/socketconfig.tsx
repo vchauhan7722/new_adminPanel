@@ -7,7 +7,5 @@ const socket = io(`${URL}`, {
   autoConnect: true,
   transports: ['polling'],
 })
-
-export const ws = new WebSocket('wss://live-stream-phjd.onrender.com/')
-
 export default socket
+export const ws = new WebSocket('wss://live-stream-phjd.onrender.com/')

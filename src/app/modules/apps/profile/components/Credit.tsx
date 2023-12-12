@@ -35,11 +35,17 @@ const Credit = () => {
   const [totalPage, setTotalPage] = useState(0)
   const [userCreditList, setUserCreditList] = useState([])
   const [filterValue, setFilterValue] = useState('')
+  const [userCreditSum, setUserCreditSum] = useState({
+    credit: 0,
+    debit: 0,
+    totalCount: 0,
+  })
 
   const page = 1
 
-  const handleChange = (tabName) => {
+  const handleChange = (tabName: string) => {
     setTabValue(tabName)
+    setFilterValue('')
   }
 
   useEffect(() => {
@@ -48,11 +54,18 @@ const Credit = () => {
     } else {
       getAllUserCreditList(page, pageSize, tabValue)
     }
-  }, [tabValue])
+  }, [tabValue, filterValue])
 
   const getAllUserCreditList = async (page: any, pageSize: any, type: any) => {
-    let result = await getUserCreditsHistoryWithPagination(userId, page, pageSize, type)
-    setUserCreditList(result.data)
+    let result = await getUserCreditsHistoryWithPagination(
+      userId,
+      page,
+      pageSize,
+      type,
+      filterValue
+    )
+    setUserCreditList(result.data?.activities)
+    setUserCreditSum(result.data?.allActivityCount[0])
     setTotalPage(result?.totalPage)
   }
 
@@ -110,7 +123,7 @@ const Credit = () => {
                   }
                   onClick={() => handleChange('all')}
                 >
-                  All
+                  All ({userCreditSum?.totalCount})
                 </div>
               </li>
               <li className='nav-item'>
@@ -120,7 +133,7 @@ const Credit = () => {
                   }
                   onClick={() => handleChange('credit')}
                 >
-                  Credit
+                  Credit ({userCreditSum?.credit})
                 </div>
               </li>
               <li className='nav-item'>
@@ -130,7 +143,7 @@ const Credit = () => {
                   }
                   onClick={() => handleChange('debit')}
                 >
-                  Spent
+                  Spent ({userCreditSum?.debit})
                 </div>
               </li>
             </ul>

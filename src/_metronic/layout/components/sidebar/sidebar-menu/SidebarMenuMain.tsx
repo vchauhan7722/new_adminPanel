@@ -30,6 +30,15 @@ const SidebarMenuMain = () => {
         title={intl.formatMessage({id: 'MENU.PLUGINS'})}
         fontIcon='bi-layers'
       />
+      <SidebarMenuItemWithSub
+        to='/user-media'
+        title='User Media'
+        icon='abstract-28'
+        fontIcon='bi-person'
+      >
+        <SidebarMenuItem to='/user-media/photos' title='Photos' hasBullet={true} />
+        <SidebarMenuItem to='/user-media/stories' title='Stories' hasBullet={true} />
+      </SidebarMenuItemWithSub>
     </>
   )
 }

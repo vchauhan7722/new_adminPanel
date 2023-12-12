@@ -216,21 +216,6 @@ const Activity = (props) => {
               cb={getPagination}
             />
           )}
-
-          {/* <Pagination>
-            {Array.from({length: totalPage}).map((page: any, index: any) => {
-              return (
-                <Pagination.Item
-                  key={index}
-                  active={activePage === index + 1}
-                  onClick={() => updatePage(index + 1)}
-                >
-                  {index + 1}
-                </Pagination.Item>
-              )
-            })}
-           
-          </Pagination> */}
         </div>
       </div>
     </div>
