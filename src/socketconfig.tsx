@@ -8,4 +8,7 @@ const socket = io(`${URL}`, {
   transports: ['polling'],
 })
 export default socket
-export const ws = new WebSocket('wss://live-stream-phjd.onrender.com/')
+
+export const ws = new WebSocket(
+  process.env.REACT_APP_WEBSOCKET_SERVER_URL || 'ws://backend.profun.live'
+)

@@ -8,13 +8,16 @@ import {
   getChatMemberByUserID,
 } from '../../../../../API/api-endpoint'
 import {calculateTimeDifferenceForChatMessage} from '../../../../../utils/Utils'
-import InfinitScroll from 'react-infinite-scroll-component'
+
 import {ChatInner} from '../../../../../_metronic/partials/chat/ChatInner'
+import CustomPagination from '../../../../../_metronic/partials/componants/Pagination'
+import ToastUtils from '../../../../../utils/ToastUtils'
 
 const Chat: FC = () => {
   const [chatMemberList, setChatMemberList] = useState<any>([])
   const [page, setPage] = useState<any>(1)
   const [pageSize, setPageSize] = useState<any>(10)
+  const [totalPage, setTotalPage] = useState(0)
   const [receiverUserDetails, setReceiverUserDetails] = useState<any>(undefined)
   const [giftCategoriesList, setGiftCategoriesList] = useState<any>([])
   const [giftList, setGiftList] = useState<any>([])
@@ -30,8 +33,13 @@ const Chat: FC = () => {
 
   const getChatMemberByUID = async (page: number, pageSize: number) => {
     let result = await getChatMemberByUserID(userID, page, pageSize)
-    setChatMemberList(result)
-    setReceiverUserDetails(undefined)
+    if (result.status === 200) {
+      setChatMemberList(result.data)
+      setReceiverUserDetails(undefined)
+      setTotalPage(result.totalPage)
+    } else {
+      ToastUtils({type: 'error', message: 'something went wrong'})
+    }
   }
 
   const getAllGiftCategoryList = async () => {
@@ -61,6 +69,13 @@ const Chat: FC = () => {
         setReceiverUserDetails(memberDetails)
       }, 500)
     }
+  }
+
+  const getPagination = (page: any, pageSize: any) => {
+    if (page === 0 || page === 1) {
+      page = 1
+    }
+    getChatMemberByUID(page, pageSize)
   }
 
   return (
@@ -94,80 +109,83 @@ const Chat: FC = () => {
               data-kt-scroll-offset='0px'
             >
               <div className='separator separator-dashed d-none'></div>
-              <InfinitScroll
-                dataLength={chatMemberList.length}
-                next={nextgetMember}
-                hasMore={false}
-                loader={<h4>Loading ... </h4>}
-              >
-                {chatMemberList !== undefined &&
-                  chatMemberList.map((member: any, index: any) => {
-                    return (
-                      <>
-                        <div
-                          key={index}
-                          className='d-flex flex-stack py-4 hover-effect'
-                          onClick={() => getRoom(member)}
-                        >
-                          <div className='d-flex align-items-center'>
-                            <div className='symbol symbol-45px symbol-circle'>
-                              <img
-                                alt='Pic'
-                                src={
-                                  toAbsoluteUrl('/media/avatars/300-5.jpg') ||
-                                  `${process.env.REACT_SERVER_URL}/${member.profileImage}`
-                                }
-                              />
-                            </div>
 
-                            <div className='ms-5'>
-                              <a
-                                href='#'
-                                className='fs-5 fw-bolder text-gray-900 text-hover-primary mb-2'
-                              >
-                                {member.fullName}
-                              </a>
-                              <div className='fw-bold text-gray-400'>
-                                {member?.messageDetail?.type === 'gift' &&
-                                  member?.messageDetail?.type}
-                                {member?.messageDetail?.type === 'media' &&
-                                  member?.messageDetail?.type}
-                                {(member?.messageDetail?.type === 'message' ||
-                                  member?.messageDetail?.type === 'credit') &&
-                                  member?.messageDetail?.message}
-                              </div>
-                            </div>
+              {chatMemberList !== undefined &&
+                chatMemberList.map((member: any, index: any) => {
+                  return (
+                    <>
+                      <div
+                        key={index}
+                        className='d-flex flex-stack py-4 hover-effect'
+                        onClick={() => getRoom(member)}
+                      >
+                        <div className='d-flex align-items-center'>
+                          <div className='symbol symbol-45px symbol-circle'>
+                            <img
+                              alt='Pic'
+                              src={
+                                `${process.env.REACT_APP_SERVER_URL}/${member.profileImage}` ||
+                                toAbsoluteUrl('/media/avatars/300-5.jpg')
+                              }
+                            />
                           </div>
 
-                          <div className='d-flex flex-column align-items-end ms-2'>
-                            <span className='text-muted fs-7 mb-1'>
-                              {calculateTimeDifferenceForChatMessage(
-                                member?.messageDetail?.createdAt
-                              )}
-                            </span>
-
-                            <div>
-                              <span>
-                                {member?.pin === 1 && (
-                                  <i className='fa-solid fa-thumbtack me-3'></i>
-                                )}
-                              </span>
-                              <span>
-                                {member?.like === 1 && <i className='fa-solid fa-heart me-3'></i>}
-                              </span>
-                              <span className='badge badge-circle badge-light-success me-2'>
-                                {member?.unreadMessageCount}
-                              </span>
+                          <div className='ms-5'>
+                            <a
+                              href='#'
+                              className='fs-5 fw-bolder text-gray-900 text-hover-primary mb-2'
+                            >
+                              {member.fullName}
+                            </a>
+                            <div className='fw-bold text-gray-400'>
+                              {member?.messageDetail?.type === 'gift' &&
+                                member?.messageDetail?.type}
+                              {member?.messageDetail?.type === 'media' &&
+                                member?.messageDetail?.type}
+                              {(member?.messageDetail?.type === 'message' ||
+                                member?.messageDetail?.type === 'credit') &&
+                                member?.messageDetail?.message}
                             </div>
                           </div>
                         </div>
 
-                        <div className='separator separator-dashed'></div>
-                      </>
-                    )
-                  })}
-              </InfinitScroll>
+                        <div className='d-flex flex-column align-items-end ms-2'>
+                          <span className='text-muted fs-7 mb-1'>
+                            {calculateTimeDifferenceForChatMessage(
+                              member?.messageDetail?.createdAt || member?.chatMemberCreatedAt
+                            )}
+                          </span>
+
+                          <div>
+                            <span>
+                              {member?.pin === 1 && <i className='fa-solid fa-thumbtack me-3'></i>}
+                            </span>
+                            <span>
+                              {member?.like === 1 && <i className='fa-solid fa-heart me-3'></i>}
+                            </span>
+                            <span className='badge badge-circle badge-light-success me-2'>
+                              {member?.unreadMessageCount}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className='separator separator-dashed'></div>
+                    </>
+                  )
+                })}
             </div>
+          </div>
+
+          <div className='card-footer'>
+            {chatMemberList.length !== 0 && (
+              <CustomPagination
+                pageSize={pageSize}
+                setPageSize={setPageSize}
+                totalPage={totalPage}
+                cb={getPagination}
+              />
+            )}
           </div>
         </div>
       </div>

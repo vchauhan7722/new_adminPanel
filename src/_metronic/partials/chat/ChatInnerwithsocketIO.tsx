@@ -2,13 +2,23 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import {FC, useEffect, useState, useRef} from 'react'
 import clsx from 'clsx'
-import {toAbsoluteUrl} from '../../helpers'
-// import socket, {ws} from '../../../socketconfig'
-import {getMessagesByUserID, pinOrLikeChatMember} from '../../../API/api-endpoint'
-import {DateTimeFormatter, TimeFormatter, sortData} from '../../../utils/Utils'
+import {toAbsoluteUrl, defaultMessages, defaultUserInfos, UserInfoModel} from '../../helpers'
+import socket from '../../../socketconfig'
+import {
+  getMessagesByUserID,
+  pinOrLikeChatMember,
+  sendCreditInChat,
+  sendMessageUsingApi,
+} from '../../../API/api-endpoint'
+import {Dropdown1} from '../content/dropdown/Dropdown1'
+import {DateTimeFormatter, GetIDFromURL, TimeFormatter, sortData} from '../../../utils/Utils'
+import {Link, useLocation} from 'react-router-dom'
 import ToastUtils from '../../../utils/ToastUtils'
-import {fileToBase64} from '../../../utils/FileUtils'
-import InfiniteScroll from 'react-infinite-scroller'
+import Pusher from 'pusher-js'
+
+type Props = {
+  isDrawer?: boolean
+}
 
 const ChatInner = (props: any) => {
   const {
@@ -32,7 +42,6 @@ const ChatInner = (props: any) => {
   const [selectedGiftCategory, setSelectedGiftCategory] = useState<any>('all')
   const [selectedGift, setSelectedGift] = useState<any>(undefined)
   const [creditToSend, setCreditToSend] = useState<any>(1)
-  const [ws, setWs] = useState<any>(null)
 
   const dates = new Set()
 
@@ -50,99 +59,177 @@ const ChatInner = (props: any) => {
   }
 
   useEffect(() => {
-    const ws1 = new WebSocket(
-      process.env.REACT_APP_WEBSOCKET_SERVER_URL || 'ws://backend.profun.live'
-    )
-
+    //console.log(receiverUserDetails)
     getchatList()
-
-    ws1.addEventListener('open', () => {
-      console.log('Connected to WebSocket server')
-      ws1.send(
-        JSON.stringify({
-          chatRoomId: receiverUserDetails?.chatRoomId,
-          senderId: receiverUserDetails?.userId,
-          type: 'join',
-        })
-      )
-    })
-
-    ws1.addEventListener('message', (event) => {
-      const receivedMessage = event.data
-      const JsonMessageData = JSON.parse(receivedMessage)
-
-      if (JsonMessageData.message !== "User doesn't have credit") {
-        let messages = JSON.parse(sessionStorage.getItem('messageList') || '')
-        const oldMessage = [...messages]
-        oldMessage.push(JsonMessageData)
-        sessionStorage.setItem('messageList', JSON.stringify(oldMessage))
-        setMessageList(oldMessage)
-      } else {
-        ToastUtils({type: 'error', message: JsonMessageData.message})
-      }
-    })
-
-    ws1.addEventListener('close', () => {
-      console.log('Disconnected from WebSocket server')
-    })
-
-    setWs(ws1)
-
-    return () => {
-      ws1.close()
-    }
+    //console.log(receiverUserDetails?.chatRoomId, receiverUserDetails?.chatId)
+    socket.emit('join_room', receiverUserDetails?.chatRoomId, receiverUserDetails?.chatId)
   }, [])
 
-  // useEffect(() => {
-  //   scrollToBottom()
-  // }, [messageList])
+  useEffect(() => {
+    socket.on('chat_message', (newMessage) => {
+      //console.log('new message Received', newMessage)
+      // const new_message = {
+      //   chatId: receiverUserDetails.chatId,
+      //   chatRoomId: receiverUserDetails.chatRoomId,
+      //   senderId: currentUserId,
+      //   receiverId: receiverUserDetails.userId,
+      //   giftId: null,
+      //   videoCallId: null,
+      //   message: newMessage,
+      //   type: 'text',
+      //   isRead: false,
+      //   deletedBySender: false,
+      //   deletedByReceiver: false,
+      //   status: true,
+      //   createdBy: currentUserId,
+      //   updatedBy: currentUserId,
+      //   createdAt: new Date(),
+      //   updatedAt: new Date(),
+      //   videoCallDetail: null,
+      // }
+      socket.emit('message_read', {messageId: newMessage.messageId, userId: newMessage.receiverId})
+      let messages = JSON.parse(sessionStorage.getItem('messageList') || '')
+      const oldMessage = [...messages]
+      oldMessage.push(newMessage)
+      sessionStorage.setItem('messageList', JSON.stringify(oldMessage))
+      setMessageList(oldMessage)
+    })
+
+    // Clean up the WebSocket connection when the component unmounts
+    return () => {
+      socket.close()
+    }
+  }, [socket])
+
+  useEffect(() => {
+    socket.on('gift_message', (newMessage) => {
+      //console.log('gift_message inside ', newMessage.data)
+      //newMessage.type = 'gift'
+      //console.log('gift_message', newMessage.data)
+      let messages = JSON.parse(sessionStorage.getItem('messageList') || '')
+      const oldMessage = [...messages]
+      oldMessage.push(newMessage.data)
+      sessionStorage.setItem('messageList', JSON.stringify(oldMessage))
+      setMessageList(oldMessage)
+    })
+
+    // Clean up the WebSocket connection when the component unmounts
+    return () => {
+      socket.close()
+    }
+  }, [socket])
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [messageList])
+
+  useEffect(() => {
+    // Initialize Pusher with your credentials
+    const pusher = new Pusher('169d6a51c82901425372', {
+      cluster: 'ap2',
+      //encrypted: true,
+    })
+    // setPusher1(pusher)
+
+    // Subscribe to the 'chat' channel
+    const channel = pusher.subscribe(`chat_${receiverUserDetails.chatRoomId}`)
+    //setChannel1(channel)
+
+    // Bind to the 'new-message' event
+    channel.bind('message', (data) => {
+      console.log('recevied msg', data)
+      // Update the messages state with the new message
+      //setMessages((prevMessages) => [...prevMessages, data.message])
+      let messages = JSON.parse(sessionStorage.getItem('messageList') || '')
+      const oldMessage = [...messages]
+      oldMessage.push(data)
+      sessionStorage.setItem('messageList', JSON.stringify(oldMessage))
+      setMessageList(oldMessage)
+    })
+
+    // Cleanup function to unsubscribe when the component unmounts
+    return () => {
+      channel.unbind()
+      pusher.unsubscribe(`chat_${receiverUserDetails.chatRoomId}`)
+    }
+  }, [])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({behavior: 'smooth'})
   }
 
-  const sendMessage = () => {
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      if (message.trim().length !== 0) {
-        ws.send(
-          JSON.stringify({
-            message: message,
-            senderId: receiverUserDetails.userId,
-            receiverId: currentUserId,
-            type: 'text',
-            chatRoomId: receiverUserDetails.chatRoomId,
-            chatId: receiverUserDetails.chatId,
-          })
-        )
-      }
+  // const sendMessage = () => {
+  //   if (message.length !== 0) {
+  //     console.log('receiverUserDetails.userId', receiverUserDetails.userId)
+  //     socket.emit('chat_message', {
+  //       message: message,
+  //       senderId: receiverUserDetails.userId,
+  //       receiverId: currentUserId,
+  //       type: 'text',
+  //       chatRoomId: receiverUserDetails.chatRoomId,
+  //       chatId: receiverUserDetails.chatId,
+  //     })
+
+  //     setMessage('')
+  //     const element = window.document.getElementById('chatInput')
+  //     if (element !== null) {
+  //       element.autofocus = true
+  //     }
+  //   }
+
+  //   // const newMessage = {
+  //   //   chatId: receiverUserDetails.chatId,
+  //   //   chatRoomId: receiverUserDetails.chatRoomId,
+  //   //   senderId: currentUserId,
+  //   //   receiverId: receiverUserDetails.userId,
+  //   //   giftId: null,
+  //   //   videoCallId: null,
+  //   //   message: message,
+  //   //   type: 'text',
+  //   //   isRead: false,
+  //   //   deletedBySender: false,
+  //   //   deletedByReceiver: false,
+  //   //   status: true,
+  //   //   createdBy: currentUserId,
+  //   //   updatedBy: currentUserId,
+  //   //   createdAt: new Date(),
+  //   //   updatedAt: new Date(),
+  //   //   videoCallDetail: null,
+  //   // }
+  //   // let messages = JSON.parse(sessionStorage.getItem('messageList') || '')
+  //   // const oldMessage = [...messages]
+  //   // oldMessage.push(newMessage)
+  //   // sessionStorage.setItem('messageList', JSON.stringify(oldMessage))
+  //   // setMessageList(oldMessage)
+  // }
+
+  const sendMessage = async () => {
+    let result = await sendMessageUsingApi(
+      message,
+      receiverUserDetails.userId,
+      currentUserId,
+      receiverUserDetails.chatRoomId,
+      receiverUserDetails.chatId
+    )
+    if (result.status === 200) {
+      // let messages = JSON.parse(sessionStorage.getItem('messageList') || '')
+      // const oldMessage = [...messages]
+      // oldMessage.push(result.data)
+      // sessionStorage.setItem('messageList', JSON.stringify(oldMessage))
+      // setMessageList(oldMessage)
       setMessage('')
-      const element = window.document.getElementById('chatInput')
-      if (element !== null) {
-        element.autofocus = true
-      }
     }
   }
 
   const sendGift = () => {
-    // socket.emit('send_gift', {
-    //   senderId: receiverUserDetails.userId,
-    //   receiverId: currentUserId,
-    //   type: 'gift',
-    //   giftId: selectedGift.giftId,
-    //   chatRoomId: receiverUserDetails.chatRoomId,
-    //   chatId: receiverUserDetails.chatId,
-    // })
-    ws.send(
-      JSON.stringify({
-        senderId: receiverUserDetails.userId,
-        receiverId: currentUserId,
-        type: 'gift',
-        giftId: selectedGift.giftId,
-        chatRoomId: receiverUserDetails.chatRoomId,
-        chatId: receiverUserDetails.chatId,
-      })
-    )
-
+    socket.emit('send_gift', {
+      senderId: receiverUserDetails.userId,
+      receiverId: currentUserId,
+      type: 'gift',
+      giftId: selectedGift.giftId,
+      chatRoomId: receiverUserDetails.chatRoomId,
+      chatId: receiverUserDetails.chatId,
+    })
     const element = window.document.getElementById('chatInput')
     if (element !== null) {
       element.autofocus = true
@@ -150,16 +237,15 @@ const ChatInner = (props: any) => {
   }
 
   const sendCredit = async () => {
-    ws.send(
-      JSON.stringify({
-        senderId: receiverUserDetails.userId,
-        receiverId: currentUserId,
-        type: 'credit',
-        message: creditToSend,
-        chatRoomId: receiverUserDetails.chatRoomId,
-        chatId: receiverUserDetails.chatId,
-      })
-    )
+    //let result = await sendCreditInChat(receiverUserDetails.userId, currentUserId, creditToSend)
+    socket.emit('send_credit', {
+      senderId: receiverUserDetails.userId,
+      receiverId: currentUserId,
+      type: 'credit',
+      message: creditToSend,
+      chatRoomId: receiverUserDetails.chatRoomId,
+      chatId: receiverUserDetails.chatId,
+    })
   }
 
   const onEnterPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -185,21 +271,18 @@ const ChatInner = (props: any) => {
     fileInput?.click()
   }
 
-  const handleMediaChange = async (event: any) => {
+  const handleMediaChange = (event: any) => {
     const fileUploaded = event.target.files[0]
-    let base64Media: any = await fileToBase64(fileUploaded)
-
-    ws.send(
-      JSON.stringify({
-        senderId: receiverUserDetails.userId,
-        receiverId: currentUserId,
-        type: 'media',
-        fileData: base64Media.split('base64,')[1],
-        fileName: fileUploaded.name,
-        chatRoomId: receiverUserDetails.chatRoomId,
-        chatId: receiverUserDetails.chatId,
-      })
-    )
+    //console.log('fileUploaded', fileUploaded)
+    socket.emit('media_message', {
+      senderId: receiverUserDetails.userId,
+      receiverId: currentUserId,
+      type: 'media',
+      fileData: fileUploaded,
+      fileName: fileUploaded.name,
+      chatRoomId: receiverUserDetails.chatRoomId,
+      chatId: receiverUserDetails.chatId,
+    })
     const element = window.document.getElementById('chatInput')
     if (element !== null) {
       element.autofocus = true
@@ -229,24 +312,6 @@ const ChatInner = (props: any) => {
     }
   }
 
-  const handleRenderChat = async (__page: any) => {
-    console.log(__page)
-    // let result = await getMessagesByUserID(
-    //   receiverUserDetails.userId,
-    //   receiverUserDetails.chatRoomId,
-    //   __page,
-    //   pageSize
-    // )
-    // sessionStorage.setItem('messageList', JSON.stringify(result.data))
-    // setMessageList(result.data)
-    //setPage(page + 1)
-    // const response = await axios.get(
-    //   `https://jsonplaceholder.typicode.com/posts?_page=${page}&_limit=10`
-    // )
-    // setItems([...items, ...response.data])
-    //setPage(page + 1)
-  }
-
   return messageList === undefined ? (
     <div>Loading</div>
   ) : (
@@ -259,8 +324,8 @@ const ChatInner = (props: any) => {
             <img
               alt='Pic'
               src={
-                `${process.env.REACT_APP_SERVER_URL}/${receiverUserDetails?.profileImage}` ||
-                toAbsoluteUrl(`/media/avatars/300-5.jpg`)
+                toAbsoluteUrl(`/media/avatars/300-5.jpg`) ||
+                `${process.env.REACT_APP_SERVER_URL}/${receiverUserDetails?.profileImage}`
               }
             />
           </div>
@@ -356,97 +421,44 @@ const ChatInner = (props: any) => {
           }
           data-kt-scroll-offset={isDrawer ? '0px' : '5px'}
         >
-          <InfiniteScroll
-            style={{margin: '10px'}}
-            pageStart={1}
-            loadMore={handleRenderChat}
-            // hasMore={true}
-            // loader={
-            //   <div className='loader' key={0}>
-            //     Loading ...
-            //   </div>
-            // }
-            // isReverse={true}
-            // useWindow={false}
-          >
-            {messageList
-              // .sort((a: any, b: any) => {
-              //   return sortData(a.updatedAt, b.updatedAt)
-              // })
-              .reverse()
-              .map((message: any, index: any) => {
-                //const userInfo = userInfos[message.user]
-                const userType = currentUserId !== message.receiverId
-                const dateNum = DateTimeFormatter(message.updatedAt)
-                const state = userType ? 'info' : 'primary'
-                const templateAttr = {}
-                if (message.template) {
-                  Object.defineProperty(templateAttr, 'data-kt-element', {
-                    value: `template-${message.type}`,
-                  })
-                }
-                const contentClass = `${isDrawer ? '' : 'd-flex'} justify-content-${
-                  userType ? 'start' : 'end'
-                } mb-10`
+          {messageList
+            .sort((a: any, b: any) => {
+              return sortData(a.updatedAt, b.updatedAt)
+            })
+            //.reverse()
+            .map((message: any, index: any) => {
+              //const userInfo = userInfos[message.user]
+              const userType = currentUserId !== message.receiverId
+              const dateNum = DateTimeFormatter(message.updatedAt)
+              const state = userType ? 'info' : 'primary'
+              const templateAttr = {}
+              if (message.template) {
+                Object.defineProperty(templateAttr, 'data-kt-element', {
+                  value: `template-${message.type}`,
+                })
+              }
+              const contentClass = `${isDrawer ? '' : 'd-flex'} justify-content-${
+                userType ? 'start' : 'end'
+              } mb-10`
 
-                return (
-                  <>
-                    {dates.has(dateNum) ? null : renderDate(message, dateNum)}
+              return (
+                <>
+                  {dates.has(dateNum) ? null : renderDate(message, dateNum)}
+                  <div
+                    key={`message${index}`}
+                    className={clsx('d-flex', contentClass, 'mb-10', {
+                      'd-none': message.template,
+                    })}
+                    {...templateAttr}
+                  >
                     <div
-                      key={`message${index}`}
-                      className={clsx('d-flex', contentClass, 'mb-10', {
-                        'd-none': message.template,
-                      })}
-                      {...templateAttr}
+                      className={clsx(
+                        'd-flex flex-column align-items',
+                        `align-items-${userType ? 'start' : 'end'}`
+                      )}
                     >
-                      <div
-                        className={clsx(
-                          'd-flex flex-column align-items',
-                          `align-items-${userType ? 'start' : 'end'}`
-                        )}
-                      >
-                        {message.type === 'text' ? (
-                          <>
-                            <div
-                              className={clsx(
-                                'rounded',
-                                `bg-light-${state}`,
-                                'text-dark fw-bold mw-lg-400px',
-                                `text-${userType ? 'start' : 'end'}`
-                              )}
-                              data-kt-element='message-text'
-                              //dangerouslySetInnerHTML={{__html: message.message}}
-                            >
-                              {' '}
-                              <div className='d-flex align-items-center ms-1 mt-1 me-1'>
-                                {userType ? (
-                                  <>
-                                    <div className='ms-3'>
-                                      <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start mb-3'>
-                                        {message.message}
-                                      </span>
-
-                                      <span className='text-muted fs-9 me-2'>
-                                        {TimeFormatter(message.updatedAt)}
-                                      </span>
-                                    </div>
-                                  </>
-                                ) : (
-                                  <>
-                                    <div className='ms-3 me-3'>
-                                      <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start '>
-                                        {message.message}
-                                      </span>
-                                      <span className='text-muted fs-9'>
-                                        {TimeFormatter(message.updatedAt)}
-                                      </span>
-                                    </div>
-                                  </>
-                                )}
-                              </div>
-                            </div>
-                          </>
-                        ) : message.type === 'gift' ? (
+                      {message.type === 'text' ? (
+                        <>
                           <div
                             className={clsx(
                               'rounded',
@@ -455,6 +467,7 @@ const ChatInner = (props: any) => {
                               `text-${userType ? 'start' : 'end'}`
                             )}
                             data-kt-element='message-text'
+                            //dangerouslySetInnerHTML={{__html: message.message}}
                           >
                             {' '}
                             <div className='d-flex align-items-center ms-1 mt-1 me-1'>
@@ -462,16 +475,11 @@ const ChatInner = (props: any) => {
                                 <>
                                   <div className='ms-3'>
                                     <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start mb-3'>
-                                      <img
-                                        alt='Pic'
-                                        src={`${process.env.REACT_APP_SERVER_URL}/${message?.giftDetail?.icon}`}
-                                        width='50px'
-                                        height='50px'
-                                      />
+                                      {message.message}
                                     </span>
 
                                     <span className='text-muted fs-9 me-2'>
-                                      {TimeFormatter(message?.giftDetail?.updatedAt)}
+                                      {TimeFormatter(message.updatedAt)}
                                     </span>
                                   </div>
                                 </>
@@ -479,127 +487,169 @@ const ChatInner = (props: any) => {
                                 <>
                                   <div className='ms-3 me-3'>
                                     <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start '>
-                                      <img
-                                        alt='Pic'
-                                        src={`${process.env.REACT_APP_SERVER_URL}/${message?.giftDetail?.icon}`}
-                                        width='50px'
-                                        height='50px'
-                                      />
+                                      {message.message}
                                     </span>
                                     <span className='text-muted fs-9'>
-                                      {TimeFormatter(message?.giftDetail?.updatedAt)}
+                                      {TimeFormatter(message.updatedAt)}
                                     </span>
                                   </div>
                                 </>
                               )}
                             </div>
                           </div>
-                        ) : message.type === 'media' ? (
-                          <div
-                            className={clsx(
-                              'rounded',
-                              `bg-light-${state}`,
-                              'text-dark fw-bold mw-lg-400px',
-                              `text-${userType ? 'start' : 'end'}`
+                        </>
+                      ) : message.type === 'gift' ? (
+                        <div
+                          className={clsx(
+                            'rounded',
+                            `bg-light-${state}`,
+                            'text-dark fw-bold mw-lg-400px',
+                            `text-${userType ? 'start' : 'end'}`
+                          )}
+                          data-kt-element='message-text'
+                        >
+                          {' '}
+                          <div className='d-flex align-items-center ms-1 mt-1 me-1'>
+                            {userType ? (
+                              <>
+                                <div className='ms-3'>
+                                  <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start mb-3'>
+                                    <img
+                                      alt='Pic'
+                                      src={`${process.env.REACT_APP_SERVER_URL}/${message?.giftDetail?.icon}`}
+                                      width='50px'
+                                      height='50px'
+                                    />
+                                  </span>
+
+                                  <span className='text-muted fs-9 me-2'>
+                                    {TimeFormatter(message?.giftDetail?.updatedAt)}
+                                  </span>
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <div className='ms-3 me-3'>
+                                  <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start '>
+                                    <img
+                                      alt='Pic'
+                                      src={`${process.env.REACT_APP_SERVER_URL}/${message?.giftDetail?.icon}`}
+                                      width='50px'
+                                      height='50px'
+                                    />
+                                  </span>
+                                  <span className='text-muted fs-9'>
+                                    {TimeFormatter(message?.giftDetail?.updatedAt)}
+                                  </span>
+                                </div>
+                              </>
                             )}
-                            data-kt-element='message-text'
-                          >
-                            {' '}
-                            <div className='d-flex align-items-center ms-1 mt-1 me-1'>
-                              {userType ? (
-                                <>
-                                  <div className='ms-3'>
-                                    <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start mb-3'></span>
+                          </div>
+                        </div>
+                      ) : message.type === 'media' ? (
+                        <div
+                          className={clsx(
+                            'rounded',
+                            `bg-light-${state}`,
+                            'text-dark fw-bold mw-lg-400px',
+                            `text-${userType ? 'start' : 'end'}`
+                          )}
+                          data-kt-element='message-text'
+                        >
+                          {' '}
+                          <div className='d-flex align-items-center ms-1 mt-1 me-1'>
+                            {userType ? (
+                              <>
+                                <div className='ms-3'>
+                                  <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start mb-3'></span>
+                                  <img
+                                    alt='Pic'
+                                    src={`${process.env.REACT_APP_SERVER_URL}/${message.message}`}
+                                    width='100px'
+                                    height='100px'
+                                    className='me-2'
+                                  />{' '}
+                                  <span className='text-muted fs-9 me-2'>
+                                    {TimeFormatter(message.updatedAt)}
+                                  </span>
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <div className='ms-3 me-3'>
+                                  <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start '>
                                     <img
                                       alt='Pic'
                                       src={`${process.env.REACT_APP_SERVER_URL}/${message.message}`}
                                       width='100px'
                                       height='100px'
                                       className='me-2'
-                                    />{' '}
-                                    <span className='text-muted fs-9 me-2'>
-                                      {TimeFormatter(message.updatedAt)}
-                                    </span>
-                                  </div>
-                                </>
-                              ) : (
-                                <>
-                                  <div className='ms-3 me-3'>
-                                    <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start '>
-                                      <img
-                                        alt='Pic'
-                                        src={`${process.env.REACT_APP_SERVER_URL}/${message.message}`}
-                                        width='100px'
-                                        height='100px'
-                                        className='me-2'
-                                      />
-                                    </span>
-                                    <span className='text-muted fs-9'>
-                                      {TimeFormatter(message.updatedAt)}
-                                    </span>
-                                  </div>
-                                </>
-                              )}
-                            </div>
-                          </div>
-                        ) : (
-                          <div
-                            className={clsx(
-                              'rounded',
-                              `bg-light-${state}`,
-                              'text-dark fw-bold mw-lg-400px',
-                              `text-${userType ? 'start' : 'end'}`
+                                    />
+                                  </span>
+                                  <span className='text-muted fs-9'>
+                                    {TimeFormatter(message.updatedAt)}
+                                  </span>
+                                </div>
+                              </>
                             )}
-                            data-kt-element='message-text'
-                          >
-                            {' '}
-                            <div className='d-flex align-items-center ms-1 mt-1 me-1'>
-                              {userType ? (
-                                <>
-                                  <div className='ms-3'>
-                                    <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start mb-3'></span>
+                          </div>
+                        </div>
+                      ) : (
+                        <div
+                          className={clsx(
+                            'rounded',
+                            `bg-light-${state}`,
+                            'text-dark fw-bold mw-lg-400px',
+                            `text-${userType ? 'start' : 'end'}`
+                          )}
+                          data-kt-element='message-text'
+                        >
+                          {' '}
+                          <div className='d-flex align-items-center ms-1 mt-1 me-1'>
+                            {userType ? (
+                              <>
+                                <div className='ms-3'>
+                                  <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start mb-3'></span>
+                                  <img
+                                    alt='Pic'
+                                    src={toAbsoluteUrl(`/media/logos/Credits.png`)}
+                                    width='20px'
+                                    height='20px'
+                                    className='me-2'
+                                  />{' '}
+                                  {message.message} Credits
+                                  <span className='text-muted fs-9 me-2'>
+                                    {TimeFormatter(message.updatedAt)}
+                                  </span>
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <div className='ms-3 me-3'>
+                                  <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start '>
                                     <img
                                       alt='Pic'
                                       src={toAbsoluteUrl(`/media/logos/Credits.png`)}
                                       width='20px'
                                       height='20px'
                                       className='me-2'
-                                    />{' '}
+                                    />
                                     {message.message} Credits
-                                    <span className='text-muted fs-9 me-2'>
-                                      {TimeFormatter(message.updatedAt)}
-                                    </span>
-                                  </div>
-                                </>
-                              ) : (
-                                <>
-                                  <div className='ms-3 me-3'>
-                                    <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start '>
-                                      <img
-                                        alt='Pic'
-                                        src={toAbsoluteUrl(`/media/logos/Credits.png`)}
-                                        width='20px'
-                                        height='20px'
-                                        className='me-2'
-                                      />
-                                      {message.message} Credits
-                                    </span>
-                                    <span className='text-muted fs-9'>
-                                      {TimeFormatter(message.updatedAt)}
-                                    </span>
-                                  </div>
-                                </>
-                              )}
-                            </div>
+                                  </span>
+                                  <span className='text-muted fs-9'>
+                                    {TimeFormatter(message.updatedAt)}
+                                  </span>
+                                </div>
+                              </>
+                            )}
                           </div>
-                        )}
-                      </div>
+                        </div>
+                      )}
                     </div>
-                  </>
-                )
-              })}
-          </InfiniteScroll>
-
+                  </div>
+                </>
+              )
+            })}
           <div ref={messagesEndRef} />
         </div>
 

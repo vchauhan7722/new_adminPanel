@@ -45,7 +45,7 @@ const CustomPagination = (props) => {
           className='form-select h-30px mt-2'
           data-kt-select2='true'
           data-allow-clear='true'
-          defaultValue='100'
+          defaultValue={pageSize}
           style={{padding: '0.5rem 2rem 0.5rem 1rem'}}
           onChange={(e) => updatePageSize(e)}
         >

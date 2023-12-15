@@ -962,7 +962,7 @@ export const getChatMemberByUserID = async (userID,page,pageSize) => {
       }
     })
 
-    return response.data.data
+    return response.data
   } catch (error) {
     console.log(error.message)
 
@@ -1228,6 +1228,56 @@ export const sendMessageUsingApi = async (message,userId,receiverId,chatRoomID,c
 
   } catch (error) {
     console.log(error.message)
+    return error.message
+  }
+}
+
+export const getAllMedia = async (page,pageSize,isPrivate,userID) => {
+ 
+  try {
+    
+    let accessToken = localStorage.getItem('accessToken')  
+    //  /api/v1/users/profile/media?page=1&pageSize=10&isPrivate=false&userId=35
+    const apiUrl = `${APIURL}/api/v1/users/profile/media?page=${page}&pageSize=${pageSize}&isPrivate=${isPrivate}&userId=${userID}`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const deleteSelectedMedia = async (MediaId) => {
+  try {
+   
+    let formData  =  {
+      mediaIds: MediaId,
+      action: 'delete'
+    }
+    
+    let accessToken = localStorage.getItem('accessToken')  
+    
+    const apiUrl = `${APIURL}/api/v1/users/media/admin`
+
+    let response = await axios.put(apiUrl,formData,{
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
     return error.message
   }
 }
