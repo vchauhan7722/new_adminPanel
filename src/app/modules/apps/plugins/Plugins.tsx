@@ -3,9 +3,11 @@ import {KTCardBody} from '../../../../_metronic/helpers/components/KTCardBody'
 import PluginData from '../plugins/PluginsData'
 import clsx from 'clsx'
 import {useIntl} from 'react-intl'
-import ProfileQuestionsAndInterest from './Componants/ProfileQuestionsAndInterest'
+import ProfileQuestionsAndInterest from './Componants/ProfileQuestionsAndInterest/ProfileQuestionsAndInterest'
 import {PageLink, PageTitle} from '../../../../_metronic/layout/core'
 import {Link, Route, Routes} from 'react-router-dom'
+import Gifts from './Componants/Gifts/gifts'
+import {toAbsoluteUrl} from '../../../../_metronic/helpers'
 
 const usersBreadcrumbs: Array<PageLink> = [
   {
@@ -55,7 +57,10 @@ const Plugins = () => {
                         <div className='d-flex align-items-center '>
                           <div className='symbol symbol-50px overflow-visible me-3'>
                             <img
-                              src={`https://preview.keenthemes.com/metronic8/react/demo1//media/avatars/300-6.jpg`}
+                              src={
+                                toAbsoluteUrl(plugin.icon) ||
+                                `https://preview.keenthemes.com/metronic8/react/demo1//media/avatars/300-6.jpg`
+                              }
                               alt='icon'
                               width='50px'
                               height='50px'
@@ -113,6 +118,15 @@ const Plugins = () => {
             <>
               <PageTitle>Questions and Answers</PageTitle>
               <ProfileQuestionsAndInterest />
+            </>
+          }
+        />
+        <Route
+          path='/gifts_plugin'
+          element={
+            <>
+              <PageTitle>Gifts</PageTitle>
+              <Gifts />
             </>
           }
         />

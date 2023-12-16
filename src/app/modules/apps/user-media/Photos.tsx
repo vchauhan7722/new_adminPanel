@@ -11,7 +11,7 @@ import {
   setMediaAsAStoryForUserMedia,
   updateMediaActionForUserMedia,
 } from '../../../../API/api-endpoint'
-import {DateWithTimeFormatter} from '../../../../utils/Utils'
+import {DateTimeFormatter, DateWithTimeFormatter, TimeFormatter} from '../../../../utils/Utils'
 import ToastUtils from '../../../../utils/ToastUtils'
 
 const Photos = () => {
@@ -239,7 +239,11 @@ const Photos = () => {
                     </td>
                     <td>
                       <div className='text-muted fw-semibold fs-6'>
-                        {DateWithTimeFormatter(media.updatedAt)}
+                        <div className='text-muted fw-semibold fs-6 '>
+                          {DateTimeFormatter(media.updatedAt)}
+                          <br></br>
+                          {TimeFormatter(media.updatedAt)}
+                        </div>
                       </div>
                     </td>
                     <td>

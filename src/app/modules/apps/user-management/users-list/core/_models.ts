@@ -75,6 +75,62 @@ export type User = {
   totalPage:number
 }
 
+// export interface User {
+//   status: number
+//   message: string
+//   page: string
+//   pageSize: string
+//   data: UserDetails[]
+//   count: number
+//   totalPage: number
+// }
+
+export interface UserDetails {
+  userId: number
+  fullName: string
+  userName?: string
+  countryCode?: string
+  mobileNo?: string
+  otp?: number
+  otpExpiration?: string
+  profileImage?: string
+  email: string
+  birthDate?: string
+  age?: number
+  lat?: string
+  lng?: string
+  country?: string
+  state?: string
+  city?: string
+  bio?: string
+  registerFrom: string
+  isAdmin: boolean
+  isOnline: boolean
+  isVerify: boolean
+  genderId?: number
+  isPremium: boolean
+  totalCredit: number
+  loginWith?: string
+  isDelete: boolean
+  completeProfile: boolean
+  isSpotlightUser: boolean
+  spotLightDays?: number
+  setSpotLightDate?: string
+  isPopular: boolean
+  popularDays?: number
+  setPopularDate?: string
+  deviceToken: string
+  status: boolean
+  createdAt: string
+  updatedAt: string
+  gender?: Gender
+}
+
+export interface Gender {
+  name: string
+}
+
+
 export type UsersQueryResponse = Response<Array<User>>
 
 export const initialUser: User = {

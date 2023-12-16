@@ -14,7 +14,7 @@ import CustomPagination from '../../../../../_metronic/partials/componants/Pagin
 import ToastUtils from '../../../../../utils/ToastUtils'
 
 const Chat: FC = () => {
-  const [chatMemberList, setChatMemberList] = useState<any>([])
+  const [chatMemberList, setChatMemberList] = useState<any>(undefined)
   const [page, setPage] = useState<any>(1)
   const [pageSize, setPageSize] = useState<any>(10)
   const [totalPage, setTotalPage] = useState(0)
@@ -110,7 +110,13 @@ const Chat: FC = () => {
             >
               <div className='separator separator-dashed d-none'></div>
 
-              {chatMemberList !== undefined &&
+              {chatMemberList === undefined ? (
+                <div className='d-flex justify-content-center'>
+                  <div className='spinner-border' role='status'>
+                    <span className='visually-hidden'>Loading...</span>
+                  </div>
+                </div>
+              ) : (
                 chatMemberList.map((member: any, index: any) => {
                   return (
                     <>
@@ -173,12 +179,13 @@ const Chat: FC = () => {
                       <div className='separator separator-dashed'></div>
                     </>
                   )
-                })}
+                })
+              )}
             </div>
           </div>
 
           <div className='card-footer'>
-            {chatMemberList.length !== 0 && (
+            {chatMemberList !== undefined && (
               <CustomPagination
                 pageSize={pageSize}
                 setPageSize={setPageSize}
@@ -201,7 +208,7 @@ const Chat: FC = () => {
               actionFlag={actionFlag}
             />
           ) : (
-            <div className='card-header h-600px' id='kt_chat_messenger_header '></div>
+            <div className='card-header h-650px' id='kt_chat_messenger_header '></div>
           )}
         </div>
       </div>

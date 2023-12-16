@@ -16,6 +16,8 @@ const UsersTable = () => {
   const data = useMemo(() => users, [users])
   const columns = useMemo(() => usersColumns, [])
 
+  console.log('Data', data)
+
   const {getTableProps, getTableBodyProps, headers, rows, prepareRow} = useTable({
     columns,
     data,

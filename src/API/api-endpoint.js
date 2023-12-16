@@ -1201,7 +1201,7 @@ export const ReUploadUserStory = async (userId,storyId) => {
 }
 
 
-// for send message
+// for send message using pusher
 
 export const sendMessageUsingApi = async (message,userId,receiverId,chatRoomID,chatID) => {
   try {
@@ -1270,6 +1270,180 @@ export const deleteSelectedMedia = async (MediaId) => {
     let response = await axios.put(apiUrl,formData,{
       headers: {
         'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const getAllStories = async (page,pageSize,isPrivate,userID) => { 
+  try {  
+    let accessToken = localStorage.getItem('accessToken')  
+    const apiUrl = `${APIURL}/api/v1/users/all/stories?page=${page}&pageSize=${pageSize}&isPrivate=${isPrivate}&userId=${userID}`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const deleteSelectedStory = async (MediaId) => {
+  try {
+   
+    let formData  =  {
+      storyIds: MediaId,
+    }
+    
+    let accessToken = localStorage.getItem('accessToken')  
+    
+    const apiUrl = `${APIURL}/api/v1/users/delete/all/stories`
+
+    let response = await axios.put(apiUrl,formData,{
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const ReUploadSelectedStory = async (MediaId) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+    
+    let formData  =  {
+      storyIds: MediaId,
+    }
+    
+    const apiUrl = `${APIURL}/api/v1/users/re-upload/all/stories`
+
+    let response = await axios.put(apiUrl,formData,{
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+// gifts plugin
+
+export const getAllGiftCategory = async () => {
+  try { 
+    let accessToken = localStorage.getItem('accessToken')  
+    //  /api/v1/users/profile/media?page=1&pageSize=10&isPrivate=false&userId=35
+    const apiUrl = `${APIURL}/api/v1/masters/gifts-category`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const CreateGiftsCategory = async (name) => {
+  try {
+
+    let formData = new FormData()
+    formData = {
+      name : name,
+    }
+    
+    let accessToken = localStorage.getItem('accessToken')  
+    
+    const apiUrl = `${APIURL}/api/v1/masters/gifts-category`
+
+    let response = await axios.post(apiUrl,formData,{
+      headers: {
+        'Content-Type': `application/x-www-form-urlencoded`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const getAllGift = async () => {
+  try { 
+    let accessToken = localStorage.getItem('accessToken')  
+    //  /api/v1/users/profile/media?page=1&pageSize=10&isPrivate=false&userId=35
+    const apiUrl = `${APIURL}/api/v1/masters/gifts`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const CreateGift = async (name,categoryId,credit,giftFile) => {
+  try {
+
+    let formData = new FormData()
+    formData = {
+      name : name,
+      giftCategoryId : categoryId,
+      credit:credit,
+      gift :giftFile
+    }
+
+    console.log("formData",formData)
+    
+    let accessToken = localStorage.getItem('accessToken')  
+    
+    const apiUrl = `${APIURL}/api/v1/masters/gifts-category/1/gifts`
+
+    let response = await axios.post(apiUrl,formData,{
+      headers: {
+        'Content-Type': `multipart/form-data;`,
         'x-access-token': accessToken
       }
     })

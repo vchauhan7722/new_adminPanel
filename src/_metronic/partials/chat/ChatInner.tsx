@@ -8,7 +8,8 @@ import {getMessagesByUserID, pinOrLikeChatMember} from '../../../API/api-endpoin
 import {DateTimeFormatter, TimeFormatter, sortData} from '../../../utils/Utils'
 import ToastUtils from '../../../utils/ToastUtils'
 import {fileToBase64} from '../../../utils/FileUtils'
-import InfiniteScroll from 'react-infinite-scroller'
+import InfiniteScroll from 'react-infinite-scroll-component'
+// react-infinite-scroll-component
 
 const ChatInner = (props: any) => {
   const {
@@ -26,13 +27,16 @@ const ChatInner = (props: any) => {
   const currentUserId = parseInt(localStorage.getItem('userId') || '1')
 
   const [message, setMessage] = useState<string>('')
-  const [messageList, setMessageList] = useState<any>([])
+  const [messageList, setMessageList] = useState<any>(undefined)
   const [page, setPage] = useState<any>(1)
-  const [pageSize, setPageSize] = useState<any>(100)
+  const [pageSize, setPageSize] = useState<any>(20)
   const [selectedGiftCategory, setSelectedGiftCategory] = useState<any>('all')
   const [selectedGift, setSelectedGift] = useState<any>(undefined)
   const [creditToSend, setCreditToSend] = useState<any>(1)
   const [ws, setWs] = useState<any>(null)
+  const [hasMoreItems, sethasMoreItems] = useState(true)
+  const [totalPage, setTotalPage] = useState(0)
+  const [totalMessageCount, setTotalMessageCount] = useState(0)
 
   const dates = new Set()
 
@@ -54,7 +58,7 @@ const ChatInner = (props: any) => {
       process.env.REACT_APP_WEBSOCKET_SERVER_URL || 'ws://backend.profun.live'
     )
 
-    getchatList()
+    getchatList(page)
 
     ws1.addEventListener('open', () => {
       console.log('Connected to WebSocket server')
@@ -70,14 +74,32 @@ const ChatInner = (props: any) => {
     ws1.addEventListener('message', (event) => {
       const receivedMessage = event.data
       const JsonMessageData = JSON.parse(receivedMessage)
+      // if (JsonMessageData.type !== 'join') {
+      //   if (JsonMessageData.message !== "User doesn't have credit") {
+      //     let messages = JSON.parse(sessionStorage.getItem('messageList') || '')
+      //     const oldMessage = [...messages]
+      //     oldMessage.push(JsonMessageData)
+      //     sessionStorage.setItem('messageList', JSON.stringify(oldMessage))
+      //     setMessageList(oldMessage)
+      //   } else {
+      //     ToastUtils({type: 'error', message: JsonMessageData.message})
+      //   }
+      // }
 
-      if (JsonMessageData.message !== "User doesn't have credit") {
-        let messages = JSON.parse(sessionStorage.getItem('messageList') || '')
-        const oldMessage = [...messages]
-        oldMessage.push(JsonMessageData)
-        sessionStorage.setItem('messageList', JSON.stringify(oldMessage))
-        setMessageList(oldMessage)
-      } else {
+      if (
+        JsonMessageData.type !== 'join' &&
+        JsonMessageData.message !== "User doesn't have credit"
+      ) {
+        // Use optional chaining (?.) to safely access sessionStorage
+        const messages = JSON.parse(sessionStorage.getItem('messageList') || '[]') || []
+
+        // Combine the new message with existing messages in a single array
+        const updatedMessages = [...messages, JsonMessageData]
+
+        // Store the updated messages in sessionStorage and update state
+        sessionStorage.setItem('messageList', JSON.stringify(updatedMessages))
+        setMessageList(updatedMessages)
+      } else if (JsonMessageData.message === "User doesn't have credit") {
         ToastUtils({type: 'error', message: JsonMessageData.message})
       }
     })
@@ -93,9 +115,9 @@ const ChatInner = (props: any) => {
     }
   }, [])
 
-  // useEffect(() => {
-  //   scrollToBottom()
-  // }, [messageList])
+  useEffect(() => {
+    scrollToBottom()
+  }, [messageList])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({behavior: 'smooth'})
@@ -169,15 +191,20 @@ const ChatInner = (props: any) => {
     }
   }
 
-  const getchatList = async () => {
+  const getchatList = async (pageNumber: any) => {
     let result = await getMessagesByUserID(
       receiverUserDetails.userId,
       receiverUserDetails.chatRoomId,
-      page,
+      pageNumber,
       pageSize
     )
-    sessionStorage.setItem('messageList', JSON.stringify(result.data))
-    setMessageList(result.data)
+
+    if (result.status === 200) {
+      sessionStorage.setItem('messageList', JSON.stringify(result.data))
+      setTotalPage(result.totalPage)
+      setTotalMessageCount(result.count)
+      setMessageList(result.data)
+    }
   }
 
   const handleClick = () => {
@@ -229,22 +256,25 @@ const ChatInner = (props: any) => {
     }
   }
 
-  const handleRenderChat = async (__page: any) => {
-    console.log(__page)
-    // let result = await getMessagesByUserID(
-    //   receiverUserDetails.userId,
-    //   receiverUserDetails.chatRoomId,
-    //   __page,
-    //   pageSize
-    // )
-    // sessionStorage.setItem('messageList', JSON.stringify(result.data))
-    // setMessageList(result.data)
-    //setPage(page + 1)
-    // const response = await axios.get(
-    //   `https://jsonplaceholder.typicode.com/posts?_page=${page}&_limit=10`
-    // )
-    // setItems([...items, ...response.data])
-    //setPage(page + 1)
+  const handleRenderChat = async (pageNumber: any) => {
+    console.log('260')
+    if (page > totalPage) {
+      console.log('262', page, totalPage)
+      sethasMoreItems(false)
+      return
+    } else {
+      console.log('266', page, totalPage)
+      setPage(pageNumber)
+      setPageSize(pageSize + 10)
+      getchatList(pageNumber)
+    }
+  }
+
+  const fetchMoreData = () => {
+    // Simulating fetching more data when scrolling
+    const nextPage = Math.floor(messageList.length / pageSize) + 1
+    console.log(nextPage)
+    handleRenderChat(nextPage)
   }
 
   return messageList === undefined ? (
@@ -339,7 +369,7 @@ const ChatInner = (props: any) => {
         id={isDrawer ? 'kt_drawer_chat_messenger_body' : 'kt_chat_messenger_body'}
       >
         <div
-          className='scroll-y me-n5 pe-5 h-400px' //{clsx('scroll-y me-n5 pe-5', {'h-300px h-lg-auto': !isDrawer})}
+          className='scroll-y me-n5 pe-5 h-450px' //{clsx('scroll-y me-n5 pe-5', {'h-300px h-lg-auto': !isDrawer})}
           data-kt-element='messages'
           data-kt-scroll='true'
           data-kt-scroll-activate='{default: false, lg: true}'
@@ -357,23 +387,24 @@ const ChatInner = (props: any) => {
           data-kt-scroll-offset={isDrawer ? '0px' : '5px'}
         >
           <InfiniteScroll
-            style={{margin: '10px'}}
-            pageStart={1}
-            loadMore={handleRenderChat}
-            // hasMore={true}
-            // loader={
-            //   <div className='loader' key={0}>
-            //     Loading ...
-            //   </div>
-            // }
-            // isReverse={true}
-            // useWindow={false}
+            dataLength={totalMessageCount}
+            next={fetchMoreData}
+            hasMore={hasMoreItems}
+            loader={
+              <div className='d-flex justify-content-center'>
+                <div className='spinner-border' role='status'>
+                  <span className='visually-hidden'>Loading...</span>
+                </div>
+              </div>
+            }
+            //scrollThreshold={250}
+            inverse={true}
           >
             {messageList
-              // .sort((a: any, b: any) => {
-              //   return sortData(a.updatedAt, b.updatedAt)
-              // })
-              .reverse()
+              .sort((a: any, b: any) => {
+                return sortData(a.updatedAt, b.updatedAt)
+              })
+              //.reverse()
               .map((message: any, index: any) => {
                 //const userInfo = userInfos[message.user]
                 const userType = currentUserId !== message.receiverId
@@ -566,7 +597,7 @@ const ChatInner = (props: any) => {
                                       className='me-2'
                                     />{' '}
                                     {message.message} Credits
-                                    <span className='text-muted fs-9 me-2'>
+                                    <span className='text-muted fs-9 ms-1 me-2'>
                                       {TimeFormatter(message.updatedAt)}
                                     </span>
                                   </div>
@@ -584,7 +615,7 @@ const ChatInner = (props: any) => {
                                       />
                                       {message.message} Credits
                                     </span>
-                                    <span className='text-muted fs-9'>
+                                    <span className='text-muted  fs-9'>
                                       {TimeFormatter(message.updatedAt)}
                                     </span>
                                   </div>

@@ -124,7 +124,7 @@ const MediaTable = (props) => {
                 <td>Date</td>
                 <td>Type</td>
                 <td>View</td>
-                <td>Gift Card</td>
+                <td>Gift Credit</td>
                 <td>Credit</td>
                 <td>Status</td>
                 <td>Action</td>
@@ -182,7 +182,7 @@ const MediaTable = (props) => {
                             <Dropdown.Menu>
                               <Dropdown.Item
                                 data-bs-toggle='modal'
-                                data-bs-target='#kt_modal_2'
+                                data-bs-target='#edit_credit_of_story'
                                 onClick={() => {
                                   setStoryId(story?.storyId)
                                   setuserStoryCredit(parseInt(story?.storyCredit))
@@ -209,7 +209,7 @@ const MediaTable = (props) => {
             </tbody>
           </table>
         </div>
-        <div className='modal fade' tabIndex={-1} id='kt_modal_2'>
+        <div className='modal fade' tabIndex={-1} id='edit_credit_of_story'>
           <div className='modal-dialog'>
             <div className='modal-content'>
               <div className='modal-header'>

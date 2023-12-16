@@ -1,6 +1,6 @@
-import {KTCard} from '../../../../../_metronic/helpers'
-import ProfileQuestions from './ProfileQuestionsAndInterest/ProfileQuestions'
-import ProfileInterest from './ProfileQuestionsAndInterest/ProfileInterest'
+import {KTCard} from '../../../../../../_metronic/helpers'
+import ProfileQuestions from './ProfileQuestions'
+import ProfileInterest from './ProfileInterest'
 
 const ProfileQuestionsAndInterest = () => {
   return (

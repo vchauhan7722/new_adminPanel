@@ -5,13 +5,19 @@ import {Dropdown} from 'react-bootstrap'
 import clsx from 'clsx'
 import CustomPagination from '../../../../_metronic/partials/componants/Pagination'
 import {
+  ReUploadSelectedStory,
+  ReUploadUserStory,
+  UpdateUserStory,
   deleteSelectedMedia,
+  deleteSelectedStory,
+  deleteUserStory,
   getAllMedia,
+  getAllStories,
   removeMediaActionForUserMedia,
   setMediaAsAStoryForUserMedia,
   updateMediaActionForUserMedia,
 } from '../../../../API/api-endpoint'
-import {DateWithTimeFormatter} from '../../../../utils/Utils'
+import {DateTimeFormatter, DateWithTimeFormatter, TimeFormatter} from '../../../../utils/Utils'
 import ToastUtils from '../../../../utils/ToastUtils'
 
 const Stories = () => {
@@ -20,20 +26,24 @@ const Stories = () => {
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
   const [totalPage, setTotalPage] = useState(15)
-  const [mediaList, setMediaList] = useState([])
+  const [storyList, setStoryList] = useState([])
   const [filter, setFilter] = useState({userId: '', isPrivate: ''})
   const [selectedUser, setSelectedUser] = useState<any>([])
-  //id
+  const [userStoryCredit, setuserStoryCredit] = useState<any>(0)
+  const [storyUserId, setstoryUserId] = useState<any>(0)
+  const [storyId, setStoryId] = useState<any>(0)
+  const [storyCount, setStoryCount] = useState<any>(0)
 
   useEffect(() => {
-    getAllMediaList(page, pageSize, filter.isPrivate, filter.userId)
+    getAllStoryList(page, pageSize, filter.isPrivate, filter.userId)
   }, [])
 
-  const getAllMediaList = async (page: any, pageSize: any, isPrivate: any, userId: any) => {
-    let result = await getAllMedia(page, pageSize, isPrivate, userId)
+  const getAllStoryList = async (page: any, pageSize: any, isPrivate: any, userId: any) => {
+    let result = await getAllStories(page, pageSize, isPrivate, userId)
     if (result.status === 200) {
-      setMediaList(result.data)
+      setStoryList(result.data)
       setTotalPage(result.totalPage)
+      setStoryCount(result.count)
     }
   }
 
@@ -41,12 +51,12 @@ const Stories = () => {
     if (page === 0 || page === 1) {
       page = 1
     }
-    getAllMediaList(page, pageSize, filter.isPrivate, filter.userId)
+    getAllStoryList(page, pageSize, filter.isPrivate, filter.userId)
     //getActivitiesList(page, pageSize, type)
   }
 
   const filterMedia = () => {
-    getAllMediaList(page, pageSize, filter.isPrivate, filter.userId)
+    getAllStoryList(page, pageSize, filter.isPrivate, filter.userId)
   }
 
   const handleSelectChange = (type: any, mediaId: any) => {
@@ -67,54 +77,81 @@ const Stories = () => {
   const handleSelectAllMedia = (type: any) => {
     if (type === true) {
       let oldArray = [...selectedUser]
-      mediaList.map((media: any) => oldArray.push(media?.id))
+      storyList.map((media: any) => oldArray.push(media?.id))
       setSelectedUser(oldArray)
     } else {
       setSelectedUser([])
     }
 
-    let oldMediaArray = [...mediaList]
-    setMediaList(oldMediaArray)
+    let oldMediaArray = [...storyList]
+    setStoryList(oldMediaArray)
   }
 
-  const deleteMultiPleMedia = async () => {
-    let result = await deleteSelectedMedia(selectedUser)
+  const deleteMultiPleStory = async () => {
+    let result = await deleteSelectedStory(selectedUser)
     if (result.status === 200) {
       setSelectedUser([])
-      ToastUtils({type: 'success', message: 'Media Is Deleted'})
-      getAllMediaList(page, pageSize, filter.isPrivate, filter.userId)
+      ToastUtils({type: 'success', message: 'Story Is Deleted'})
+      getAllStoryList(page, pageSize, filter.isPrivate, filter.userId)
     } else {
       ToastUtils({type: 'error', message: 'Something Went Wrong'})
     }
   }
 
-  const UploadToStory = async (userID: any, mediaId: any) => {
-    let result = await setMediaAsAStoryForUserMedia(userID, mediaId)
+  const DeleteSingleStory = async (userID: any, storyID: any) => {
+    let result = await deleteUserStory(userID, storyID)
     if (result.status === 200) {
-      ToastUtils({type: 'success', message: 'Media Is Uploaded As a Story'})
+      getAllStoryList(page, pageSize, filter.isPrivate, filter.userId)
+      ToastUtils({type: 'success', message: 'Your story has Removed'})
+    } else {
+      ToastUtils({type: 'error', message: 'Error in Deleting story'})
+    }
+  }
+
+  const updateCreditofStory = async () => {
+    let result = await UpdateUserStory(userStoryCredit, storyUserId, storyId)
+    if (result.status === 200) {
+      getAllStoryList(page, pageSize, filter.isPrivate, filter.userId)
+      ToastUtils({type: 'success', message: 'Your Story is Updated'})
+      setuserStoryCredit(0)
+      setStoryId(0)
+    } else {
+      ToastUtils({type: 'error', message: 'Error in Updating Story'})
+    }
+  }
+
+  const reuploadStory = async (userId: any, mediaId: any) => {
+    let result = await ReUploadUserStory(userId, mediaId)
+    if (result.status === 200) {
+      getAllStoryList(page, pageSize, filter.isPrivate, filter.userId)
+      ToastUtils({type: 'success', message: 'Your Story is Uploaded'})
+    } else {
+      ToastUtils({type: 'error', message: 'Error in Uploading Story'})
+    }
+  }
+
+  const reUploadMultipleStory = async () => {
+    let result = await ReUploadSelectedStory(selectedUser)
+    if (result.status === 200) {
+      setSelectedUser([])
+      ToastUtils({type: 'success', message: 'Story Is Reuploaded'})
+      getAllStoryList(page, pageSize, filter.isPrivate, filter.userId)
     } else {
       ToastUtils({type: 'error', message: 'Something Went Wrong'})
     }
   }
 
-  const DeleteSingleMedia = async (userID: any, mediaId: any) => {
-    let result = await removeMediaActionForUserMedia(userID, mediaId)
-    if (result.status === 200) {
-      getAllMediaList(page, pageSize, filter.isPrivate, filter.userId)
-      ToastUtils({type: 'success', message: 'Media Is Deleted'})
-    } else {
-      ToastUtils({type: 'error', message: 'Something Went Wrong'})
-    }
+  const filterUsingUid = (userID: any, mediaId: any) => {
+    getAllStoryList(page, pageSize, filter.isPrivate, userID)
+    setFilter({userId: userID, isPrivate: ''})
+    // let oldStoryArray = [...selectedUser]
+    // oldStoryArray.push(mediaId)
+    // setSelectedUser(oldStoryArray)
   }
 
-  const setMediaAsPrivate = async (userID: any, mediaId: any, typeValue: any) => {
-    let result = await updateMediaActionForUserMedia(userID, mediaId, 'isPrivate', typeValue)
-    if (result.status === 200) {
-      getAllMediaList(page, pageSize, filter.isPrivate, filter.userId)
-      ToastUtils({type: 'success', message: !typeValue ? 'Media Is Public' : 'Media Is Private'})
-    } else {
-      ToastUtils({type: 'error', message: 'Something Went Wrong'})
-    }
+  const clearFilter = () => {
+    setFilter({userId: '', isPrivate: ''})
+    getAllStoryList(page, pageSize, '', '')
   }
 
   return (
@@ -164,6 +201,27 @@ const Stories = () => {
         </div>
       </div>
 
+      {selectedUser.length === 0 && (
+        <div className='card py-4 px-4 mb-5'>
+          <div className='d-flex justify-content-between'>
+            <div className='row'>
+              <h4>SEARCH RESULT {storyCount} STORIES </h4>
+            </div>
+
+            <div>
+              <button
+                type='submit'
+                className={'btn btn-primary'}
+                onClick={clearFilter}
+                // disabled={!isAnyProfileChanges}
+              >
+                <i className='fa-solid fa-close'></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {selectedUser.length !== 0 && (
         <div className='card py-4 px-4 mb-5'>
           <div className='d-flex justify-content-between'>
@@ -179,7 +237,10 @@ const Stories = () => {
                 </Dropdown.Toggle>
 
                 <Dropdown.Menu>
-                  <Dropdown.Item onClick={deleteMultiPleMedia}>
+                  <Dropdown.Item onClick={reUploadMultipleStory}>
+                    Reupload {selectedUser.length} Media
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={deleteMultiPleStory}>
                     Delete {selectedUser.length} Media
                   </Dropdown.Item>
                 </Dropdown.Menu>
@@ -207,12 +268,15 @@ const Stories = () => {
                 <td>Media</td>
                 <td>Date</td>
                 <td>Type</td>
-                <td>User</td>
+                <td>View</td>
+                <td>Gift Credit</td>
+                <td>Credit</td>
+                <td>Status</td>
                 <td>Action</td>
               </tr>
             </thead>
             <tbody className='text-gray-600 '>
-              {mediaList.map((media: any, index: any) => {
+              {storyList.map((story: any, index: any) => {
                 return (
                   <tr key={index}>
                     <td>
@@ -220,15 +284,15 @@ const Stories = () => {
                         className='form-check-input'
                         type='checkbox'
                         data-kt-check-target='#kt_table_users .form-check-input'
-                        defaultChecked={selectedUser.includes(media?.id)}
-                        onChange={(e) => handleSelectChange(e.target.checked, media?.id)}
+                        defaultChecked={selectedUser.includes(story?.storyId)}
+                        onChange={(e) => handleSelectChange(e.target.checked, story?.storyId)}
                       />
                     </td>
                     <td>
                       <div className='symbol symbol-50px overflow-visible me-3'>
                         <img
                           src={
-                            `${process.env.REACT_APP_SERVER_URL}/${media.media}` ||
+                            `${process.env.REACT_APP_SERVER_URL}/${story.media}` ||
                             `https://preview.keenthemes.com/metronic8/react/demo1//media/avatars/300-6.jpg`
                           }
                           alt='icon'
@@ -238,27 +302,38 @@ const Stories = () => {
                       </div>
                     </td>
                     <td>
-                      <div className='text-muted fw-semibold fs-6'>
-                        {DateWithTimeFormatter(media.updatedAt)}
+                      <div className='text-muted fw-semibold fs-6 '>
+                        {DateTimeFormatter(story.updatedAt)}
+                        <br></br>
+                        {TimeFormatter(story.updatedAt)}
                       </div>
                     </td>
                     <td>
-                      {media.isPrivate ? (
-                        <span className='badge rounded-pill text-bg-danger text-white'>
-                          Private
-                        </span>
-                      ) : (
-                        <span className='badge rounded-pill text-bg-success text-white'>
-                          Public
-                        </span>
-                      )}
+                      <span>{story?.isPrivate ? 'private' : 'public'}</span>
                     </td>
                     <td>
-                      <div className='d-flex align-items-center '>
+                      <span>{story?.totalViews}</span>
+                    </td>
+                    <td>
+                      <span>
+                        {story?.totalGift}/{story?.totalGiftCredit}
+                      </span>
+                    </td>
+                    <td>
+                      <span>{story?.storyCredit || 0}</span>
+                    </td>
+                    <td>
+                      <span>{story?.status ? 'visible' : 'Not Visible'}</span>
+                    </td>
+                    <td>
+                      <div
+                        className='d-flex align-items-center'
+                        onClick={() => filterUsingUid(story?.userDetail?.userId, story.storyId)}
+                      >
                         <div className='symbol symbol-50px overflow-visible me-3'>
                           <img
                             src={
-                              `${process.env.REACT_APP_SERVER_URL}/${media?.userDetail?.profileImage}` ||
+                              `${process.env.REACT_APP_SERVER_URL}/${story?.userDetail?.profileImage}` ||
                               `https://preview.keenthemes.com/metronic8/react/demo1//media/avatars/300-6.jpg`
                             }
                             alt='icon'
@@ -269,10 +344,10 @@ const Stories = () => {
 
                         <div className='flex-grow-1'>
                           <a href='#' className='text-gray-800 text-hover-primary fw-bold fs-4'>
-                            {media?.userDetail?.fullName}
+                            {story?.userDetail?.fullName}
                           </a>
                           <span className='text-muted fw-semibold d-block fs-6'>
-                            ID : {media?.userDetail?.userId}
+                            ID : {story?.userDetail?.userId}
                           </span>
                         </div>
                       </div>
@@ -290,32 +365,39 @@ const Stories = () => {
                         <Dropdown.Menu>
                           <Dropdown.Item>
                             <Link
-                              to={`/apps/users-profile/media/${media?.userDetail?.userId}`}
+                              to={`/apps/users-profile/media/${story?.userDetail?.userId}`}
                               style={{color: 'black'}}
                             >
                               Edit Profile
                             </Link>
                           </Dropdown.Item>
+                          {!story?.status && (
+                            <Dropdown.Item
+                              onClick={() =>
+                                reuploadStory(story?.userDetail?.userId, story?.storyId)
+                              }
+                            >
+                              ReUpload Story
+                            </Dropdown.Item>
+                          )}
+                          <Dropdown.Item
+                            data-bs-toggle='modal'
+                            data-bs-target='#edit_credit_of_story'
+                            onClick={() => {
+                              setStoryId(story?.storyId)
+                              setuserStoryCredit(parseInt(story?.storyCredit))
+                              setstoryUserId(story?.userDetail?.userId)
+                            }}
+                          >
+                            Set Story Price
+                          </Dropdown.Item>
+
                           <Dropdown.Item
                             onClick={() =>
-                              setMediaAsPrivate(
-                                media?.userDetail?.userId,
-                                media?.id,
-                                !media.isPrivate
-                              )
+                              DeleteSingleStory(story?.userDetail?.userId, story?.storyId)
                             }
                           >
-                            {media.isPrivate ? 'Set Public' : 'Set Private'}
-                          </Dropdown.Item>
-                          <Dropdown.Item
-                            onClick={() => UploadToStory(media?.userDetail?.userId, media?.id)}
-                          >
-                            Upload to Story
-                          </Dropdown.Item>
-                          <Dropdown.Item
-                            onClick={() => DeleteSingleMedia(media?.userDetail?.userId, media?.id)}
-                          >
-                            Delete Media
+                            Delete Story
                           </Dropdown.Item>
                         </Dropdown.Menu>
                       </Dropdown>
@@ -332,6 +414,61 @@ const Stories = () => {
               totalPage={totalPage}
               cb={getPagination}
             />
+          </div>
+        </div>
+
+        <div className='modal fade' tabIndex={-1} id='edit_credit_of_story'>
+          <div className='modal-dialog'>
+            <div className='modal-content'>
+              <div className='modal-header'>
+                <h5 className='modal-title'>Edit Credits Of Story</h5>
+                <div
+                  className='btn btn-icon btn-sm btn-active-light-primary ms-2'
+                  data-bs-dismiss='modal'
+                  aria-label='Close'
+                >
+                  <i className='fa-solid fa-xmark'></i>
+                </div>
+              </div>
+              <div className='modal-body'>
+                <select
+                  className='form-select form-select-solid fw-bolder'
+                  data-kt-select2='true'
+                  data-placeholder='Select option'
+                  data-allow-clear='true'
+                  data-kt-user-table-filter='gender'
+                  data-hide-search='true'
+                  name='credit'
+                  //defaultValue={0}
+                  value={userStoryCredit}
+                  onChange={(e) => setuserStoryCredit(e.target.value)}
+                >
+                  <option value={0}>Free</option>
+                  <option value={1}>1 Credits</option>
+                  <option value={3}>3 Credits</option>
+                  <option value={5}>5 Credits</option>
+                  <option value={10}>10 Credits</option>
+                  <option value={15}>15 Credits</option>
+                  <option value={25}>25 Credits</option>
+                  <option value={50}>50 Credits</option>
+                  <option value={100}>100 Credits</option>
+                  <option value={500}>500 Credits</option>
+                </select>
+              </div>
+              <div className='modal-footer'>
+                <button type='button' className='btn' data-bs-dismiss='modal'>
+                  Cancel
+                </button>
+                <button
+                  type='button'
+                  className='btn btn-primary'
+                  data-bs-dismiss='modal'
+                  onClick={updateCreditofStory}
+                >
+                  Update Credit
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </KTCardBody>
