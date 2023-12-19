@@ -13,7 +13,8 @@ import {ChatInner} from '../../../../../_metronic/partials/chat/ChatInner'
 import CustomPagination from '../../../../../_metronic/partials/componants/Pagination'
 import ToastUtils from '../../../../../utils/ToastUtils'
 
-const Chat: FC = () => {
+const Chat = (props) => {
+  const {CurrentUser} = props
   const [chatMemberList, setChatMemberList] = useState<any>(undefined)
   const [page, setPage] = useState<any>(1)
   const [pageSize, setPageSize] = useState<any>(10)
@@ -206,6 +207,7 @@ const Chat: FC = () => {
               giftList={giftList}
               setActionFlag={setActionFlag}
               actionFlag={actionFlag}
+              CurrentUser={CurrentUser}
             />
           ) : (
             <div className='card-header h-650px' id='kt_chat_messenger_header '></div>

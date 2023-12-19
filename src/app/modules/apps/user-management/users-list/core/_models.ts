@@ -73,6 +73,7 @@ export type User = {
   page:number
   pageSize:number
   totalPage:number
+  count:Number
 }
 
 // export interface User {
@@ -139,5 +140,6 @@ export const initialUser: User = {
   email: '',
   page:1,
   pageSize:100,
-  totalPage:1
+  totalPage:1,
+  count:0
 }

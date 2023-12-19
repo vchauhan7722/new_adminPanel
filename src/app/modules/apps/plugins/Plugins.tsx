@@ -5,9 +5,16 @@ import clsx from 'clsx'
 import {useIntl} from 'react-intl'
 import ProfileQuestionsAndInterest from './Componants/ProfileQuestionsAndInterest/ProfileQuestionsAndInterest'
 import {PageLink, PageTitle} from '../../../../_metronic/layout/core'
-import {Link, Route, Routes} from 'react-router-dom'
+import {Link, Route, Routes, useLocation} from 'react-router-dom'
 import Gifts from './Componants/Gifts/gifts'
 import {toAbsoluteUrl} from '../../../../_metronic/helpers'
+import ChatPlugin from './Componants/Chat/ChatPlugin'
+import SitePricingPlugin from './Componants/SitePricing/SitePricingPlugin'
+import RewardPlugin from './Componants/Reward/RewardPlugin'
+import PopularPlugin from './Componants/Popular/popularPlugin'
+import SpotlightPlugin from './Componants/Spotlight/SpotlightPlugin'
+import VideocallPlugin from './Componants/Videocall/VideocallPlugin'
+import LegalInformationPlugin from './Componants/LegalInformation/LegalInformationPlugin'
 
 const usersBreadcrumbs: Array<PageLink> = [
   {
@@ -26,15 +33,15 @@ const usersBreadcrumbs: Array<PageLink> = [
 
 const Plugins = () => {
   const intl = useIntl()
+  const location = useLocation()
   const [pluginList, setPluginList] = useState(PluginData)
-  const [selectedPlugins, setSelectedPlugins] = useState('')
 
   return (
     <>
       <PageTitle breadcrumbs={usersBreadcrumbs}>
         {intl.formatMessage({id: 'MENU.PLUGINS'})}
       </PageTitle>
-      {selectedPlugins.length === 0 && (
+      {location.pathname === '/plugins' && (
         <KTCardBody className='py-4 card'>
           <div className='table-responsive'>
             <table
@@ -92,11 +99,7 @@ const Plugins = () => {
                       </td>
                       <td colSpan={2}>
                         <Link to={`/plugins/${plugin.path}`}>
-                          <button
-                            className='btn btn-sm btn-light'
-                            data-kt-menu-dismiss='true'
-                            onClick={() => setSelectedPlugins(plugin.name)}
-                          >
+                          <button className='btn btn-sm btn-light' data-kt-menu-dismiss='true'>
                             <i className='fa-solid fa-gear'></i>
                             Setting
                           </button>
@@ -127,6 +130,69 @@ const Plugins = () => {
             <>
               <PageTitle>Gifts</PageTitle>
               <Gifts />
+            </>
+          }
+        />
+        <Route
+          path='/chat_plugin'
+          element={
+            <>
+              <PageTitle>Chat</PageTitle>
+              <ChatPlugin />
+            </>
+          }
+        />
+        <Route
+          path='/site_pricing_plugin'
+          element={
+            <>
+              <PageTitle>Site Pricing</PageTitle>
+              <SitePricingPlugin />
+            </>
+          }
+        />
+        <Route
+          path='/reward_plugin'
+          element={
+            <>
+              <PageTitle>Reward</PageTitle>
+              <RewardPlugin />
+            </>
+          }
+        />
+        <Route
+          path='/populars_plugin'
+          element={
+            <>
+              <PageTitle>Popular</PageTitle>
+              <PopularPlugin />
+            </>
+          }
+        />
+        <Route
+          path='/spotlight_plugin'
+          element={
+            <>
+              <PageTitle>Spotlight</PageTitle>
+              <SpotlightPlugin />
+            </>
+          }
+        />
+        <Route
+          path='/videocall_plugin'
+          element={
+            <>
+              <PageTitle>Videocall</PageTitle>
+              <VideocallPlugin />
+            </>
+          }
+        />
+        <Route
+          path='/legal_information_plugin'
+          element={
+            <>
+              <PageTitle>Legal Information</PageTitle>
+              <LegalInformationPlugin />
             </>
           }
         />

@@ -927,6 +927,57 @@ export const UpdatePopularStatusByUID = async (UID,days,isPopular) => {
   
 }
 
+export const AddOrUpdateCreditByUID = async (UID,type,credit) => {
+  try {
+  let accessToken = localStorage.getItem('accessToken')
+  let formData = new FormData()
+  formData = {
+    type : type,
+    credit : credit
+  }
+                   
+  const apiUrl = `${APIURL}/api/v1/web/users/${UID}/send/credit`
+
+  let response = await axios.put(apiUrl, formData, {
+    headers: {
+      'Content-Type': `application/json`,
+      'x-access-token': accessToken
+    }
+  })
+
+    return response.data
+  } catch (error) { 
+    return error.response.data
+  }
+  
+}
+
+export const AddOrUpdatePremiumByUID = async (UID,type,days,premiumPackageAmountId) => {
+  try {
+  let accessToken = localStorage.getItem('accessToken')
+  let formData = new FormData()
+  formData = {
+    type : type,
+    days : days,
+    premiumPackageAmountId:premiumPackageAmountId
+  }
+                   
+  const apiUrl = `${APIURL}/api/v1/web/users/${UID}/send/premium`
+
+  let response = await axios.put(apiUrl, formData, {
+    headers: {
+      'Content-Type': `application/json`,
+      'x-access-token': accessToken
+    }
+  })
+
+    return response.data
+  } catch (error) { 
+    return error.response.data
+  }
+  
+}
+
 /*For Chats */
 export const getMessagesByUserID = async (userID,chatroomID,page,pageSize) => {
   try {
@@ -1435,7 +1486,6 @@ export const CreateGift = async (name,categoryId,credit,giftFile) => {
       gift :giftFile
     }
 
-    console.log("formData",formData)
     
     let accessToken = localStorage.getItem('accessToken')  
     
@@ -1455,3 +1505,200 @@ export const CreateGift = async (name,categoryId,credit,giftFile) => {
     return error.message
   }
 }
+
+//master plugins
+
+export const getConfigurationByName = async (name) => {
+  try { 
+    let accessToken = localStorage.getItem('accessToken')  
+    const apiUrl = `${APIURL}/api/v1/masters/configurations/types/${name}`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const updateConfigurationByConfigID = async (ConfigID,values) => {
+  try {  
+    let accessToken = localStorage.getItem('accessToken')  
+   
+    const apiUrl = `${APIURL}/api/v1/masters/configurations/${ConfigID}`
+
+    let formData = new FormData()
+    formData = {
+      values  : JSON.stringify(values)
+    }
+
+    let response = await axios.post(apiUrl,formData, {
+      headers: {
+        'Content-Type': `multipart/form-data;`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+// site-pricing plugin
+
+export const getCreditPackageAmountPlans = async () => {
+  try { 
+    let accessToken = localStorage.getItem('accessToken')  
+    const apiUrl = `${APIURL}/api/v1/masters/packages/credits/amounts`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const CreateCreditPackageAmountPlan = async (credit,amount) => {
+  try { 
+    let accessToken = localStorage.getItem('accessToken')  
+    const apiUrl = `${APIURL}/api/v1/masters/packages/credits/amounts`
+
+    let formData = new FormData()
+    formData = {
+      credit : credit,
+      amount : amount
+    }
+
+    let response = await axios.post(apiUrl,formData, {
+      headers: {
+        'Content-Type': `application/x-www-form-urlencoded`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const updateCreditPackageAmountPlan = async (pkgId,credit,amount) => {
+  try { 
+    let accessToken = localStorage.getItem('accessToken')  
+    const apiUrl = `${APIURL}/api/v1/masters/packages/credits/amounts/${pkgId}`
+
+    let formData = new FormData()
+    formData = {
+      credit : credit,
+      amount : amount
+    }
+
+    let response = await axios.put(apiUrl,formData, {
+      headers: {
+        'Content-Type': `application/x-www-form-urlencoded`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const getPremiumPackageAmountPlans = async () => {
+  try { 
+    let accessToken = localStorage.getItem('accessToken')  
+    const apiUrl = `${APIURL}/api/v1/masters/packages/premium/amounts`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const CreatePremiumPackageAmountPlan = async (days,amount,pkgName) => {
+  try { 
+    let accessToken = localStorage.getItem('accessToken')  
+    const apiUrl = `${APIURL}/api/v1/masters/packages/premium/amounts`
+
+    let formData = new FormData()
+    formData = {
+      days : days,
+      amount : amount,
+      premiumPackageName : pkgName
+    }
+
+    let response = await axios.post(apiUrl,formData, {
+      headers: {
+        'Content-Type': `application/x-www-form-urlencoded`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const updatePremiumPackageAmountPlan = async (pkgId,days,amount,pkgName) => {
+  try { 
+    let accessToken = localStorage.getItem('accessToken')  
+    const apiUrl = `${APIURL}/api/v1/masters/packages/premium/amounts/${pkgId}`
+
+    let formData = new FormData()
+    formData = {
+      days : days,
+      amount : amount,
+      premiumPackageName : pkgName
+    }
+
+    let response = await axios.put(apiUrl,formData, {
+      headers: {
+        'Content-Type': `application/x-www-form-urlencoded`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+

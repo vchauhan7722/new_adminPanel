@@ -6,11 +6,15 @@ import {useIntl} from 'react-intl'
 import Accordion from 'react-bootstrap/Accordion'
 import {useEffect, useState} from 'react'
 import {
+  AddOrUpdateCreditByUID,
+  AddOrUpdatePremiumByUID,
   UpdatePopularStatusByUID,
   UpdateSpotlightStatusByUID,
   UpdateVerifyStatusByUID,
+  getPremiumPackageAmountPlans,
 } from '../../../../API/api-endpoint'
 import ToastUtils from '../../../../utils/ToastUtils'
+import {Form} from 'react-bootstrap'
 
 const ProfileHeader = (props) => {
   const {user, userProfilePercentage, setUserUpdateFlag, userUpdateFlag} = props
@@ -22,6 +26,13 @@ const ProfileHeader = (props) => {
 
   const [popularDays, setPopularDays] = useState(0)
   const [spotlightDays, setspotlightDays] = useState(0)
+  const [premiumAmountPackages, setPremiumAmountPackages] = useState<any>([])
+  const [addUpdateCredit, setAddUpdateCredit] = useState({credit: 0, type: 'add'})
+  const [addUpdatePremium, setaddUpdatePremium] = useState({days: 0, type: 'add', premiumId: 1})
+
+  useEffect(() => {
+    getPremiumAmountpackages()
+  }, [])
 
   const verifyUser = async () => {
     let result = await UpdateVerifyStatusByUID(UserID, !user?.isVerify)
@@ -62,6 +73,42 @@ const ProfileHeader = (props) => {
       })
     } else {
       ToastUtils({type: 'error', message: 'Something Went Wrong'})
+    }
+  }
+
+  const addOrUpdateCredit = async () => {
+    let result = await AddOrUpdateCreditByUID(UserID, addUpdateCredit.type, addUpdateCredit.credit)
+    if (result.status === 200) {
+      setAddUpdateCredit({credit: 0, type: 'add'})
+      setUserUpdateFlag(userUpdateFlag + 1)
+      ToastUtils({
+        type: 'success',
+        message: addUpdateCredit.type === 'add' ? 'User Credit is Added' : 'User Credit is Updated',
+      })
+    } else {
+      ToastUtils({type: 'error', message: 'Something Went Wrong'})
+    }
+  }
+
+  const addOrUpdatePremium = async () => {
+    let result = await AddOrUpdatePremiumByUID()
+    if (result.status === 200) {
+      setaddUpdatePremium({days: 0, type: 'add', premiumId: 1})
+      ToastUtils({
+        type: 'success',
+        message:
+          addUpdateCredit.type === 'add' ? 'User Premium is Added' : 'User Premium is Updated',
+      })
+      setUserUpdateFlag(userUpdateFlag + 1)
+    } else {
+      ToastUtils({type: 'error', message: 'Something Went Wrong'})
+    }
+  }
+
+  const getPremiumAmountpackages = async () => {
+    let result = await getPremiumPackageAmountPlans()
+    if (result.status === 200) {
+      setPremiumAmountPackages(result.data)
     }
   }
 
@@ -155,7 +202,12 @@ const ProfileHeader = (props) => {
 
                         {/* begin::Menu item */}
                         <div className='menu-item px-3'>
-                          <a className='menu-link px-3' data-kt-users-table-filter='delete_row'>
+                          <a
+                            className='menu-link px-3'
+                            data-kt-users-table-filter='delete_row'
+                            data-bs-toggle='modal'
+                            data-bs-target='#add_update_credit_for_user'
+                          >
                             Add/Update Credit
                           </a>
                         </div>
@@ -163,7 +215,12 @@ const ProfileHeader = (props) => {
 
                         {/* begin::Menu item */}
                         <div className='menu-item px-3'>
-                          <a className='menu-link px-3' data-kt-users-table-filter='delete_row'>
+                          <a
+                            className='menu-link px-3'
+                            data-kt-users-table-filter='delete_row'
+                            data-bs-toggle='modal'
+                            data-bs-target='#add_update_premium_for_user'
+                          >
                             Add/Update Premium
                           </a>
                         </div>
@@ -260,7 +317,9 @@ const ProfileHeader = (props) => {
                       <div className='border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3'>
                         <div className='d-flex align-items-center'>
                           <KTIcon iconName='arrow-down' className='fs-3 text-danger me-2' />
-                          <div className='fs-2 fw-bolder'>{user.isPremium ? 'Yes' : 'No'}</div>
+                          <div className='fs-2 fw-bolder'>
+                            {user.isPremium ? user?.userPurchasePlan[0]?.days + ' days' : 'No'}
+                          </div>
                         </div>
 
                         <div className='fw-bold fs-6 text-gray-400'>
@@ -313,20 +372,6 @@ const ProfileHeader = (props) => {
                       </div>
                     </div>
                   </div>
-
-                  {/* <div className='d-flex align-items-center w-200px w-sm-300px flex-column mt-3'>
-                    <div className='d-flex justify-content-between w-100 mt-auto mb-2'>
-                      <span className='fw-bold fs-6 text-gray-400'>Profile Compleation</span>
-                      <span className='fw-bolder fs-6'>50%</span>
-                    </div>
-                    <div className='h-5px mx-3 w-100 bg-light mb-3'>
-                      <div
-                        className='bg-success rounded h-5px'
-                        role='progressbar'
-                        style={{width: '50%'}}
-                      ></div>
-                    </div>
-                  </div> */}
                 </div>
               </div>
             </div>
@@ -563,7 +608,7 @@ const ProfileHeader = (props) => {
           </div>
         </div>
 
-        <div className='modal fade' tabIndex={-1} id='kt_modal_3'>
+        <div className='modal fade' tabIndex={-1} id='add_update_credit_for_user'>
           <div className='modal-dialog'>
             <div className='modal-content'>
               <div className='modal-header'>
@@ -577,26 +622,37 @@ const ProfileHeader = (props) => {
                 </div>
               </div>
               <div className='modal-body'>
-                {user.isPopular ? (
-                  'Current Left Days ' + user?.popularDays
-                ) : (
-                  <input
-                    placeholder='Enter Days'
-                    type='number'
-                    className={'form-control form-control-solid mb-3 mb-lg-0'}
-                    autoComplete='off'
-                    value={popularDays}
-                    onChange={(e) => setPopularDays(parseInt(e.target.value))}
-                  />
-                )}
-                {/* <input
-                  placeholder='Enter Days'
+                <input
+                  placeholder='Enter Credit'
                   type='number'
                   className={'form-control form-control-solid mb-3 mb-lg-0'}
                   autoComplete='off'
-                  value={popularDays}
-                  onChange={(e) => setPopularDays(parseInt(e.target.value))}
-                /> */}
+                  value={addUpdateCredit.credit}
+                  onChange={(e) =>
+                    setAddUpdateCredit({
+                      ...addUpdateCredit,
+                      credit: Math.abs(parseInt(e.target.value)),
+                    })
+                  }
+                />
+                <br />
+                <select
+                  className='form-select form-select-solid fw-bolder'
+                  data-kt-select2='true'
+                  data-placeholder='Select option'
+                  data-allow-clear='true'
+                  data-hide-search='true'
+                  defaultValue={addUpdateCredit.type}
+                  onChange={(e) =>
+                    setAddUpdateCredit({
+                      ...addUpdateCredit,
+                      type: e.target.value,
+                    })
+                  }
+                >
+                  <option value='add'>Add</option>
+                  <option value='update'>Update</option>
+                </select>
               </div>
               <div className='modal-footer'>
                 <button type='button' className='btn btn-light' data-bs-dismiss='modal'>
@@ -606,9 +662,119 @@ const ProfileHeader = (props) => {
                   type='button'
                   className='btn btn-primary'
                   data-bs-dismiss='modal'
-                  onClick={setAsPopular}
+                  onClick={addOrUpdateCredit}
                 >
-                  {user.isPopular ? 'Remove Popular' : 'Add To Popular'}
+                  Add / Update Credit
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className='modal fade' tabIndex={-1} id='add_update_premium_for_user'>
+          <div className='modal-dialog'>
+            <div className='modal-content'>
+              <div className='modal-header'>
+                <h5 className='modal-title'>Add/Update Premium </h5>
+                <div
+                  className='btn btn-icon btn-sm btn-active-light-primary ms-2'
+                  data-bs-dismiss='modal'
+                  aria-label='Close'
+                >
+                  <i className='fa-solid fa-xmark'></i>
+                </div>
+              </div>
+              <div className='modal-body'>
+                <div>
+                  <p>
+                    Current User Plan Name :-
+                    {user?.userPurchasePlan[0]?.premiumPackageAmountDetail?.premiumPackageName}
+                  </p>
+                  {/* <p>Premium package Id : {user?.userPurchasePlan[0].premiumPackageAmountId}</p> */}
+                  <p>Remaining Days : {user?.userPurchasePlan[0]?.days}</p>
+                </div>
+                <br />
+                <input
+                  placeholder='Enter days'
+                  type='number'
+                  className={'form-control form-control-solid mb-3 mb-lg-0'}
+                  autoComplete='off'
+                  value={addUpdatePremium.days}
+                  onChange={(e) =>
+                    setaddUpdatePremium({
+                      ...addUpdatePremium,
+                      days: Math.abs(parseInt(e.target.value)),
+                    })
+                  }
+                />
+                <br />
+                <select
+                  className='form-select form-select-solid fw-bolder'
+                  data-kt-select2='true'
+                  data-placeholder='Select option'
+                  data-allow-clear='true'
+                  data-hide-search='true'
+                  defaultValue={addUpdatePremium.type}
+                  onChange={(e) =>
+                    setaddUpdatePremium({
+                      ...addUpdatePremium,
+                      type: e.target.value,
+                    })
+                  }
+                >
+                  <option value='add'>Add</option>
+                  <option value='update'>Update</option>
+                </select>
+                <br />
+                <Form>
+                  <Form.Group>
+                    <div className='row'>
+                      {premiumAmountPackages.length !== 0 &&
+                        premiumAmountPackages.map((premiumAmountPackage: any) => (
+                          <div className='col-6'>
+                            <div
+                              key={`inline-${premiumAmountPackage.premiumPackageAmountId}`}
+                              className='mb-3'
+                            >
+                              <Form.Check
+                                type='radio'
+                                aria-label='radio 1'
+                                label={
+                                  <div>
+                                    <h4>{premiumAmountPackage.premiumPackageName}</h4>
+                                    <div className='d-flex justify-content-between'>
+                                      <h4>Rs. {premiumAmountPackage.amount}</h4>
+                                      <h4>{premiumAmountPackage.days} Days</h4>
+                                    </div>
+                                  </div>
+                                }
+                                value={premiumAmountPackage.premiumPackageAmountId}
+                                name='group1'
+                                onChange={(e) =>
+                                  setaddUpdatePremium({
+                                    ...addUpdatePremium,
+                                    premiumId: parseInt(e.target.value),
+                                  })
+                                }
+                              />
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  </Form.Group>
+                </Form>
+              </div>
+              <div className='modal-footer'>
+                <button type='button' className='btn btn-light' data-bs-dismiss='modal'>
+                  Close
+                </button>
+                <button
+                  type='button'
+                  className='btn btn-primary'
+                  data-bs-dismiss='modal'
+                  onClick={addOrUpdatePremium}
+                >
+                  Add / Update Premium
                 </button>
               </div>
             </div>

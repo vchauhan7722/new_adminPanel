@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, {FC, useEffect, useState, useRef, useCallback} from 'react'
+import {FC, useEffect, useState, useRef} from 'react'
 import clsx from 'clsx'
 import {toAbsoluteUrl} from '../../helpers'
 // import socket, {ws} from '../../../socketconfig'
@@ -9,6 +9,7 @@ import {DateTimeFormatter, TimeFormatter, sortData} from '../../../utils/Utils'
 import ToastUtils from '../../../utils/ToastUtils'
 import {fileToBase64} from '../../../utils/FileUtils'
 import InfiniteScroll from 'react-infinite-scroll-component'
+// react-infinite-scroll-component
 
 const ChatInner = (props: any) => {
   const {
@@ -18,11 +19,9 @@ const ChatInner = (props: any) => {
     giftList,
     setActionFlag,
     actionFlag,
-    CurrentUser,
   } = props
 
   const messagesEndRef = useRef<any>(null)
-  const chatContainerRef = useRef<HTMLDivElement>(null)
   const hiddenFileInput = useRef<HTMLInputElement>(document.createElement('input'))
 
   const currentUserId = parseInt(localStorage.getItem('userId') || '1')
@@ -30,14 +29,14 @@ const ChatInner = (props: any) => {
   const [message, setMessage] = useState<string>('')
   const [messageList, setMessageList] = useState<any>(undefined)
   const [page, setPage] = useState<any>(1)
-  const [pageSize, setPageSize] = useState<any>(10)
+  const [pageSize, setPageSize] = useState<any>(20)
   const [selectedGiftCategory, setSelectedGiftCategory] = useState<any>('all')
   const [selectedGift, setSelectedGift] = useState<any>(undefined)
   const [creditToSend, setCreditToSend] = useState<any>(1)
   const [ws, setWs] = useState<any>(null)
+  const [hasMoreItems, sethasMoreItems] = useState(true)
   const [totalPage, setTotalPage] = useState(0)
   const [totalMessageCount, setTotalMessageCount] = useState(0)
-  const [isLoading, setIsLoading] = useState(false)
 
   const dates = new Set()
 
@@ -59,7 +58,7 @@ const ChatInner = (props: any) => {
       process.env.REACT_APP_WEBSOCKET_SERVER_URL || 'ws://backend.profun.live'
     )
 
-    getchatList()
+    getchatList(page)
 
     ws1.addEventListener('open', () => {
       console.log('Connected to WebSocket server')
@@ -118,7 +117,7 @@ const ChatInner = (props: any) => {
 
   useEffect(() => {
     scrollToBottom()
-  }, [])
+  }, [messageList])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({behavior: 'smooth'})
@@ -139,7 +138,6 @@ const ChatInner = (props: any) => {
         )
       }
       setMessage('')
-      scrollToBottom()
       const element = window.document.getElementById('chatInput')
       if (element !== null) {
         element.autofocus = true
@@ -148,6 +146,14 @@ const ChatInner = (props: any) => {
   }
 
   const sendGift = () => {
+    // socket.emit('send_gift', {
+    //   senderId: receiverUserDetails.userId,
+    //   receiverId: currentUserId,
+    //   type: 'gift',
+    //   giftId: selectedGift.giftId,
+    //   chatRoomId: receiverUserDetails.chatRoomId,
+    //   chatId: receiverUserDetails.chatId,
+    // })
     ws.send(
       JSON.stringify({
         senderId: receiverUserDetails.userId,
@@ -185,29 +191,19 @@ const ChatInner = (props: any) => {
     }
   }
 
-  const getchatList = async () => {
+  const getchatList = async (pageNumber: any) => {
     let result = await getMessagesByUserID(
       receiverUserDetails.userId,
       receiverUserDetails.chatRoomId,
-      page,
+      pageNumber,
       pageSize
     )
 
     if (result.status === 200) {
-      let oldMessageArray
-      if (messageList !== undefined) {
-        oldMessageArray = [...messageList, ...result.data]
-      } else {
-        oldMessageArray = result.data
-      }
-      //let oldMessageArray = [messageList, ...result.data]
-      //console.log('oldMessageArray', messageList, oldMessageArray)
-      sessionStorage.setItem('messageList', JSON.stringify(oldMessageArray))
+      sessionStorage.setItem('messageList', JSON.stringify(result.data))
       setTotalPage(result.totalPage)
       setTotalMessageCount(result.count)
-      setMessageList(oldMessageArray)
-      setIsLoading(false)
-      //setMessageList([messageList, ...result.data])
+      setMessageList(result.data)
     }
   }
 
@@ -260,93 +256,67 @@ const ChatInner = (props: any) => {
     }
   }
 
-  const handleChatModuleScroll = useCallback(() => {
-    if (page <= totalPage) {
-      const chatContainer = chatContainerRef.current
-      if (chatContainer) {
-        if (chatContainer.scrollTop === 0 && !isLoading) {
-          // User has scrolled to the top, fetch more messages
-          //console.log('inside scrolling')
-          setPage((prev) => prev + 1)
-          setIsLoading(true)
-          //getchatList()
-        }
-      }
+  const handleRenderChat = async (pageNumber: any) => {
+    console.log('260')
+    if (page > totalPage) {
+      console.log('262', page, totalPage)
+      sethasMoreItems(false)
+      return
+    } else {
+      console.log('266', page, totalPage)
+      setPage(pageNumber)
+      setPageSize(pageSize + 10)
+      getchatList(pageNumber)
     }
-  }, [getchatList, isLoading])
+  }
 
-  useEffect(() => {
-    const chatContainer = chatContainerRef.current
-    if (chatContainer) {
-      chatContainer.addEventListener('scroll', handleChatModuleScroll)
-    }
-
-    return () => {
-      // Clean up the event listener when the component unmounts
-      if (chatContainer) {
-        chatContainer.removeEventListener('scroll', handleChatModuleScroll)
-      }
-    }
-  }, [handleChatModuleScroll])
-
-  useEffect(() => {
-    getchatList()
-  }, [page])
+  const fetchMoreData = () => {
+    // Simulating fetching more data when scrolling
+    const nextPage = Math.floor(messageList.length / pageSize) + 1
+    console.log(nextPage)
+    handleRenderChat(nextPage)
+  }
 
   return messageList === undefined ? (
-    <div className='d-flex justify-content-center'>
-      <div className='spinner-border' role='status'>
-        <span className='visually-hidden'>Loading...</span>
-      </div>
-    </div>
+    <div>Loading</div>
   ) : (
     <>
       {' '}
       <div className='card-header' id='kt_chat_messenger_header'>
         <div className='card-title'>
-          <div className='d-flex '>
-            <div className='symbol  symbol-36px symbol-circle me-3'>
-              <img
-                alt='Pic'
-                src={
-                  `${process.env.REACT_APP_SERVER_URL}/${receiverUserDetails?.profileImage}` ||
-                  toAbsoluteUrl(`/media/avatars/300-5.jpg`)
-                }
-              />
-            </div>
-
-            <div className='d-flex justify-content-center flex-column me-1'>
-              <div>
-                <a
-                  href='#'
-                  className='fs-4 fw-bolder text-gray-900 text-hover-primary me-1 mb-1 lh-1'
-                >
-                  {receiverUserDetails?.fullName}
-                </a>
-                <p className='fs-8'>
-                  {receiverUserDetails?.fullName} Message to {CurrentUser?.fullName}
-                </p>
-              </div>
-              {receiverUserDetails?.isOnline == '1' && (
-                <div className='mb-0 lh-1'>
-                  <span className='badge badge-success badge-circle w-10px h-10px me-1'></span>
-                  <span className='fs-7 fw-bold text-gray-400'>Active</span>
-                </div>
-              )}
-            </div>
-            {receiverUserDetails?.isPremium == '1' && (
-              <div className='ms-3'>
-                <img
-                  alt='Pic'
-                  src={toAbsoluteUrl(`/media/logos/Premiuim.png`)}
-                  width='17px'
-                  height='17px'
-                />
+          <div className='symbol-group symbol-hover'></div>
+          <div className='symbol  symbol-36px symbol-circle me-3'>
+            <img
+              alt='Pic'
+              src={
+                `${process.env.REACT_APP_SERVER_URL}/${receiverUserDetails?.profileImage}` ||
+                toAbsoluteUrl(`/media/avatars/300-5.jpg`)
+              }
+            />
+          </div>
+          <div className='d-flex justify-content-center flex-column me-1'>
+            <a href='#' className='fs-4 fw-bolder text-gray-900 text-hover-primary me-1 mb-1 lh-1'>
+              {receiverUserDetails?.fullName}
+            </a>
+            {receiverUserDetails?.isOnline == '1' && (
+              <div className='mb-0 lh-1'>
+                <span className='badge badge-success badge-circle w-10px h-10px me-1'></span>
+                <span className='fs-7 fw-bold text-gray-400'>Active</span>
               </div>
             )}
           </div>
+          {receiverUserDetails?.isPremium == '1' && (
+            <div className='ms-3'>
+              <img
+                alt='Pic'
+                src={toAbsoluteUrl(`/media/logos/Premiuim.png`)}
+                width='17px'
+                height='17px'
+              />
+            </div>
+          )}
 
-          <div className='ms-2'>
+          <div className='ms-3'>
             <img
               alt='Pic'
               src={toAbsoluteUrl(`/media/logos/Credits.png`)}
@@ -355,67 +325,25 @@ const ChatInner = (props: any) => {
             />
             <span className='text-muted fs-7 ms-3'>{receiverUserDetails?.totalCredit}</span>
           </div>
-
-          {/*send gift and credit start */}
-          <div className='d-flex ms-11'>
-            <div className='' data-bs-toggle='modal' data-bs-target='#kt_modal_credit'>
-              <img
-                alt='Pic'
-                src={toAbsoluteUrl(`/media/logos/Credits.png`)}
-                width='20px'
-                height='20px'
-              />
-            </div>
-            <div data-bs-toggle='modal' data-bs-target='#kt_modal_gift' className='me-5'>
-              <img
-                alt='Pic'
-                src={toAbsoluteUrl(`/media/logos/gift.png`)}
-                width='20px'
-                height='20px'
-              />
-            </div>
-          </div>
-          {/*send gift and credit end */}
-
-          {/* <div className='d-flex ms-5'>
-            <div className='d-flex justify-content-center flex-column me-1'>
-              <a
-                href='#'
-                className='fs-4 fw-bolder text-gray-900 text-hover-primary me-1 mb-1 lh-1'
-              >
-                {receiverUserDetails?.fullName}
-              </a>
-              {receiverUserDetails?.isOnline == '1' && (
-                <div className='mb-0 lh-1'>
-                  <span className='badge badge-success badge-circle w-10px h-10px me-1'></span>
-                  <span className='fs-7 fw-bold text-gray-400'>Active</span>
-                </div>
-              )}
-            </div>
-            {receiverUserDetails?.isPremium == '1' && (
-              <div className='ms-3'>
-                <img
-                  alt='Pic'
-                  src={toAbsoluteUrl(`/media/logos/Premiuim.png`)}
-                  width='17px'
-                  height='17px'
-                />
-              </div>
-            )}
-
-            <div className='symbol  symbol-36px symbol-circle me-3'>
-              <img
-                alt='Pic'
-                src={
-                  `${process.env.REACT_APP_SERVER_URL}/${receiverUserDetails?.profileImage}` ||
-                  toAbsoluteUrl(`/media/avatars/300-5.jpg`)
-                }
-              />
-            </div>
-          </div> */}
         </div>
 
         <div className='card-toolbar'>
+          <div className='me-3' data-bs-toggle='modal' data-bs-target='#kt_modal_credit'>
+            <img
+              alt='Pic'
+              src={toAbsoluteUrl(`/media/logos/Credits.png`)}
+              width='20px'
+              height='20px'
+            />
+          </div>
+          <div data-bs-toggle='modal' data-bs-target='#kt_modal_gift' className='me-5'>
+            <img
+              alt='Pic'
+              src={toAbsoluteUrl(`/media/logos/gift.png`)}
+              width='20px'
+              height='20px'
+            />
+          </div>
           <div className='d-flex my-4'>
             <div className='me-0'>
               <div className='dropdown'>
@@ -436,74 +364,120 @@ const ChatInner = (props: any) => {
           </div>
         </div>
       </div>
-      <div className='card-body' id={'kt_chat_messenger_body'}>
+      <div
+        className='card-body'
+        id={isDrawer ? 'kt_drawer_chat_messenger_body' : 'kt_chat_messenger_body'}
+      >
         <div
-          className='me-n5 pe-5' // scroll-y  {clsx('scroll-y me-n5 pe-5', {'h-300px h-lg-auto': !isDrawer})}
+          className='scroll-y me-n5 pe-5 h-450px' //{clsx('scroll-y me-n5 pe-5', {'h-300px h-lg-auto': !isDrawer})}
           data-kt-element='messages'
-          id='message_container'
-          ref={chatContainerRef}
-          style={{height: '450px', overflowY: 'auto'}}
-          //ref={chatModuleRef}
-          //data-kt-scroll='true'
-          // data-kt-scroll-activate='{default: false, lg: true}'
-          // data-kt-scroll-max-height='auto'
-          // data-kt-scroll-dependencies={
-          //   isDrawer
-          //     ? '#kt_drawer_chat_messenger_header, #kt_drawer_chat_messenger_footer'
-          //     : '#kt_header, #kt_app_header, #kt_app_toolbar, #kt_toolbar, #kt_footer, #kt_app_footer, #kt_chat_messenger_header, #kt_chat_messenger_footer'
-          // }
-          // data-kt-scroll-wrappers={
-          //   isDrawer
-          //     ? '#kt_drawer_chat_messenger_body'
-          //     : '#kt_content, #kt_app_content, #kt_chat_messenger_body'
-          // }
-          // data-kt-scroll-offset={isDrawer ? '0px' : '5px'}
+          data-kt-scroll='true'
+          data-kt-scroll-activate='{default: false, lg: true}'
+          data-kt-scroll-max-height='auto'
+          data-kt-scroll-dependencies={
+            isDrawer
+              ? '#kt_drawer_chat_messenger_header, #kt_drawer_chat_messenger_footer'
+              : '#kt_header, #kt_app_header, #kt_app_toolbar, #kt_toolbar, #kt_footer, #kt_app_footer, #kt_chat_messenger_header, #kt_chat_messenger_footer'
+          }
+          data-kt-scroll-wrappers={
+            isDrawer
+              ? '#kt_drawer_chat_messenger_body'
+              : '#kt_content, #kt_app_content, #kt_chat_messenger_body'
+          }
+          data-kt-scroll-offset={isDrawer ? '0px' : '5px'}
         >
-          {isLoading && (
-            <div className='d-flex justify-content-center'>
-              <div className='spinner-border' role='status'>
-                <span className='visually-hidden'>Loading...</span>
+          <InfiniteScroll
+            dataLength={totalMessageCount}
+            next={fetchMoreData}
+            hasMore={hasMoreItems}
+            loader={
+              <div className='d-flex justify-content-center'>
+                <div className='spinner-border' role='status'>
+                  <span className='visually-hidden'>Loading...</span>
+                </div>
               </div>
-            </div>
-          )}
-          {messageList
-            .sort((a: any, b: any) => {
-              return sortData(a.updatedAt, b.updatedAt)
-            })
-            //.reverse()
-            .map((message: any, index: any) => {
-              //const userInfo = userInfos[message.user]
-              const userType = currentUserId !== message.receiverId
-              const dateNum = DateTimeFormatter(message.updatedAt)
-              const state = userType ? 'info' : 'primary'
-              const templateAttr = {}
-              if (message.template) {
-                Object.defineProperty(templateAttr, 'data-kt-element', {
-                  value: `template-${message.type}`,
-                })
-              }
-              const contentClass = `${isDrawer ? '' : 'd-flex'} justify-content-${
-                userType ? 'start' : 'end'
-              } mb-10`
+            }
+            //scrollThreshold={250}
+            inverse={true}
+          >
+            {messageList
+              .sort((a: any, b: any) => {
+                return sortData(a.updatedAt, b.updatedAt)
+              })
+              //.reverse()
+              .map((message: any, index: any) => {
+                //const userInfo = userInfos[message.user]
+                const userType = currentUserId !== message.receiverId
+                const dateNum = DateTimeFormatter(message.updatedAt)
+                const state = userType ? 'info' : 'primary'
+                const templateAttr = {}
+                if (message.template) {
+                  Object.defineProperty(templateAttr, 'data-kt-element', {
+                    value: `template-${message.type}`,
+                  })
+                }
+                const contentClass = `${isDrawer ? '' : 'd-flex'} justify-content-${
+                  userType ? 'start' : 'end'
+                } mb-10`
 
-              return (
-                <>
-                  {dates.has(dateNum) ? null : renderDate(message, dateNum)}
-                  <div
-                    key={`message${index}`}
-                    className={clsx('d-flex', contentClass, 'mb-10', {
-                      'd-none': message.template,
-                    })}
-                    {...templateAttr}
-                  >
+                return (
+                  <>
+                    {dates.has(dateNum) ? null : renderDate(message, dateNum)}
                     <div
-                      className={clsx(
-                        'd-flex flex-column align-items',
-                        `align-items-${userType ? 'start' : 'end'}`
-                      )}
+                      key={`message${index}`}
+                      className={clsx('d-flex', contentClass, 'mb-10', {
+                        'd-none': message.template,
+                      })}
+                      {...templateAttr}
                     >
-                      {message.type === 'text' ? (
-                        <>
+                      <div
+                        className={clsx(
+                          'd-flex flex-column align-items',
+                          `align-items-${userType ? 'start' : 'end'}`
+                        )}
+                      >
+                        {message.type === 'text' ? (
+                          <>
+                            <div
+                              className={clsx(
+                                'rounded',
+                                `bg-light-${state}`,
+                                'text-dark fw-bold mw-lg-400px',
+                                `text-${userType ? 'start' : 'end'}`
+                              )}
+                              data-kt-element='message-text'
+                              //dangerouslySetInnerHTML={{__html: message.message}}
+                            >
+                              {' '}
+                              <div className='d-flex align-items-center ms-1 mt-1 me-1'>
+                                {userType ? (
+                                  <>
+                                    <div className='ms-3'>
+                                      <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start mb-3'>
+                                        {message.message}
+                                      </span>
+
+                                      <span className='text-muted fs-9 me-2'>
+                                        {TimeFormatter(message.updatedAt)}
+                                      </span>
+                                    </div>
+                                  </>
+                                ) : (
+                                  <>
+                                    <div className='ms-3 me-3'>
+                                      <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start '>
+                                        {message.message}
+                                      </span>
+                                      <span className='text-muted fs-9'>
+                                        {TimeFormatter(message.updatedAt)}
+                                      </span>
+                                    </div>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          </>
+                        ) : message.type === 'gift' ? (
                           <div
                             className={clsx(
                               'rounded',
@@ -512,7 +486,6 @@ const ChatInner = (props: any) => {
                               `text-${userType ? 'start' : 'end'}`
                             )}
                             data-kt-element='message-text'
-                            //dangerouslySetInnerHTML={{__html: message.message}}
                           >
                             {' '}
                             <div className='d-flex align-items-center ms-1 mt-1 me-1'>
@@ -520,9 +493,61 @@ const ChatInner = (props: any) => {
                                 <>
                                   <div className='ms-3'>
                                     <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start mb-3'>
-                                      {message.message}
+                                      <img
+                                        alt='Pic'
+                                        src={`${process.env.REACT_APP_SERVER_URL}/${message?.giftDetail?.icon}`}
+                                        width='50px'
+                                        height='50px'
+                                      />
                                     </span>
 
+                                    <span className='text-muted fs-9 me-2'>
+                                      {TimeFormatter(message?.giftDetail?.updatedAt)}
+                                    </span>
+                                  </div>
+                                </>
+                              ) : (
+                                <>
+                                  <div className='ms-3 me-3'>
+                                    <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start '>
+                                      <img
+                                        alt='Pic'
+                                        src={`${process.env.REACT_APP_SERVER_URL}/${message?.giftDetail?.icon}`}
+                                        width='50px'
+                                        height='50px'
+                                      />
+                                    </span>
+                                    <span className='text-muted fs-9'>
+                                      {TimeFormatter(message?.giftDetail?.updatedAt)}
+                                    </span>
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        ) : message.type === 'media' ? (
+                          <div
+                            className={clsx(
+                              'rounded',
+                              `bg-light-${state}`,
+                              'text-dark fw-bold mw-lg-400px',
+                              `text-${userType ? 'start' : 'end'}`
+                            )}
+                            data-kt-element='message-text'
+                          >
+                            {' '}
+                            <div className='d-flex align-items-center ms-1 mt-1 me-1'>
+                              {userType ? (
+                                <>
+                                  <div className='ms-3'>
+                                    <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start mb-3'></span>
+                                    <img
+                                      alt='Pic'
+                                      src={`${process.env.REACT_APP_SERVER_URL}/${message.message}`}
+                                      width='100px'
+                                      height='100px'
+                                      className='me-2'
+                                    />{' '}
                                     <span className='text-muted fs-9 me-2'>
                                       {TimeFormatter(message.updatedAt)}
                                     </span>
@@ -532,7 +557,13 @@ const ChatInner = (props: any) => {
                                 <>
                                   <div className='ms-3 me-3'>
                                     <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start '>
-                                      {message.message}
+                                      <img
+                                        alt='Pic'
+                                        src={`${process.env.REACT_APP_SERVER_URL}/${message.message}`}
+                                        width='100px'
+                                        height='100px'
+                                        className='me-2'
+                                      />
                                     </span>
                                     <span className='text-muted fs-9'>
                                       {TimeFormatter(message.updatedAt)}
@@ -542,159 +573,63 @@ const ChatInner = (props: any) => {
                               )}
                             </div>
                           </div>
-                        </>
-                      ) : message.type === 'gift' ? (
-                        <div
-                          className={clsx(
-                            'rounded',
-                            `bg-light-${state}`,
-                            'text-dark fw-bold mw-lg-400px',
-                            `text-${userType ? 'start' : 'end'}`
-                          )}
-                          data-kt-element='message-text'
-                        >
-                          {' '}
-                          <div className='d-flex align-items-center ms-1 mt-1 me-1'>
-                            {userType ? (
-                              <>
-                                <div className='ms-3'>
-                                  <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start mb-3'>
-                                    <img
-                                      alt='Pic'
-                                      src={`${process.env.REACT_APP_SERVER_URL}/${message?.giftDetail?.icon}`}
-                                      width='50px'
-                                      height='50px'
-                                    />
-                                  </span>
-
-                                  <span className='text-muted fs-9 me-2'>
-                                    {TimeFormatter(message?.giftDetail?.updatedAt)}
-                                  </span>
-                                </div>
-                              </>
-                            ) : (
-                              <>
-                                <div className='ms-3 me-3'>
-                                  <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start '>
-                                    <img
-                                      alt='Pic'
-                                      src={`${process.env.REACT_APP_SERVER_URL}/${message?.giftDetail?.icon}`}
-                                      width='50px'
-                                      height='50px'
-                                    />
-                                  </span>
-                                  <span className='text-muted fs-9'>
-                                    {TimeFormatter(message?.giftDetail?.updatedAt)}
-                                  </span>
-                                </div>
-                              </>
+                        ) : (
+                          <div
+                            className={clsx(
+                              'rounded',
+                              `bg-light-${state}`,
+                              'text-dark fw-bold mw-lg-400px',
+                              `text-${userType ? 'start' : 'end'}`
                             )}
-                          </div>
-                        </div>
-                      ) : message.type === 'media' ? (
-                        <div
-                          className={clsx(
-                            'rounded',
-                            `bg-light-${state}`,
-                            'text-dark fw-bold mw-lg-400px',
-                            `text-${userType ? 'start' : 'end'}`
-                          )}
-                          data-kt-element='message-text'
-                        >
-                          {' '}
-                          <div className='d-flex align-items-center ms-1 mt-1 me-1'>
-                            {userType ? (
-                              <>
-                                <div className='ms-3'>
-                                  <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start mb-3'></span>
-                                  <img
-                                    alt='Pic'
-                                    src={`${process.env.REACT_APP_SERVER_URL}/${message.message}`}
-                                    width='100px'
-                                    height='100px'
-                                    className='me-2'
-                                  />{' '}
-                                  <span className='text-muted fs-9 me-2'>
-                                    {TimeFormatter(message.updatedAt)}
-                                  </span>
-                                </div>
-                              </>
-                            ) : (
-                              <>
-                                <div className='ms-3 me-3'>
-                                  <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start '>
-                                    <img
-                                      alt='Pic'
-                                      src={`${process.env.REACT_APP_SERVER_URL}/${message.message}`}
-                                      width='100px'
-                                      height='100px'
-                                      className='me-2'
-                                    />
-                                  </span>
-                                  <span className='text-muted fs-9'>
-                                    {TimeFormatter(message.updatedAt)}
-                                  </span>
-                                </div>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      ) : (
-                        <div
-                          className={clsx(
-                            'rounded',
-                            `bg-light-${state}`,
-                            'text-dark fw-bold mw-lg-400px',
-                            `text-${userType ? 'start' : 'end'}`
-                          )}
-                          data-kt-element='message-text'
-                        >
-                          {' '}
-                          <div className='d-flex align-items-center ms-1 mt-1 me-1'>
-                            {userType ? (
-                              <>
-                                <div className='ms-3'>
-                                  <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start mb-3'></span>
-                                  <img
-                                    alt='Pic'
-                                    src={toAbsoluteUrl(`/media/logos/Credits.png`)}
-                                    width='20px'
-                                    height='20px'
-                                    className='me-2'
-                                  />{' '}
-                                  {message.message} Credits
-                                  <span className='text-muted fs-9 ms-1 me-2'>
-                                    {TimeFormatter(message.updatedAt)}
-                                  </span>
-                                </div>
-                              </>
-                            ) : (
-                              <>
-                                <div className='ms-3 me-3'>
-                                  <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start '>
+                            data-kt-element='message-text'
+                          >
+                            {' '}
+                            <div className='d-flex align-items-center ms-1 mt-1 me-1'>
+                              {userType ? (
+                                <>
+                                  <div className='ms-3'>
+                                    <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start mb-3'></span>
                                     <img
                                       alt='Pic'
                                       src={toAbsoluteUrl(`/media/logos/Credits.png`)}
                                       width='20px'
                                       height='20px'
                                       className='me-2'
-                                    />
+                                    />{' '}
                                     {message.message} Credits
-                                  </span>
-                                  <span className='text-muted  fs-9'>
-                                    {TimeFormatter(message.updatedAt)}
-                                  </span>
-                                </div>
-                              </>
-                            )}
+                                    <span className='text-muted fs-9 ms-1 me-2'>
+                                      {TimeFormatter(message.updatedAt)}
+                                    </span>
+                                  </div>
+                                </>
+                              ) : (
+                                <>
+                                  <div className='ms-3 me-3'>
+                                    <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start '>
+                                      <img
+                                        alt='Pic'
+                                        src={toAbsoluteUrl(`/media/logos/Credits.png`)}
+                                        width='20px'
+                                        height='20px'
+                                        className='me-2'
+                                      />
+                                      {message.message} Credits
+                                    </span>
+                                    <span className='text-muted  fs-9'>
+                                      {TimeFormatter(message.updatedAt)}
+                                    </span>
+                                  </div>
+                                </>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </>
-              )
-            })}
+                  </>
+                )
+              })}
+          </InfiniteScroll>
 
           <div ref={messagesEndRef} />
         </div>

@@ -58,6 +58,15 @@ const useQueryResponseData = () => {
   return response?.data || []
 }
 
+const useQueryResponseUserCount = () => {
+  const {response} = useQueryResponse()
+  if (!response) {
+    return []
+  }
+
+  return response?.count || []
+}
+
 const useQueryResponsePagination = () => {
   const defaultPaginationState: PaginationState = {
     links: [],
@@ -112,4 +121,5 @@ export {
   useQueryResponseData,
   useQueryResponsePagination,
   useQueryResponseLoading,
+  useQueryResponseUserCount,
 }

@@ -113,7 +113,7 @@ const ProfilePage = () => {
               <PageTitle breadcrumbs={profileBreadCrumbs}>
                 {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.CHAT'})}
               </PageTitle>
-              <Chat />
+              <Chat CurrentUser={userDetails} />
               {/* <h1>Chat</h1> */}
             </>
           }

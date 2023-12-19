@@ -2,8 +2,10 @@
 import {useEffect, useState} from 'react'
 import {initialQueryState, KTIcon, useDebounce} from '../../../../../../../_metronic/helpers'
 import {useQueryRequest} from '../../core/QueryRequestProvider'
+import {useQueryResponseUserCount} from '../../core/QueryResponseProvider'
 
 const UsersListSearchComponent = () => {
+  const count = useQueryResponseUserCount()
   const {updateState} = useQueryRequest()
   const [searchTerm, setSearchTerm] = useState<string>('')
 
@@ -34,6 +36,9 @@ const UsersListSearchComponent = () => {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
       />
+      <div className='ms-5'>
+        <p className='m-4 fs-6 fw-bold'> Search result {count || 0} users</p>
+      </div>
     </div>
   )
 }

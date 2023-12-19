@@ -41,6 +41,7 @@ const Gifts = () => {
     let result = await getAllGift()
     if (result.status === 200) {
       const groupedGifts: any = groupGiftsByCategoryId(result.data)
+      console.log('groupedGifts', groupedGifts)
       setGiftList(groupedGifts)
     }
   }

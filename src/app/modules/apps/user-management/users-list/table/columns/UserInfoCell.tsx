@@ -8,7 +8,7 @@ type Props = {
   user: User
 }
 
-const UserInfoCell: FC<Props> = ({user}) => (
+const UserInfoCell = ({user}) => (
   <div className='d-flex align-items-center'>
     {/* begin:: Avatar */}
 
@@ -18,7 +18,7 @@ const UserInfoCell: FC<Props> = ({user}) => (
           `${process.env.REACT_APP_SERVER_URL}/${user?.profileImage}` ||
           `https://preview.keenthemes.com/metronic8/react/demo1//media/avatars/300-6.jpg`
         }
-        alt={user.userName}
+        alt={user?.userName}
         width='50px'
         height='50px'
       />
