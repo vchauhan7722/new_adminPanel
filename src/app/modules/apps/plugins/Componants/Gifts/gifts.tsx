@@ -1,6 +1,12 @@
 import React, {useEffect, useRef, useState} from 'react'
 import GiftsCategory from './GiftsCategory'
-import {CreateGift, getAllGift} from '../../../../../../API/api-endpoint'
+import {
+  CreateGift,
+  deleteGifts,
+  getAllGift,
+  getAllGiftCategory,
+  updateGifts,
+} from '../../../../../../API/api-endpoint'
 import {toAbsoluteUrl} from '../../../../../../_metronic/helpers'
 import clsx from 'clsx'
 import ToastUtils from '../../../../../../utils/ToastUtils'
@@ -8,41 +14,27 @@ import ToastUtils from '../../../../../../utils/ToastUtils'
 const Gifts = () => {
   const hiddenFileInput = useRef<HTMLInputElement>(document.createElement('input'))
 
-  const [giftList, setGiftList] = useState([])
+  const [giftList, setGiftList] = useState<any>([])
   const [currentImageTempPath, setCurrentImageTempPath] = useState<any>('')
   const [isImageUploaded, setisImageUploaded] = useState<any>(false)
   const [file, setFile] = useState('')
   const [giftName, setGiftName] = useState('')
   const [giftCredit, setGiftCredit] = useState(1)
+  const [giftId, setGiftId] = useState('')
   const [selectedGiftCategoryID, setSelectedGiftCategoryID] = useState(0)
+  const [getGiftsOnCategoryChange, setGetGiftsOnCategoryChange] = useState(1)
+  const [IsEditGift, setIsEditGift] = useState(false)
 
   useEffect(() => {
     getAllGiftsList()
-  }, [])
-
-  const groupGiftsByCategoryId = (gifts) => {
-    const groupedGifts = {}
-
-    gifts.forEach((gift) => {
-      const categoryId = gift.giftCategoryId
-
-      if (!groupedGifts[categoryId]) {
-        groupedGifts[categoryId] = []
-      }
-
-      groupedGifts[categoryId].push(gift)
-    })
-
-    // Convert the object values to an array
-    return Object.values(groupedGifts)
-  }
+  }, [getGiftsOnCategoryChange])
 
   const getAllGiftsList = async () => {
     let result = await getAllGift()
+    console.log('result')
     if (result.status === 200) {
-      const groupedGifts: any = groupGiftsByCategoryId(result.data)
-      console.log('groupedGifts', groupedGifts)
-      setGiftList(groupedGifts)
+      //const groupedGifts: any = groupGiftsByCategoryId(result.data)
+      setGiftList(result.data)
     }
   }
 
@@ -77,23 +69,57 @@ const Gifts = () => {
     }
   }
 
+  const deleteGift = async () => {
+    let result = await deleteGifts(selectedGiftCategoryID, giftId)
+    if (result.status === 200) {
+      getAllGiftsList()
+      ToastUtils({type: 'success', message: 'Gift Is Deleted'})
+    } else {
+      ToastUtils({type: 'error', message: 'Something Went Wrong'})
+    }
+  }
+
+  const updateGift = async () => {
+    if (giftName.trim().length === 0 || giftCredit === 0) {
+      ToastUtils({type: 'error', message: 'Please Fill All Data'})
+    } else {
+      let result = await updateGifts(giftName, selectedGiftCategoryID, giftCredit, file, giftId)
+      if (result.status === 200) {
+        getAllGiftsList()
+        ToastUtils({type: 'success', message: 'Gift Is Updated'})
+        setGiftCredit(1)
+        setGiftName('')
+        setFile('')
+        setCurrentImageTempPath('')
+        setisImageUploaded(false)
+      } else {
+        ToastUtils({type: 'error', message: 'Something Went Wrong'})
+      }
+    }
+  }
+
   return (
     <>
       <div className='mb-5'>
-        <GiftsCategory />
+        <GiftsCategory
+          setGetGiftsOnCategoryChange={setGetGiftsOnCategoryChange}
+          getGiftsOnCategoryChange={getGiftsOnCategoryChange}
+        />
       </div>
       {giftList.map((giftcategory: any, index: any) => {
         return (
           <div className='card mb-5' key={index}>
             <div className='card-title p-4'>
-              <h4>{giftcategory[index + 1]?.giftsCategory?.name}</h4>
+              <h4>{giftcategory?.name}</h4>
             </div>
             <div className='card-body row d-flex p-4 '>
               <div
                 className='col-1'
                 data-bs-toggle='modal'
                 data-bs-target='#gift_model'
-                onClick={() => setSelectedGiftCategoryID(giftcategory[index + 1].giftCategoryId)}
+                onClick={() => {
+                  setSelectedGiftCategoryID(giftcategory?.giftCategoryId)
+                }}
               >
                 <img
                   src={toAbsoluteUrl('/media/plugins/jstree/add.png')}
@@ -103,10 +129,23 @@ const Gifts = () => {
                 />
               </div>
 
-              {giftcategory.map((gift: any, index: any) => {
+              {giftcategory?.gifts.map((gift: any, index: any) => {
                 return (
                   <>
-                    <div className='col-1'>
+                    <div
+                      className='col-1'
+                      data-bs-toggle='modal'
+                      data-bs-target='#gift_model'
+                      onClick={() => {
+                        setIsEditGift(true)
+                        setSelectedGiftCategoryID(giftcategory?.giftCategoryId)
+                        setGiftId(gift?.giftId)
+                        setGiftName(gift?.name)
+                        setGiftCredit(gift?.credit)
+                        setCurrentImageTempPath(`${process.env.REACT_APP_SERVER_URL}/${gift?.icon}`)
+                        setisImageUploaded(true)
+                      }}
+                    >
                       <img
                         src={`${process.env.REACT_APP_SERVER_URL}/${gift.icon}`}
                         height={82}
@@ -143,19 +182,17 @@ const Gifts = () => {
         <div className='modal-dialog'>
           <div className='modal-content'>
             <div className='modal-header'>
-              <h5 className='modal-title'>Add Gifts</h5>
-              <div
-                className='btn btn-icon btn-sm btn-active-light-primary ms-2'
-                data-bs-dismiss='modal'
-                aria-label='Close'
-              >
-                <i className='fa-solid fa-xmark'></i>
-              </div>
+              <h5 className='modal-title'>{IsEditGift ? 'Update Gift' : 'Add Gifts'}</h5>
             </div>
             <div className='modal-body'>
               <div className='d-flex align-items-center '>
                 <div className='symbol symbol-50px overflow-visible me-3'>
-                  <div onClick={() => handleClick()}>
+                  <div
+                    onClick={() => {
+                      handleClick()
+                      setisImageUploaded(false)
+                    }}
+                  >
                     <img
                       src={
                         !isImageUploaded
@@ -203,16 +240,43 @@ const Gifts = () => {
               </div>
             </div>
             <div className='modal-footer'>
-              <button type='button' className='btn btn-light' data-bs-dismiss='modal'>
+              <button
+                type='button'
+                className='btn btn-light'
+                data-bs-dismiss='modal'
+                onClick={() => {
+                  setIsEditGift(false)
+                  setSelectedGiftCategoryID(0)
+                  setGiftId('')
+                  setGiftName('')
+                  setGiftCredit(1)
+                  setCurrentImageTempPath('')
+                  setisImageUploaded(false)
+                }}
+              >
                 Close
               </button>
+              {IsEditGift && (
+                <button
+                  type='button'
+                  className='btn btn-danger'
+                  data-bs-dismiss='modal'
+                  onClick={() => {
+                    deleteGift()
+                  }}
+                >
+                  Delete Gift
+                </button>
+              )}
               <button
                 type='button'
                 className='btn btn-primary'
                 data-bs-dismiss='modal'
-                onClick={createGift}
+                onClick={() => {
+                  IsEditGift ? updateGift() : createGift()
+                }}
               >
-                Add
+                {IsEditGift ? 'Update Gift' : 'Add Gifts'}
               </button>
             </div>
           </div>

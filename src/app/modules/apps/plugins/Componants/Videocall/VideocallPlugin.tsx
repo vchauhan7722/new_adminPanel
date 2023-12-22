@@ -7,29 +7,39 @@ import ToastUtils from '../../../../../../utils/ToastUtils'
 
 const VideocallPlugin = () => {
   const [configID, setConfigId] = useState(0)
-  const [spotlightConfig, setSpotlightConfig] = useState<any>({
-    credit: 0,
-    duration: 0,
-    autoWorldwide: false,
-    spotLightArea: 'city',
+  const [videoCallConfig, setVideocallConfig] = useState<any>({
+    isEnabled: true, //Enable videocalling
+    creditPerMin: 2, //Charge credits per minutes
+    allowFreeUser: true, //Allow free users to videocall
+    isCreditDeduct: true, //Enable credits per minute
+    isTransferCredit: true, //Transfer videocall credits
+    transferCreditPercentage: 100,
+    allowForOnlyMatchedProfile: true,
+    isVideoCallRecordEnabled: false,
+    recordVideocallSpecificGender: 1,
+    IsRecordedVideocallUploadToAmazonS3: false,
   })
 
-  //   useEffect(() => {
-  //     getConfiguration()
-  //   }, [])
+  useEffect(() => {
+    getConfiguration()
+  }, [])
 
   const handleChange = (event: any) => {
     let name = event.target.name
     let value = event.target.checked
 
-    if (name !== 'autoWorldwide') {
-      setSpotlightConfig({...spotlightConfig, [name]: event.target.value})
+    if (
+      name === 'creditPerMin' ||
+      name === 'transferCreditPercentage' ||
+      name === 'recordVideocallSpecificGender'
+    ) {
+      setVideocallConfig({...videoCallConfig, [name]: event.target.value})
       if (event.target.value.length !== 0) {
-        updateConfiguration({...spotlightConfig, [name]: event.target.value})
+        updateConfiguration({...videoCallConfig, [name]: event.target.value})
       }
     } else {
-      setSpotlightConfig({...spotlightConfig, [name]: value})
-      updateConfiguration({...spotlightConfig, [name]: value})
+      setVideocallConfig({...videoCallConfig, [name]: value})
+      updateConfiguration({...videoCallConfig, [name]: value})
     }
   }
 
@@ -38,18 +48,23 @@ const VideocallPlugin = () => {
     if (result.status === 200) {
       let parsedData = JSON.parse(result.data.values)
       setConfigId(result.data.id)
-      setSpotlightConfig({
-        credit: parsedData?.credit,
-        duration: parsedData?.duration,
-        autoWorldwide: parsedData?.autoWorldwide,
-        spotLightArea: parsedData?.spotLightArea,
+      setVideocallConfig({
+        isEnabled: parsedData?.isEnabled,
+        creditPerMin: parsedData?.creditPerMin,
+        allowFreeUser: parsedData?.allowFreeUser,
+        isCreditDeduct: parsedData?.isCreditDeduct,
+        isTransferCredit: parsedData?.isTransferCredit,
+        transferCreditPercentage: parsedData?.transferCreditPercentage,
+        allowForOnlyMatchedProfile: parsedData?.allowForOnlyMatchedProfile,
+        isVideoCallRecordEnabled: parsedData?.isVideoCallRecordEnabled,
+        recordVideocallSpecificGender: parsedData?.recordVideocallSpecificGender,
+        IsRecordedVideocallUploadToAmazonS3: parsedData?.IsRecordedVideocallUploadToAmazonS3,
       })
     }
   }
 
   const updateConfiguration = async (config: any) => {
-    //console.log('config', config)
-    let result = await updateConfigurationByConfigID(configID, config)
+    let result = await updateConfigurationByConfigID(configID, config, null)
     if (result.status === 200) {
       getConfiguration()
       ToastUtils({type: 'success', message: 'Configuration Saved SuccessFully'})
@@ -78,8 +93,8 @@ const VideocallPlugin = () => {
                 type='checkbox'
                 role='switch'
                 id='flexSwitchCheckDefault'
-                name='autoWorldwide'
-                checked={spotlightConfig.autoWorldwide}
+                name='isEnabled'
+                checked={videoCallConfig.isEnabled}
                 onChange={(event) => handleChange(event)}
               />
             </div>
@@ -101,8 +116,8 @@ const VideocallPlugin = () => {
                 type='checkbox'
                 role='switch'
                 id='flexSwitchCheckDefault'
-                name='autoWorldwide'
-                checked={spotlightConfig.autoWorldwide}
+                name='allowFreeUser'
+                checked={videoCallConfig.allowFreeUser}
                 onChange={(event) => handleChange(event)}
               />
             </div>
@@ -123,8 +138,8 @@ const VideocallPlugin = () => {
                 type='checkbox'
                 role='switch'
                 id='flexSwitchCheckDefault'
-                name='autoWorldwide'
-                checked={spotlightConfig.autoWorldwide}
+                name='isCreditDeduct'
+                checked={videoCallConfig.isCreditDeduct}
                 onChange={(event) => handleChange(event)}
               />
             </div>
@@ -142,13 +157,56 @@ const VideocallPlugin = () => {
           <div className='col-lg-8 card-form__body card-body d-flex align-items-center bg-white'>
             <div className='flex'>
               <label className='form-check-label' htmlFor='flexSwitchCheckDefault'>
-                AMOUNT OF CREDITS
+                Amount Of Credit
               </label>
               <input
                 type='number'
                 className='form-control'
-                name='duration'
-                value={spotlightConfig.duration}
+                name='creditPerMin'
+                value={videoCallConfig.creditPerMin}
+                onChange={(event) => handleChange(event)}
+              />
+            </div>
+          </div>
+
+          <div className='col-lg-4 card-body bg-light'>
+            <p>
+              <strong className='headings-color'>Transfer Credit Percentage</strong>
+            </p>
+            <p className='text-muted'>
+              Its Transfer Only That Percentage which You Have Entered Here
+            </p>
+          </div>
+          <div className='col-lg-8 card-form__body card-body d-flex align-items-center bg-white'>
+            <div className='flex'>
+              <label className='form-check-label' htmlFor='flexSwitchCheckDefault'>
+                Credit Percentage
+              </label>
+              <input
+                type='number'
+                className='form-control'
+                name='transferCreditPercentage'
+                value={videoCallConfig.transferCreditPercentage}
+                onChange={(event) => handleChange(event)}
+              />
+            </div>
+          </div>
+
+          <div className='col-lg-4 card-body bg-light'>
+            <p>
+              <strong className='headings-color'>Allow For Only Matched Profile</strong>
+            </p>
+            <p className='text-muted'>If true then its allow video call when profile are matched</p>
+          </div>
+          <div className='col-lg-8 card-form__body card-body d-flex align-items-center bg-white'>
+            <div className='form-check form-switch'>
+              <input
+                className='form-check-input'
+                type='checkbox'
+                role='switch'
+                id='flexSwitchCheckDefault'
+                name='allowForOnlyMatchedProfile'
+                checked={videoCallConfig.allowForOnlyMatchedProfile}
                 onChange={(event) => handleChange(event)}
               />
             </div>
@@ -169,8 +227,8 @@ const VideocallPlugin = () => {
                 type='checkbox'
                 role='switch'
                 id='flexSwitchCheckDefault'
-                name='autoWorldwide'
-                checked={spotlightConfig.autoWorldwide}
+                name='isTransferCredit'
+                checked={videoCallConfig.isTransferCredit}
                 onChange={(event) => handleChange(event)}
               />
             </div>
@@ -189,8 +247,8 @@ const VideocallPlugin = () => {
                 type='checkbox'
                 role='switch'
                 id='flexSwitchCheckDefault'
-                name='autoWorldwide'
-                checked={spotlightConfig.autoWorldwide}
+                name='isVideoCallRecordEnabled'
+                checked={videoCallConfig.isVideoCallRecordEnabled}
                 onChange={(event) => handleChange(event)}
               />
             </div>
@@ -212,14 +270,14 @@ const VideocallPlugin = () => {
                 data-placeholder='Select option'
                 data-allow-clear='true'
                 data-hide-search='true'
-                //defaultValue={spotlightConfig.search}
-                name='spotLightArea'
-                value={spotlightConfig.spotLightArea}
+                //defaultValue={videoCallConfig.search}
+                name='recordVideocallSpecificGender'
+                value={videoCallConfig.recordVideocallSpecificGender}
                 onChange={(event) => handleChange(event)}
               >
-                <option value='all genders'>All Genders</option>
-                <option value='1'>Male</option>
-                <option value='2'>Female</option>
+                <option value={0}>All Genders</option>
+                <option value={1}>Male</option>
+                <option value={2}>Female</option>
               </select>
             </div>
           </div>
@@ -240,8 +298,8 @@ const VideocallPlugin = () => {
                 type='checkbox'
                 role='switch'
                 id='flexSwitchCheckDefault'
-                name='autoWorldwide'
-                checked={spotlightConfig.autoWorldwide}
+                name='IsRecordedVideocallUploadToAmazonS3'
+                checked={videoCallConfig.IsRecordedVideocallUploadToAmazonS3}
                 onChange={(event) => handleChange(event)}
               />
             </div>

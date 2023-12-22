@@ -100,6 +100,9 @@ const ChatInner = (props: any) => {
         // Store the updated messages in sessionStorage and update state
         sessionStorage.setItem('messageList', JSON.stringify(updatedMessages))
         setMessageList(updatedMessages)
+        setTimeout(() => {
+          scrollToBottom()
+        }, 500)
       } else if (JsonMessageData.message === "User doesn't have credit") {
         ToastUtils({type: 'error', message: JsonMessageData.message})
       }
@@ -139,7 +142,7 @@ const ChatInner = (props: any) => {
         )
       }
       setMessage('')
-      scrollToBottom()
+
       const element = window.document.getElementById('chatInput')
       if (element !== null) {
         element.autofocus = true
@@ -518,7 +521,7 @@ const ChatInner = (props: any) => {
                             <div className='d-flex align-items-center ms-1 mt-1 me-1'>
                               {userType ? (
                                 <>
-                                  <div className='ms-3'>
+                                  <div className='ms-3' style={{width: '95%'}}>
                                     <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start mb-3'>
                                       {message.message}
                                     </span>
@@ -530,7 +533,7 @@ const ChatInner = (props: any) => {
                                 </>
                               ) : (
                                 <>
-                                  <div className='ms-3 me-3'>
+                                  <div className='ms-3 me-3' style={{width: '95%'}}>
                                     <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start '>
                                       {message.message}
                                     </span>
@@ -553,7 +556,6 @@ const ChatInner = (props: any) => {
                           )}
                           data-kt-element='message-text'
                         >
-                          {' '}
                           <div className='d-flex align-items-center ms-1 mt-1 me-1'>
                             {userType ? (
                               <>
@@ -574,7 +576,7 @@ const ChatInner = (props: any) => {
                               </>
                             ) : (
                               <>
-                                <div className='ms-3 me-3'>
+                                <div className='ms-3 me-3 '>
                                   <span className='text-dark fw-bold fs-6 mw-lg-400px me-4 text-start '>
                                     <img
                                       alt='Pic'

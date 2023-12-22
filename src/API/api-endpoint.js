@@ -978,6 +978,49 @@ export const AddOrUpdatePremiumByUID = async (UID,type,days,premiumPackageAmount
   
 }
 
+export const getSpotlightUsers = async (Page,pageSize) => {
+  try {
+  let accessToken = localStorage.getItem('accessToken')
+ 
+                   
+  const apiUrl = `${APIURL}/api/v1/web/users/spotlight?page=${Page}&pageSize=${pageSize}&userType=normalUser`
+
+  let response = await axios.get(apiUrl, {
+    headers: {
+      'Content-Type': `application/json`,
+      'x-access-token': accessToken
+    }
+  })
+
+    return response.data
+  } catch (error) { 
+    return error.response.data
+  }
+  
+}
+
+export const removeSpotlightUser = async (userID) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+    
+    const apiUrl = `${APIURL}/api/v1/users/${userID}/remove/spotlight`
+
+    let response = await axios.put(apiUrl,{}, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+
 /*For Chats */
 export const getMessagesByUserID = async (userID,chatroomID,page,pageSize) => {
   try {
@@ -1454,11 +1497,60 @@ export const CreateGiftsCategory = async (name) => {
   }
 }
 
+export const updateGiftsCategory = async (name,giftCategoryId) => {
+  try {
+
+    let formData = new FormData()
+    formData = {
+      name : name,
+    }
+    
+    let accessToken = localStorage.getItem('accessToken')  
+    
+    const apiUrl = `${APIURL}/api/v1/masters/gifts-category/${giftCategoryId}`
+
+    let response = await axios.put(apiUrl,formData,{
+      headers: {
+        'Content-Type': `application/x-www-form-urlencoded`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const deleteGiftsCategory = async (giftCategoryId) => {
+  try {
+    
+    let accessToken = localStorage.getItem('accessToken')  
+    
+    const apiUrl = `${APIURL}/api/v1/masters/gifts-category/${giftCategoryId}`
+
+    let response = await axios.delete(apiUrl,{
+      headers: {
+        'Content-Type': `application/x-www-form-urlencoded`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
 export const getAllGift = async () => {
   try { 
     let accessToken = localStorage.getItem('accessToken')  
     //  /api/v1/users/profile/media?page=1&pageSize=10&isPrivate=false&userId=35
-    const apiUrl = `${APIURL}/api/v1/masters/gifts`
+    const apiUrl = `${APIURL}/api/v1/masters/gifts-category/with/gifts`
 
     let response = await axios.get(apiUrl, {
       headers: {
@@ -1506,6 +1598,60 @@ export const CreateGift = async (name,categoryId,credit,giftFile) => {
   }
 }
 
+export const updateGifts = async (name,categoryId,credit,giftFile,giftId) => {
+  try {
+
+    let formData = new FormData()
+    formData = {
+      name : name,
+      giftCategoryId : categoryId,
+      credit:credit,
+      gift :giftFile
+    }
+
+    console.log("formData",formData)
+    
+    let accessToken = localStorage.getItem('accessToken')  
+    
+    const apiUrl = `${APIURL}/api/v1/masters/gifts-category/${categoryId}/gifts/${giftId}`
+
+    let response = await axios.put(apiUrl,formData,{
+      headers: {
+        'Content-Type': `multipart/form-data;`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const deleteGifts = async (giftCategoryId,giftId) => {
+  try {
+    
+    let accessToken = localStorage.getItem('accessToken')  
+    
+    const apiUrl = `${APIURL}/api/v1/masters/gifts-category/${giftCategoryId}/gifts/${giftId}`
+
+    let response = await axios.delete(apiUrl,{
+      headers: {
+        'Content-Type': `application/x-www-form-urlencoded`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
 //master plugins
 
 export const getConfigurationByName = async (name) => {
@@ -1528,16 +1674,24 @@ export const getConfigurationByName = async (name) => {
   }
 }
 
-export const updateConfigurationByConfigID = async (ConfigID,values) => {
+export const updateConfigurationByConfigID = async (ConfigID,values,gestureFile) => {
   try {  
     let accessToken = localStorage.getItem('accessToken')  
    
     const apiUrl = `${APIURL}/api/v1/masters/configurations/${ConfigID}`
 
     let formData = new FormData()
-    formData = {
-      values  : JSON.stringify(values)
+    if(gestureFile === null){
+      formData = {
+        values  : JSON.stringify(values)
+      }
+    }else{
+      formData = {
+        gesture : gestureFile,
+        values  : JSON.stringify(values)
+      }
     }
+   
 
     let response = await axios.post(apiUrl,formData, {
       headers: {
@@ -1702,3 +1856,124 @@ export const updatePremiumPackageAmountPlan = async (pkgId,days,amount,pkgName) 
   }
 }
 
+//verification system 
+
+export const getUserVerificationList = async (page,pageSize) => {
+  try { 
+    let accessToken = localStorage.getItem('accessToken')  
+    const apiUrl = `${APIURL}/api/v1/web/users/verification/list?page=${page}&pageSize=${pageSize}`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const updateUserVerification = async (userID,verificationId,verifyStatus,reason) => {
+  try { 
+    let accessToken = localStorage.getItem('accessToken')  
+    const apiUrl = `${APIURL}/api/v1/web/users/${userID}/verification/${verificationId}`
+
+    let formData = new FormData()
+    if(verifyStatus === 'verified'){
+      formData = {
+        "verifyStatus": verifyStatus,
+      }
+    }else{
+      formData = {
+        "verifyStatus": verifyStatus,
+        "reason": reason
+      }
+    }
+  
+    let response = await axios.put(apiUrl,formData, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+// anonymous users
+
+export const getAllAnonymousUser = async (query) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+    // let pageModel = paginationModel.split('&')
+    // let page = pageModel[0].split('=')[1]
+    // let pageSize = pageModel[1].split('=')[1]
+
+    //const apiUrl = `${APIURL}/api/v1/users?page=${page}&pageSize=${pageSize}`
+    const apiUrl = `${APIURL}/api/v1/anonymous/users?${query}`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const getAllUserAnonymousStories = async (page,pageSize,isPrivate,userID) => { 
+  try {  
+    let accessToken = localStorage.getItem('accessToken')  
+    const apiUrl = `${APIURL}/api/v1/anonymous/users/stories?page=${page}&pageSize=${pageSize}&isPrivate=${isPrivate}&userId=${userID}`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const getAllUserAnonymousMedia = async (page,pageSize,isPrivate,userID) => {
+  try {
+    
+    let accessToken = localStorage.getItem('accessToken')  
+    const apiUrl = `${APIURL}/api/v1/anonymous/users/media?page=${page}&pageSize=${pageSize}&isPrivate=${isPrivate}&userId=${userID}`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}

@@ -15,6 +15,10 @@ import PopularPlugin from './Componants/Popular/popularPlugin'
 import SpotlightPlugin from './Componants/Spotlight/SpotlightPlugin'
 import VideocallPlugin from './Componants/Videocall/VideocallPlugin'
 import LegalInformationPlugin from './Componants/LegalInformation/LegalInformationPlugin'
+import DiscoverGame from './Componants/DiscoverGame/DiscoverGamePlugin'
+import GeneralPlugin from './Componants/General/GeneralPlugin'
+import VerificationSystemPlugin from './Componants/VerificationSystem/VerificationSystemPlugin'
+import AccountPrivilgesPlugin from './Componants/AccountPrivilges/AccountPrivilgesPlugin'
 
 const usersBreadcrumbs: Array<PageLink> = [
   {
@@ -184,6 +188,42 @@ const Plugins = () => {
             <>
               <PageTitle>Videocall</PageTitle>
               <VideocallPlugin />
+            </>
+          }
+        />
+        <Route
+          path='/discover_game_plugin'
+          element={
+            <>
+              <PageTitle>Discover Game</PageTitle>
+              <DiscoverGame />
+            </>
+          }
+        />
+        <Route
+          path='/general_plugin'
+          element={
+            <>
+              <PageTitle>General </PageTitle>
+              <GeneralPlugin />
+            </>
+          }
+        />
+        <Route
+          path='/verification_system_plugin'
+          element={
+            <>
+              <PageTitle>Verification System</PageTitle>
+              <VerificationSystemPlugin />
+            </>
+          }
+        />
+        <Route
+          path='/account_privileges_plugin'
+          element={
+            <>
+              <PageTitle>Account Privileges</PageTitle>
+              <AccountPrivilgesPlugin />
             </>
           }
         />

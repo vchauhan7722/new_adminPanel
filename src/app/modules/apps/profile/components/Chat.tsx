@@ -170,9 +170,11 @@ const Chat = (props) => {
                             <span>
                               {member?.like === 1 && <i className='fa-solid fa-heart me-3'></i>}
                             </span>
-                            <span className='badge badge-circle badge-light-success me-2'>
-                              {member?.unreadMessageCount}
-                            </span>
+                            {member?.unreadMessageCount !== 0 && (
+                              <span className='badge badge-circle badge-light-success me-2'>
+                                {member?.unreadMessageCount}
+                              </span>
+                            )}
                           </div>
                         </div>
                       </div>

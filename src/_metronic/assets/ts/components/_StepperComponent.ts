@@ -32,7 +32,7 @@ class StepperComponent {
   btnNext: HTMLElement | null
   btnPrev: HTMLElement | null
   btnSubmit: HTMLElement | null
-  totalStepsNumber: number = 0
+  totalStepsNumber: number = 3
   passedStepIndex: number = 0
   currentStepIndex: number = 1
 

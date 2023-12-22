@@ -1,12 +1,21 @@
 import React, {useEffect, useState} from 'react'
 import {
   getConfigurationByName,
+  getSpotlightUsers,
+  removeSpotlightUser,
   updateConfigurationByConfigID,
 } from '../../../../../../API/api-endpoint'
 import ToastUtils from '../../../../../../utils/ToastUtils'
+import {KTCardBody} from '../../../../../../_metronic/helpers'
+import {Link} from 'react-router-dom'
+import CustomPagination from '../../../../../../_metronic/partials/componants/Pagination'
+import Swal from 'sweetalert2'
 
 const SpotlightPlugin = () => {
   const [configID, setConfigId] = useState(0)
+  const [spotlightUsers, setSpotlightUsers] = useState<any>([])
+  const [pageSize, setPageSize] = useState(100)
+  const [totalPage, setTotalPage] = useState(0)
   const [spotlightConfig, setSpotlightConfig] = useState<any>({
     credit: 0,
     duration: 0,
@@ -16,6 +25,7 @@ const SpotlightPlugin = () => {
 
   useEffect(() => {
     getConfiguration()
+    getspotlightUserList(1, pageSize)
   }, [])
 
   const handleChange = (event: any) => {
@@ -49,13 +59,48 @@ const SpotlightPlugin = () => {
 
   const updateConfiguration = async (config: any) => {
     //console.log('config', config)
-    let result = await updateConfigurationByConfigID(configID, config)
+    let result = await updateConfigurationByConfigID(configID, config, null)
     if (result.status === 200) {
       getConfiguration()
       ToastUtils({type: 'success', message: 'Configuration Saved SuccessFully'})
     } else {
       ToastUtils({type: 'error', message: 'Something Went Wrong'})
     }
+  }
+
+  const getspotlightUserList = async (page: any, pageSize: any) => {
+    let result = await getSpotlightUsers(page, pageSize)
+    if (result.status === 200) {
+      setSpotlightUsers(result?.data)
+      setTotalPage(result?.totalPage)
+    }
+  }
+
+  const getPagination = (page: any, pageSize: any) => {
+    if (page === 0 || page === 1) {
+      page = 1
+    }
+    getspotlightUserList(page, pageSize)
+  }
+
+  const removeSpotLightUserFromList = async (userId: any) => {
+    Swal.fire({
+      title: 'Remove from Spotlight',
+      text: 'Proceed to remove this user from the spotlight',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        let result = await removeSpotlightUser(userId)
+        if (result.status === 200) {
+          ToastUtils({type: 'success', message: 'User is Removed From Spotlight'})
+          getspotlightUserList(1, pageSize)
+        }
+      }
+    })
   }
 
   return (
@@ -159,6 +204,92 @@ const SpotlightPlugin = () => {
             </div>
           </div>
         </div>
+      </div>
+
+      <KTCardBody className='py-4'>
+        <div className='table-responsive'>
+          <table
+            id='kt_table_users'
+            className='table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer'
+          >
+            <thead>
+              <tr className='text-start text-muted fw-bolder fs-7 text-uppercase gs-0'>
+                <td>User Info</td>
+                <td>Spotlight Days</td>
+                <td>Location</td>
+                <td>Action</td>
+              </tr>
+            </thead>
+            <tbody className='text-gray-600 '>
+              {spotlightUsers.length !== 0 &&
+                spotlightUsers.map((spotlight: any, index: any) => {
+                  return (
+                    <tr key={index}>
+                      <td>
+                        <div className='d-flex align-items-center'>
+                          <div className='symbol symbol-circle symbol-50px overflow-visible me-3'>
+                            <img
+                              src={
+                                `${process.env.REACT_APP_SERVER_URL}/${spotlight?.profileImage}` ||
+                                `https://preview.keenthemes.com/metronic8/react/demo1//media/avatars/300-6.jpg`
+                              }
+                              alt='logo'
+                              width='50px'
+                              height='50px'
+                            />
+                            {!spotlight.isOnline && (
+                              <div className='position-absolute  bottom-0 end-0 bg-success rounded-circle border border-3 border-white h-15px w-15px'></div>
+                            )}
+                          </div>
+
+                          <div className='d-flex flex-column'>
+                            <Link
+                              to={`/apps/users-profile/activity/${spotlight.userId}`}
+                              className='fw-bolder text-gray-800 text-hover-primary mb-1'
+                            >
+                              {spotlight.fullName}
+                            </Link>
+
+                            <span className='text-gray-500 fw-bold'>(ID : {spotlight.userId})</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <span>{spotlight?.spotLightDays} days</span>
+                      </td>
+                      <td>
+                        <span>
+                          {spotlight?.city !== null
+                            ? `${spotlight?.city}, ${spotlight?.state}, ${spotlight?.country}`
+                            : '-'}
+                        </span>
+                      </td>
+                      <td>
+                        <div className='d-flex my-4'>
+                          <button
+                            className='btn btn-primary'
+                            onClick={() => removeSpotLightUserFromList(spotlight?.userId)}
+                          >
+                            <i className='fa-solid fa-trash-can'></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
+            </tbody>
+          </table>
+        </div>
+      </KTCardBody>
+      <div className='card-footer'>
+        {spotlightUsers.length !== 0 && (
+          <CustomPagination
+            pageSize={pageSize}
+            setPageSize={setPageSize}
+            totalPage={totalPage}
+            cb={getPagination}
+          />
+        )}
       </div>
     </div>
   )

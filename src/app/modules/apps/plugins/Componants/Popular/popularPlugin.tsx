@@ -46,7 +46,7 @@ const PopularPlugin = () => {
   }
 
   const updateConfiguration = async (config: any) => {
-    let result = await updateConfigurationByConfigID(configID, config)
+    let result = await updateConfigurationByConfigID(configID, config, null)
     if (result.status === 200) {
       getConfiguration()
       ToastUtils({type: 'success', message: 'Configuration Saved SuccessFully'})
