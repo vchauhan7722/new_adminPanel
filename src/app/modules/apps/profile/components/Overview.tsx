@@ -1,6 +1,6 @@
 import React from 'react'
 import {useIntl} from 'react-intl'
-import {DateTimeFormatter, DateWithTimeFormatter} from '../../../../../utils/Utils'
+import {DateTimeFormatter, DateWithTimeFormatter} from '../../../../../utils/DateUtils'
 
 export function Overview(props: any) {
   const {user} = props

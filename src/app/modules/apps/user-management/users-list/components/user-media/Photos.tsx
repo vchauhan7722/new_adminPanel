@@ -12,7 +12,7 @@ import {
   DateTimeFormatter,
   DateWithTimeFormatter,
   TimeFormatter,
-} from '../../../../../../../utils/Utils'
+} from '../../../../../../../utils/DateUtils'
 import ToastUtils from '../../../../../../../utils/ToastUtils'
 import {Link} from 'react-router-dom'
 import {Dropdown} from 'react-bootstrap'

@@ -7,7 +7,7 @@ import {
   getAllGiftsCategory,
   getChatMemberByUserID,
 } from '../../../../../API/api-endpoint'
-import {calculateTimeDifferenceForChatMessage} from '../../../../../utils/Utils'
+import {calculateTimeDifferenceForChatMessage} from '../../../../../utils/DateUtils'
 
 import {ChatInner} from '../../../../../_metronic/partials/chat/ChatInner'
 import CustomPagination from '../../../../../_metronic/partials/componants/Pagination'
@@ -111,13 +111,7 @@ const Chat = (props) => {
             >
               <div className='separator separator-dashed d-none'></div>
 
-              {chatMemberList === undefined ? (
-                <div className='d-flex justify-content-center'>
-                  <div className='spinner-border' role='status'>
-                    <span className='visually-hidden'>Loading...</span>
-                  </div>
-                </div>
-              ) : (
+              {chatMemberList !== undefined &&
                 chatMemberList.map((member: any, index: any) => {
                   return (
                     <>
@@ -182,8 +176,7 @@ const Chat = (props) => {
                       <div className='separator separator-dashed'></div>
                     </>
                   )
-                })
-              )}
+                })}
             </div>
           </div>
 

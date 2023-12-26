@@ -17,7 +17,7 @@ import {
   setMediaAsAStoryForUserMedia,
   updateMediaActionForUserMedia,
 } from '../../../../API/api-endpoint'
-import {DateTimeFormatter, DateWithTimeFormatter, TimeFormatter} from '../../../../utils/Utils'
+import {DateTimeFormatter, DateWithTimeFormatter, TimeFormatter} from '../../../../utils/DateUtils'
 import ToastUtils from '../../../../utils/ToastUtils'
 
 const Stories = () => {

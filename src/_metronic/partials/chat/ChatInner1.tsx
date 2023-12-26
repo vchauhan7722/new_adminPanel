@@ -6,7 +6,8 @@ import {toAbsoluteUrl, defaultMessages, defaultUserInfos, UserInfoModel} from '.
 import socket from '../../../socketconfig'
 import {getMessagesByUserID} from '../../../API/api-endpoint'
 import {Dropdown1} from '../content/dropdown/Dropdown1'
-import {DateTimeFormatter, TimeFormatter, sortData} from '../../../utils/Utils'
+import {sortData} from '../../../utils/Utils'
+import {DateTimeFormatter, TimeFormatter} from '../../../utils/DateUtils'
 import {io} from 'socket.io-client'
 
 type Props = {

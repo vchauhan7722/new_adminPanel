@@ -5,7 +5,7 @@ import clsx from 'clsx'
 import {KTCardBody} from '../../../../../../../_metronic/helpers'
 import CustomPagination from '../../../../../../../_metronic/partials/componants/Pagination'
 import ToastUtils from '../../../../../../../utils/ToastUtils'
-import {DateTimeFormatter, TimeFormatter} from '../../../../../../../utils/Utils'
+import {DateTimeFormatter, TimeFormatter} from '../../../../../../../utils/DateUtils'
 import {
   ReUploadSelectedStory,
   ReUploadUserStory,

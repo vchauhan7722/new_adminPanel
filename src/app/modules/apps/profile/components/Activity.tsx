@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import {useIntl} from 'react-intl'
 import {getUserActivityWithPagination} from '../../../../../API/api-endpoint'
-import {calculateTimeDifferenceForActivity} from '../../../../../utils/Utils'
+import {calculateTimeDifferenceForActivity} from '../../../../../utils/DateUtils'
 import Pagination from 'react-bootstrap/Pagination'
 import clsx from 'clsx'
 import CustomPagination from '../../../../../_metronic/partials/componants/Pagination'

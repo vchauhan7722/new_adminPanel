@@ -8,7 +8,7 @@ import moment from 'moment'
 import {UserSelectionCell} from './UserSelectionCell'
 import {UserSelectionHeader} from './UserSelectionHeader'
 import {KTIcon} from '../../../../../../../_metronic/helpers'
-import {calculateTimeDifference} from '../../../../../../../utils/Utils'
+import {calculateTimeDifference} from '../../../../../../../utils/DateUtils'
 
 const usersColumns: ReadonlyArray<Column<User>> = [
   {

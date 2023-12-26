@@ -359,60 +359,91 @@
 // export {Vertical}
 
 import {useEffect, useRef, useState} from 'react'
-import {KTIcon} from '../../../../../../../../_metronic/helpers'
 import {Step1} from './steps/Step1'
 import {Step2} from './steps/Step2'
 import {Step3} from './steps/Step3'
-import {StepperComponent} from '../../../../../../../../_metronic/assets/ts/components'
-import {Form, Formik, FormikValues} from 'formik'
-import {createAccountSchemas, ICreateAccount, inits} from './CreateAccountWizardHelper'
+
+import clsx from 'clsx'
 
 const Vertical = () => {
-  const stepperRef = useRef<HTMLDivElement | null>(null)
-  const stepper = useRef<StepperComponent | null>(null)
-  const [currentSchema, setCurrentSchema] = useState(createAccountSchemas[0])
-  const [initValues] = useState<ICreateAccount>(inits)
-
-  const loadStepper = () => {
-    stepper.current = StepperComponent.createInsance(stepperRef.current as HTMLDivElement)
-  }
+  const [stepValue, setStepValue] = useState(3)
+  const [currentUserId, setCurrentUserId] = useState(1)
 
   const prevStep = () => {
-    if (!stepper.current) {
-      return
+    // if (!stepper.current) {
+    //   return
+    // }
+
+    // stepper.current.goPrev()
+
+    // setCurrentSchema(createAccountSchemas[stepper.current.currentStepIndex - 1])
+    if (stepValue !== 1) {
+      setStepValue((prev) => prev - 1)
     }
-
-    stepper.current.goPrev()
-
-    setCurrentSchema(createAccountSchemas[stepper.current.currentStepIndex - 1])
   }
 
-  const submitStep = (values: ICreateAccount, actions: FormikValues) => {
-    if (!stepper.current) {
-      return
+  const submitStep = (userId: any) => {
+    if (stepValue !== 3) {
+      setStepValue(stepValue + 1)
     }
 
-    if (stepper.current.currentStepIndex !== stepper.current.totalStepsNumber) {
-      stepper.current.goNext()
-    } else {
-      stepper.current.goto(1)
-      actions.resetForm()
-    }
+    setCurrentUserId(userId)
+    // actions.preventDefault()
+    // if (!stepper.current) {
+    //   return
+    // }
 
-    setCurrentSchema(createAccountSchemas[stepper.current.currentStepIndex - 1])
+    // if (stepper.current.currentStepIndex !== stepper.current.totalStepsNumber) {
+    //   stepper.current.goNext()
+    // } else {
+    //   stepper.current.goto(1)
+    //   actions.resetForm()
+    // }
   }
 
-  useEffect(() => {
-    if (!stepperRef.current) {
-      return
-    }
+  const renderStep = () => {
+    switch (stepValue) {
+      case 1:
+        return (
+          <div className='d-flex flex-row-fluid flex-center bg-body rounded'>
+            <form className='py-3 w-100 px-9' noValidate id='kt_create_account_form'>
+              <div className='current' data-kt-stepper-element='content'>
+                <Step1 submitStep={submitStep} prevStep={prevStep} />
+              </div>
+            </form>
+          </div>
+        )
 
-    loadStepper()
-  }, [stepperRef])
+      case 2:
+        return (
+          <div className='d-flex flex-row-fluid flex-center bg-body rounded h-100vh'>
+            <div className='py-20 w-100 w-xl-700px px-9'>
+              <div className='current' data-kt-stepper-element='content'>
+                <Step2 submitStep={submitStep} prevStep={prevStep} userID={currentUserId} />
+              </div>
+            </div>
+          </div>
+        )
+
+      case 3:
+        return (
+          <div className='d-flex flex-row-fluid flex-center bg-body rounded h-100vh'>
+            <div className='py-20 w-100 w-xl-700px px-9'>
+              <div className='current' data-kt-stepper-element='content'>
+                <Step3 submitStep={submitStep} prevStep={prevStep} userID={currentUserId} />
+              </div>
+            </div>
+          </div>
+        )
+
+      default:
+        break
+    }
+  }
 
   return (
     <div
-      ref={stepperRef}
+      //ref={stepperRef}
       className='stepper stepper-pills stepper-column d-flex flex-column flex-xl-row flex-row-fluid'
       id='kt_create_account_stepper'
     >
@@ -423,7 +454,10 @@ const Vertical = () => {
           {/* begin::Nav*/}
           <div className='stepper-nav'>
             {/* begin::Step 1*/}
-            <div className='stepper-item current' data-kt-stepper-element='nav'>
+            <div
+              className={clsx('stepper-item', stepValue === 1 && 'current')}
+              data-kt-stepper-element='nav'
+            >
               {/* begin::Wrapper*/}
               <div className='stepper-wrapper'>
                 {/* begin::Icon*/}
@@ -450,7 +484,10 @@ const Vertical = () => {
             {/* end::Step 1*/}
 
             {/* begin::Step 2*/}
-            <div className='stepper-item' data-kt-stepper-element='nav'>
+            <div
+              className={clsx('stepper-item', stepValue === 2 && 'current')}
+              data-kt-stepper-element='nav'
+            >
               {/* begin::Wrapper*/}
               <div className='stepper-wrapper'>
                 {/* begin::Icon*/}
@@ -478,7 +515,10 @@ const Vertical = () => {
             {/* end::Step 2*/}
 
             {/* begin::Step 3*/}
-            <div className='stepper-item' data-kt-stepper-element='nav'>
+            <div
+              className={clsx('stepper-item', stepValue === 3 && 'current')}
+              data-kt-stepper-element='nav'
+            >
               {/* begin::Wrapper*/}
               <div className='stepper-wrapper'>
                 {/* begin::Icon*/}
@@ -507,51 +547,7 @@ const Vertical = () => {
       </div>
       {/* begin::Aside*/}
 
-      <div className='d-flex flex-row-fluid flex-center bg-body rounded'>
-        <Formik validationSchema={currentSchema} initialValues={initValues} onSubmit={submitStep}>
-          {() => (
-            <Form className='py-20 w-100 w-xl-700px px-9' noValidate id='kt_create_account_form'>
-              <div className='current' data-kt-stepper-element='content'>
-                <Step1 />
-              </div>
-
-              <div data-kt-stepper-element='content'>
-                <Step2 />
-              </div>
-
-              <div data-kt-stepper-element='content'>
-                <Step3 />
-              </div>
-
-              <div className='d-flex flex-stack pt-10'>
-                <div className='mr-2'>
-                  <button
-                    onClick={prevStep}
-                    type='button'
-                    className='btn btn-lg btn-light-primary me-3'
-                    data-kt-stepper-action='previous'
-                  >
-                    <KTIcon iconName='arrow-left' className='fs-4 me-1' />
-                    Back
-                  </button>
-                </div>
-
-                <div>
-                  <button type='submit' className='btn btn-lg btn-primary me-3'>
-                    <span className='indicator-label'>
-                      {stepper.current?.currentStepIndex !==
-                        stepper.current?.totalStepsNumber! - 1 && 'Continue'}
-                      {stepper.current?.currentStepIndex ===
-                        stepper.current?.totalStepsNumber! - 1 && 'Submit'}
-                      <KTIcon iconName='arrow-right' className='fs-3 ms-2 me-0' />
-                    </span>
-                  </button>
-                </div>
-              </div>
-            </Form>
-          )}
-        </Formik>
-      </div>
+      {renderStep()}
     </div>
   )
 }

@@ -8,7 +8,7 @@ import {
   deleteUserStory,
   getAllUserStory,
 } from '../../../../../../../API/api-endpoint'
-import {DateWithTimeFormatter} from '../../../../../../../utils/Utils'
+import {DateWithTimeFormatter} from '../../../../../../../utils/DateUtils'
 import ToastUtils from '../../../../../../../utils/ToastUtils'
 import {DropdownButton, Dropdown, Form} from 'react-bootstrap'
 import clsx from 'clsx'

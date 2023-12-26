@@ -5,7 +5,9 @@ import clsx from 'clsx'
 import {toAbsoluteUrl} from '../../helpers'
 // import socket, {ws} from '../../../socketconfig'
 import {getMessagesByUserID, pinOrLikeChatMember} from '../../../API/api-endpoint'
-import {DateTimeFormatter, TimeFormatter, sortData} from '../../../utils/Utils'
+import {sortData} from '../../../utils/Utils' //DateUtils
+import {DateTimeFormatter, TimeFormatter} from '../../../utils/DateUtils'
+
 import ToastUtils from '../../../utils/ToastUtils'
 import {fileToBase64} from '../../../utils/FileUtils'
 import InfiniteScroll from 'react-infinite-scroll-component'

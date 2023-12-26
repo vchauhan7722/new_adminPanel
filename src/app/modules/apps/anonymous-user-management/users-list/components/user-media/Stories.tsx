@@ -9,7 +9,7 @@ import {
   DateTimeFormatter,
   DateWithTimeFormatter,
   TimeFormatter,
-} from '../../../../../../../utils/Utils'
+} from '../../../../../../../utils/DateUtils'
 import {
   ReUploadSelectedStory,
   ReUploadUserStory,

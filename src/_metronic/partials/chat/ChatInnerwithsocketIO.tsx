@@ -11,7 +11,8 @@ import {
   sendMessageUsingApi,
 } from '../../../API/api-endpoint'
 import {Dropdown1} from '../content/dropdown/Dropdown1'
-import {DateTimeFormatter, GetIDFromURL, TimeFormatter, sortData} from '../../../utils/Utils'
+import {sortData} from '../../../utils/Utils'
+import {DateTimeFormatter, TimeFormatter} from '../../../utils/DateUtils'
 import {Link, useLocation} from 'react-router-dom'
 import ToastUtils from '../../../utils/ToastUtils'
 import Pusher from 'pusher-js'

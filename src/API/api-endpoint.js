@@ -1692,8 +1692,7 @@ export const updateConfigurationByConfigID = async (ConfigID,values,gestureFile)
       }
     }
    
-
-    let response = await axios.post(apiUrl,formData, {
+    let response = await axios.put(apiUrl,formData, {
       headers: {
         'Content-Type': `multipart/form-data;`,
         'x-access-token': accessToken
@@ -1977,3 +1976,124 @@ export const getAllUserAnonymousMedia = async (page,pageSize,isPrivate,userID) =
     return error.message
   }
 }
+
+export const createNewAnonymousUser = async (values) => {
+  try { 
+    let accessToken = localStorage.getItem('accessToken')  
+    const apiUrl = `${APIURL}/api/v1/anonymous/users`
+
+    let formData = new FormData()
+    formData = values
+
+    let response = await axios.post(apiUrl,formData, {
+      headers: {
+        'Content-Type': `application/x-www-form-urlencoded`,
+        'x-access-token': accessToken
+      }
+    })
+    localStorage.setItem("anonymousUserId",response.data.data.userId)
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+// export const UpdateUserInterestAndQuestions = async (UID, interests,questions) => {
+//   try {
+//   let accessToken = localStorage.getItem('accessToken')
+//   let formdata = new FormData()
+//   formdata = {
+//     interests: interests,
+//     questions: questions,
+//   }
+  
+//   const apiUrl = `${APIURL}/api/v1/users/update/${UID}`
+
+//   let response = await axios.put(apiUrl, formdata, {
+//     headers: {
+//       'Content-Type': `multipart/form-data;`,
+//       'x-access-token': accessToken
+//     }
+//   })
+
+//     return response.data
+//   } catch (error) { 
+//     return error.response.data
+//   }
+  
+// }
+
+export const UpdateUserProfilePicture = async (UID, fileData) => {
+  try {
+  let accessToken = localStorage.getItem('accessToken')
+  let formdata = new FormData()
+  formdata = {
+    profile: fileData,
+  }
+
+  const apiUrl = `${APIURL}/api/v1/users/update/${UID}`
+
+  let response = await axios.put(apiUrl, formdata, {
+    headers: {
+      'Content-Type': `multipart/form-data;`,
+      'x-access-token': accessToken
+    }
+  })
+
+    return response.data
+  } catch (error) { 
+    return error.response.data
+  }
+  
+}
+
+export const getUserMediaImages = async (uid) => {
+  try { 
+    let accessToken = localStorage.getItem('accessToken')  
+    
+    const apiUrl = `${APIURL}/api/v1/users/${uid}/all/profile/media`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const UpdateUserInterestAndQuestions = async (UID, interests,questions) => {
+  try {  
+    let accessToken = localStorage.getItem('accessToken')  
+   
+    const apiUrl = `${APIURL}/api/v1/users/update/${UID}`
+
+    let formData = new FormData()
+    formData = {
+      interests: JSON.stringify(interests),
+      questions: JSON.stringify(questions),
+    }
+   
+    let response = await axios.put(apiUrl,formData, {
+      headers: {
+        'Content-Type': `multipart/form-data;`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+

@@ -2,8 +2,8 @@ import {Route, Routes, Outlet} from 'react-router-dom'
 import {PageLink, PageTitle} from '../../../../_metronic/layout/core'
 import {UsersListWrapper} from './users-list/UsersList'
 import {useIntl} from 'react-intl'
-import Photos from '../user-media/Photos'
-import Stories from '../user-media/Stories'
+import Photos from './users-list/components/user-media/Photos'
+import Stories from './users-list/components/user-media/Stories'
 
 const usersBreadcrumbs: Array<PageLink> = [
   {

@@ -146,10 +146,6 @@ const Media = (props: any) => {
                   <div className={userProfileMedia.length >= 6 ? 'col-1' : 'col-2'} key={index}>
                     <div
                       className='position-relative'
-                      onClick={() => {
-                        setOpenLightBox(true)
-                        setSelectedImage(userMedia.media)
-                      }}
 
                       // data-bs-toggle='modal'
                       // data-bs-target='#full_width_image_modal'
@@ -162,6 +158,10 @@ const Media = (props: any) => {
                         // width='192'
                         // height='189'
                         className='rounded'
+                        onClick={() => {
+                          setOpenLightBox(true)
+                          setSelectedImage(userMedia.media)
+                        }}
                       />
                       <span className='position-absolute top-0 start-100'>
                         <div>

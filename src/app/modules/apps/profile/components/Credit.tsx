@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react'
 import {useIntl} from 'react-intl'
 import {KTCardBody} from '../../../../../_metronic/helpers'
 import {getUserCreditsHistoryWithPagination} from '../../../../../API/api-endpoint'
-import {DateWithTimeFormatter} from '../../../../../utils/Utils'
+import {DateWithTimeFormatter} from '../../../../../utils/DateUtils'
 import CustomPagination from '../../../../../_metronic/partials/componants/Pagination'
 
 let creditFilter = [

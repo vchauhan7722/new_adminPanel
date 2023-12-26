@@ -11,7 +11,7 @@ import {
   setMediaAsAStoryForUserMedia,
   updateMediaActionForUserMedia,
 } from '../../../../API/api-endpoint'
-import {DateTimeFormatter, DateWithTimeFormatter, TimeFormatter} from '../../../../utils/Utils'
+import {DateTimeFormatter, DateWithTimeFormatter, TimeFormatter} from '../../../../utils/DateUtils'
 import ToastUtils from '../../../../utils/ToastUtils'
 
 const Photos = () => {
@@ -259,15 +259,13 @@ const Photos = () => {
                     </td>
                     <td>
                       <div className='d-flex align-items-center '>
-                        <div className='symbol symbol-50px overflow-visible me-3'>
+                        <div className='symbol symbol-40px symbol-circle overflow-visible me-3'>
                           <img
                             src={
                               `${process.env.REACT_APP_SERVER_URL}/${media?.userDetail?.profileImage}` ||
                               `https://preview.keenthemes.com/metronic8/react/demo1//media/avatars/300-6.jpg`
                             }
                             alt='icon'
-                            width='50px'
-                            height='50px'
                           />
                         </div>
 
