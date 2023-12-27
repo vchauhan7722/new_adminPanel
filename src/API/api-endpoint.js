@@ -1855,6 +1855,34 @@ export const updatePremiumPackageAmountPlan = async (pkgId,days,amount,pkgName) 
   }
 }
 
+export const updatePremiumPackageAmountConfig = async (pkgId,days,amount,premiumPackageConfig) => {
+  try { 
+    let accessToken = localStorage.getItem('accessToken')  
+    const apiUrl = `${APIURL}/api/v1/masters/packages/premium/amounts/${pkgId}`
+
+     
+     let formData = {
+      days : days,
+      amount : amount,
+      premiumPackageConfig : premiumPackageConfig
+    }
+
+    let response = await axios.put(apiUrl,formData, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+
 //verification system 
 
 export const getUserVerificationList = async (page,pageSize) => {
@@ -2000,31 +2028,6 @@ export const createNewAnonymousUser = async (values) => {
   }
 }
 
-// export const UpdateUserInterestAndQuestions = async (UID, interests,questions) => {
-//   try {
-//   let accessToken = localStorage.getItem('accessToken')
-//   let formdata = new FormData()
-//   formdata = {
-//     interests: interests,
-//     questions: questions,
-//   }
-  
-//   const apiUrl = `${APIURL}/api/v1/users/update/${UID}`
-
-//   let response = await axios.put(apiUrl, formdata, {
-//     headers: {
-//       'Content-Type': `multipart/form-data;`,
-//       'x-access-token': accessToken
-//     }
-//   })
-
-//     return response.data
-//   } catch (error) { 
-//     return error.response.data
-//   }
-  
-// }
-
 export const UpdateUserProfilePicture = async (UID, fileData) => {
   try {
   let accessToken = localStorage.getItem('accessToken')
@@ -2097,3 +2100,51 @@ export const UpdateUserInterestAndQuestions = async (UID, interests,questions) =
   }
 }
 
+// legal information plugins (policy)
+
+export const getAllPolicies = async (uid) => {
+  try { 
+    let accessToken = localStorage.getItem('accessToken')  
+    
+    const apiUrl = `${APIURL}/api/v1/policies`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const UpdatePolicy = async (policyId, htmlText) => {
+  try {  
+    let accessToken = localStorage.getItem('accessToken')  
+   
+    const apiUrl = `${APIURL}/api/v1/policies/${policyId}`
+
+    let formData = new FormData()
+    formData = {
+      html: htmlText //JSON.stringify(htmlText),
+    }
+   
+    let response = await axios.put(apiUrl,formData, {
+      headers: {
+        'Content-Type': `application/x-www-form-urlencoded`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}

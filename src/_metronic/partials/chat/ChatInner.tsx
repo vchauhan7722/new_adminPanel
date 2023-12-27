@@ -9,7 +9,6 @@ import {sortData} from '../../../utils/Utils'
 import {DateTimeFormatter, TimeFormatter} from '../../../utils/DateUtils'
 import ToastUtils from '../../../utils/ToastUtils'
 import {fileToBase64} from '../../../utils/FileUtils'
-import InfiniteScroll from 'react-infinite-scroll-component'
 
 const ChatInner = (props: any) => {
   const {
@@ -87,11 +86,11 @@ const ChatInner = (props: any) => {
       //     ToastUtils({type: 'error', message: JsonMessageData.message})
       //   }
       // }
+      if (JsonMessageData?.status === 500) {
+        ToastUtils({type: 'error', message: JsonMessageData.message})
+      }
 
-      if (
-        JsonMessageData.type !== 'join' &&
-        JsonMessageData.message !== "User doesn't have credit"
-      ) {
+      if (JsonMessageData.type !== 'join') {
         // Use optional chaining (?.) to safely access sessionStorage
         const messages = JSON.parse(sessionStorage.getItem('messageList') || '[]') || []
 
@@ -104,8 +103,6 @@ const ChatInner = (props: any) => {
         setTimeout(() => {
           scrollToBottom()
         }, 500)
-      } else if (JsonMessageData.message === "User doesn't have credit") {
-        ToastUtils({type: 'error', message: JsonMessageData.message})
       }
     })
 

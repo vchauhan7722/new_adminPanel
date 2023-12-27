@@ -91,7 +91,12 @@ const ProfileHeader = (props) => {
   }
 
   const addOrUpdatePremium = async () => {
-    let result = await AddOrUpdatePremiumByUID()
+    let result = await AddOrUpdatePremiumByUID(
+      UserID,
+      addUpdatePremium.type,
+      addUpdatePremium.days,
+      addUpdatePremium.premiumId
+    )
     if (result.status === 200) {
       setaddUpdatePremium({days: 0, type: 'add', premiumId: 1})
       ToastUtils({

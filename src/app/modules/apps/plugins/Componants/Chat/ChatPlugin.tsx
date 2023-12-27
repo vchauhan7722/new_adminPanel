@@ -30,13 +30,14 @@ const ChatPlugin = () => {
       updateConfiguration({...chatConfig, [name]: value})
     } else {
       setChatConfig({...chatConfig, [name]: event.target.value})
-      if (name === 'creditPerMessage') {
-        event.target.value.length !== 0 &&
-          updateConfiguration({...chatConfig, [name]: event.target.value})
-      } else {
-        updateConfiguration({...chatConfig, [name]: event.target.value})
+      if (name === 'deductCreditGender') {
+        updateConfiguration({...chatConfig, [name]: value})
       }
     }
+  }
+
+  const onBlurUpdate = () => {
+    updateConfiguration(chatConfig)
   }
 
   const getConfiguration = async () => {
@@ -140,6 +141,7 @@ const ChatPlugin = () => {
                 name='creditPerMessage'
                 value={chatConfig.creditPerMessage}
                 onChange={(event) => handleChange(event)}
+                onBlur={onBlurUpdate}
               />
             </div>
           </div>

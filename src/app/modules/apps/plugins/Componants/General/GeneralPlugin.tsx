@@ -22,13 +22,17 @@ const GeneralPlugin = () => {
 
     if (name !== 'reviewMedia') {
       setGeneralConfig({...generalConfig, [name]: event.target.value})
-      if (event.target.value.length !== 0) {
-        updateConfiguration({...generalConfig, [name]: event.target.value})
-      }
+      // if (event.target.value.length !== 0) {
+      //   updateConfiguration({...generalConfig, [name]: event.target.value})
+      // }
     } else {
       setGeneralConfig({...generalConfig, [name]: value})
       updateConfiguration({...generalConfig, [name]: value})
     }
+  }
+
+  const onBlurUpdate = () => {
+    updateConfiguration(generalConfig)
   }
 
   const getConfiguration = async () => {
@@ -74,6 +78,7 @@ const GeneralPlugin = () => {
                 name='maxUploadCount'
                 value={generalConfig.maxUploadCount}
                 onChange={(event) => handleChange(event)}
+                onBlur={onBlurUpdate}
               />
             </div>
           </div>

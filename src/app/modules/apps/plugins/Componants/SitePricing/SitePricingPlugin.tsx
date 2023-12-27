@@ -7,9 +7,46 @@ import {
   getCreditPackageAmountPlans,
   getPremiumPackageAmountPlans,
   updateCreditPackageAmountPlan,
+  updatePremiumPackageAmountConfig,
   updatePremiumPackageAmountPlan,
 } from '../../../../../../API/api-endpoint'
 import ToastUtils from '../../../../../../utils/ToastUtils'
+
+let configName = [
+  {
+    name: 'Chat/day',
+  },
+  {
+    name: 'See who likes you',
+  },
+  {
+    name: 'See who visit you',
+  },
+  {
+    name: 'Video call',
+  },
+  {
+    name: 'Undo profile/day',
+  },
+  {
+    name: 'Private photo',
+  },
+  {
+    name: 'Live stream',
+  },
+  {
+    name: 'Upload reels',
+  },
+  {
+    name: 'Free Credits',
+  },
+  {
+    name: 'Spotlight',
+  },
+  {
+    name: 'Global online',
+  },
+]
 
 const SitePricingPlugin = () => {
   const [creditAmountPackages, setCreditAmountPackages] = useState<any>([])
@@ -20,6 +57,18 @@ const SitePricingPlugin = () => {
   const [PremiumPackageAmount, setPremiumPackageAmount] = useState<any>('')
   const [PremiumPackageCredits, setPremiumPackageCredits] = useState<any>('')
   const [PremiumPackageName, setPremiumPackageName] = useState<any>('')
+
+  const [CreditAmountPackagesChanges, setCreditAmountPackagesChanges] = useState<any>({
+    creditAmountPackagesID: 0,
+    credit: 0,
+    amount: 0,
+  })
+  const [PremiuimAmountPackagesChanges, setPremiuimAmountPackagesChanges] = useState<any>({
+    PremiuimAmountPackagesID: 0,
+    days: 0,
+    amount: 0,
+    pkgName: '',
+  })
 
   useEffect(() => {
     getCreditAmountpackages()
@@ -82,7 +131,20 @@ const SitePricingPlugin = () => {
       credit = updatedcreditAmountPackages[index].credit
       amount = event.target.value
     }
-    updateCreditAmountPackages(creditAmountPackagesID, credit, amount)
+    setCreditAmountPackagesChanges({
+      creditAmountPackagesID: creditAmountPackagesID,
+      credit: credit,
+      amount: amount,
+    })
+    //updateCreditAmountPackages(creditAmountPackagesID, credit, amount)
+  }
+
+  const onBlurUpdateCreditAmountPackages = () => {
+    updateCreditAmountPackages(
+      CreditAmountPackagesChanges.creditAmountPackagesID,
+      CreditAmountPackagesChanges.credit,
+      CreditAmountPackagesChanges.amount
+    )
   }
 
   const updateCreditAmountPackages = async (pkgId: any, credit: any, amount: any) => {
@@ -113,7 +175,23 @@ const SitePricingPlugin = () => {
       days = updatedpremiumAmountPackages[index].days
       pkgName = event.target.value
     }
-    updatePremiumAmountPackages(premiumPackageAmountId, days, amount, pkgName)
+
+    setPremiuimAmountPackagesChanges({
+      PremiuimAmountPackagesID: premiumPackageAmountId,
+      days: days,
+      amount: amount,
+      pkgName: pkgName,
+    })
+    //updatePremiumAmountPackages(premiumPackageAmountId, days, amount, pkgName)
+  }
+
+  const onBlurUpdatePremiumAmountPackages = () => {
+    updatePremiumAmountPackages(
+      PremiuimAmountPackagesChanges.PremiuimAmountPackagesID,
+      PremiuimAmountPackagesChanges.days,
+      PremiuimAmountPackagesChanges.amount,
+      PremiuimAmountPackagesChanges.pkgName
+    )
   }
 
   const updatePremiumAmountPackages = async (pkgId: any, days: any, amount: any, pkgName: any) => {
@@ -123,6 +201,65 @@ const SitePricingPlugin = () => {
     } else {
       ToastUtils({type: 'error', message: 'Something Went Wrong'})
     }
+  }
+
+  //  update a premium config
+  const updatePremiumAmountConfig = async (pkgId: any, days: any, amount: any, pkgConfig: any) => {
+    let result = await updatePremiumPackageAmountConfig(pkgId, days, amount, pkgConfig)
+    if (result.status === 200) {
+      ToastUtils({type: 'success', message: 'Premium Amount Package Config is Updated'})
+    } else {
+      ToastUtils({type: 'error', message: 'Something Went Wrong'})
+    }
+  }
+
+  const handleChangePremiumAmountPackagesConfig = (event: any, premiumPkgId: any, index: any) => {
+    let name = event.target.name
+
+    let premiumPkgObject = premiumAmountPackages.filter(
+      (pkg: any) => pkg.premiumPackageAmountId === premiumPkgId
+    )
+
+    let premiumPkgIndex = premiumAmountPackages.findIndex(
+      (pkg: any) => pkg.premiumPackageAmountId === premiumPkgId
+    )
+
+    if (
+      name === 'chat_day' ||
+      name === 'undo_profile_day' ||
+      name === 'live_stream' ||
+      name === 'upload_reels' ||
+      name === 'free_credits' ||
+      name === 'spotlight'
+    ) {
+      let value = event.target.value.length === 0 ? 'e' : event.target.value
+      let oldPremiumPackage = [...premiumAmountPackages]
+      oldPremiumPackage[premiumPkgIndex]['premiumPackageConfig'][index]['value'] = value
+      setPremiumAmountPackages(oldPremiumPackage)
+    } else {
+      let oldPremiumPackage = [...premiumAmountPackages]
+      oldPremiumPackage[premiumPkgIndex]['premiumPackageConfig'][index]['value'] =
+        event.target.checked
+      setPremiumAmountPackages(oldPremiumPackage)
+      updatePremiumAmountConfig(
+        premiumPkgId,
+        premiumPkgObject.days,
+        premiumPkgObject.amount,
+        oldPremiumPackage
+      )
+    }
+  }
+
+  const onBlurUpdatePremiumAmountConfig = (premiumPkgId: any) => {
+    let premiumPkgObject = premiumAmountPackages.filter(
+      (pkg: any) => pkg.premiumPackageAmountId === premiumPkgId
+    )
+    updatePremiumAmountConfig(
+      premiumPkgId,
+      premiumPkgObject.days,
+      premiumPkgObject.amount,
+      premiumPkgObject.premiumPackageConfig
+    )
   }
 
   return (
@@ -166,6 +303,7 @@ const SitePricingPlugin = () => {
                               onChange={(event) =>
                                 handleCreditAmountPackagesInputChange(event, index)
                               }
+                              onBlur={onBlurUpdateCreditAmountPackages}
                             />
                           </InputGroup>
                         </td>
@@ -178,6 +316,7 @@ const SitePricingPlugin = () => {
                               onChange={(event) =>
                                 handleCreditAmountPackagesInputChange(event, index)
                               }
+                              onBlur={onBlurUpdateCreditAmountPackages}
                             />
                           </InputGroup>
                         </td>
@@ -220,6 +359,7 @@ const SitePricingPlugin = () => {
                               onChange={(event) =>
                                 handlePremiumAmountPackagesInputChange(event, index)
                               }
+                              onBlur={onBlurUpdatePremiumAmountPackages}
                             />
                           </InputGroup>
                         </td>
@@ -232,6 +372,7 @@ const SitePricingPlugin = () => {
                               onChange={(event) =>
                                 handlePremiumAmountPackagesInputChange(event, index)
                               }
+                              onBlur={onBlurUpdatePremiumAmountPackages}
                             />
                           </InputGroup>
                         </td>
@@ -244,6 +385,7 @@ const SitePricingPlugin = () => {
                               onChange={(event) =>
                                 handlePremiumAmountPackagesInputChange(event, index)
                               }
+                              onBlur={onBlurUpdatePremiumAmountPackages}
                             />
                           </InputGroup>
                         </td>
@@ -256,14 +398,94 @@ const SitePricingPlugin = () => {
         </div>
       </div>
 
-      <div className='col-lg-12 mt-4'>
+      <div className='card p-3 mt-5'>
+        <div className='card-title fs-2 fw-bold'>Premium Packages Config</div>
+        <div className='row mt-4'>
+          {premiumAmountPackages !== undefined &&
+            premiumAmountPackages.map((packageItem: any, index: any) => (
+              <>
+                <div className='col-3'>
+                  <div className='mb-4'>
+                    <div className='fs-3 fw-bold'>{packageItem.premiumPackageName}</div>
+                  </div>
+                  <hr />
+                  <div key={index} className=' mb-4'>
+                    {' '}
+                    {/*className='row mb-4' */}
+                    {/* Display labels in col-4 */}
+                    {/* <div className='col-6'>
+                      {packageItem?.premiumPackageConfig.map(
+                        (configItem: any, configIndex: any) => (
+                          <div key={configIndex} className='fs-6 fw-bold mb-7'>
+                            {configItem.label}
+                          </div>
+                        )
+                      )}
+                    </div> */}
+                    {/* Display inputs in col-4 */}
+                    <div className=''>
+                      {/*className='col-4' */}
+                      {packageItem?.premiumPackageConfig.map(
+                        (configItem: any, configIndex: any) => (
+                          <div key={configIndex}>
+                            <div key={configIndex} className='fs-6 mb-1 text-muted'>
+                              {configItem.label}
+                            </div>
+                            {configItem.type === 'checkbox' ? (
+                              <input
+                                type='checkbox'
+                                className='form-check-input mb-4'
+                                checked={configItem.value}
+                                name={configItem.name}
+                                onChange={(e) =>
+                                  handleChangePremiumAmountPackagesConfig(
+                                    e,
+                                    packageItem.premiumPackageAmountId,
+                                    configIndex
+                                  )
+                                }
+                              />
+                            ) : (
+                              <input
+                                type='number'
+                                className={clsx('form-control form-control-solid mb-3')}
+                                value={configItem.value}
+                                name={configItem.name}
+                                onChange={(e) =>
+                                  handleChangePremiumAmountPackagesConfig(
+                                    e,
+                                    packageItem.premiumPackageAmountId,
+                                    configIndex
+                                  )
+                                }
+                                onBlur={() =>
+                                  onBlurUpdatePremiumAmountConfig(
+                                    packageItem.premiumPackageAmountId
+                                  )
+                                }
+                              />
+                            )}
+                          </div>
+                        )
+                      )}
+                    </div>
+                    {/* Display premium package name in col-4 */}
+                  </div>
+                </div>
+                <br></br>
+              </>
+            ))}
+        </div>
+      </div>
+
+      {/* <div className='col-lg-12 mt-4'>
         <div className='card'>
           <div className='card-title p-4'>
             <div className='d-flex justify-content-between'>
               <h2 className='mt-4'>Premium Packages Configuration</h2>
-              {/* <button className='btn btn-primary'>Add Plan</button> */}
             </div>
           </div>
+
           <div className='card-body'>
             <div className='row'>
               <div className='col-lg-4 fw-bold fs-6'></div>
@@ -694,7 +916,7 @@ const SitePricingPlugin = () => {
             <br />
           </div>
         </div>
-      </div>
+      </div> */}
 
       <div className='modal fade' tabIndex={-1} id='add_credit_plan'>
         <div className='modal-dialog'>

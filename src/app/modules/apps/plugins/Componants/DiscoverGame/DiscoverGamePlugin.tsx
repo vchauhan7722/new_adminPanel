@@ -31,29 +31,32 @@ const DiscoverGame = () => {
     let name = event.target.name
     let value = event.target.checked
 
-    if (
-      name !== 'isEnabled' ||
-      name !== 'allowFreeUser' ||
-      name !== 'isUndoProfile' ||
-      name !== 'isCreditDeduct'
-    ) {
+    if (name === 'creditPerUndoProfile' || name === 'undoProfileCountFreeUser') {
       setUndoProfileConfig({...undoProfileConfig, [name]: event.target.value})
-      if (event.target.value.length !== 0) {
-        updateConfiguration({...undoProfileConfig, [name]: event.target.value}, configID)
-      }
+      // if (name === 'creditPerUndoProfile' || name === 'undoProfileCountFreeUser') {
+      //   updateConfiguration({...undoProfileConfig, [name]: event.target.value}, configID)
+      // }
     } else {
       setUndoProfileConfig({...undoProfileConfig, [name]: value})
       updateConfiguration({...undoProfileConfig, [name]: value}, configID)
     }
   }
 
+  const onBlurUndoProfileConfigUpdate = () => {
+    updateConfiguration(undoProfileConfig, configID)
+  }
+
   const handleLikedProfileChange = (event: any) => {
     let name = event.target.name
 
     setLikedProfileConfig({...likedProfileConfig, [name]: event.target.value})
-    if (event.target.value.length !== 0) {
-      updateConfiguration({...likedProfileConfig, [name]: event.target.value}, LikeProfileconfigID)
-    }
+    // if (event.target.value.length !== 0) {
+    //   updateConfiguration({...likedProfileConfig, [name]: event.target.value}, LikeProfileconfigID)
+    // }
+  }
+
+  const onBlurLikedProfileConfigUpdate = () => {
+    updateConfiguration(likedProfileConfig, LikeProfileconfigID)
   }
 
   const getConfiguration = async () => {
@@ -117,6 +120,7 @@ const DiscoverGame = () => {
                 name='creditPerLikeProfile'
                 value={likedProfileConfig.creditPerLikeProfile}
                 onChange={(event) => handleLikedProfileChange(event)}
+                onBlur={onBlurLikedProfileConfigUpdate}
               />
             </div>
           </div>
@@ -197,6 +201,7 @@ const DiscoverGame = () => {
                 name='creditPerUndoProfile'
                 value={undoProfileConfig.creditPerUndoProfile}
                 onChange={(event) => handleChange(event)}
+                onBlur={onBlurUndoProfileConfigUpdate}
               />
             </div>
           </div>
@@ -215,6 +220,7 @@ const DiscoverGame = () => {
                 name='undoProfileCountFreeUser'
                 value={undoProfileConfig.undoProfileCountFreeUser}
                 onChange={(event) => handleChange(event)}
+                onBlur={onBlurUndoProfileConfigUpdate}
               />
             </div>
           </div>

@@ -26,7 +26,7 @@ const RewardPlugin = () => {
 
     if (name !== 'isEnableRewards') {
       setRewardConfig({...rewardConfig, [name]: event.target.value})
-      if (event.target.value.length !== 0) {
+      if (name === 'genderId' || name === 'PremiumPackageID') {
         updateConfiguration({...rewardConfig, [name]: event.target.value})
       }
     } else {
@@ -59,6 +59,10 @@ const RewardPlugin = () => {
     } else {
       ToastUtils({type: 'error', message: 'Something Went Wrong'})
     }
+  }
+
+  const onBlurUpdate = () => {
+    updateConfiguration(rewardConfig)
   }
 
   return (
@@ -102,6 +106,7 @@ const RewardPlugin = () => {
                 name='initialCredit'
                 value={rewardConfig.initialCredit}
                 onChange={(event) => handleChange(event)}
+                onBlur={onBlurUpdate}
               />
             </div>
           </div>
@@ -120,6 +125,7 @@ const RewardPlugin = () => {
                 name='freePremium'
                 value={rewardConfig.freePremium}
                 onChange={(event) => handleChange(event)}
+                onBlur={onBlurUpdate}
               />
             </div>
           </div>
@@ -138,6 +144,7 @@ const RewardPlugin = () => {
                 name='profileCompleteCredit'
                 value={rewardConfig.profileCompleteCredit}
                 onChange={(event) => handleChange(event)}
+                onBlur={onBlurUpdate}
               />
             </div>
           </div>

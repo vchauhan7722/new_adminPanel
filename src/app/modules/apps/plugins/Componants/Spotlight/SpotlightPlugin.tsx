@@ -34,7 +34,7 @@ const SpotlightPlugin = () => {
 
     if (name !== 'autoWorldwide') {
       setSpotlightConfig({...spotlightConfig, [name]: event.target.value})
-      if (event.target.value.length !== 0) {
+      if (name === 'spotLightArea') {
         updateConfiguration({...spotlightConfig, [name]: event.target.value})
       }
     } else {
@@ -55,6 +55,10 @@ const SpotlightPlugin = () => {
         spotLightArea: parsedData?.spotLightArea,
       })
     }
+  }
+
+  const onBlurUpdate = () => {
+    updateConfiguration(spotlightConfig)
   }
 
   const updateConfiguration = async (config: any) => {
@@ -129,6 +133,7 @@ const SpotlightPlugin = () => {
                 name='duration'
                 value={spotlightConfig.duration}
                 onChange={(event) => handleChange(event)}
+                onBlur={onBlurUpdate}
               />
             </div>
           </div>
@@ -150,6 +155,7 @@ const SpotlightPlugin = () => {
                 name='credit'
                 value={spotlightConfig.credit}
                 onChange={(event) => handleChange(event)}
+                onBlur={onBlurUpdate}
               />
             </div>
           </div>

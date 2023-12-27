@@ -23,7 +23,7 @@ const PopularPlugin = () => {
 
     if (name !== 'onlyPremiumUserVisitProfile') {
       setpopularConfig({...popularConfig, [name]: event.target.value})
-      if (event.target.value.length !== 0) {
+      if (name === 'search') {
         updateConfiguration({...popularConfig, [name]: event.target.value})
       }
     } else {
@@ -43,6 +43,10 @@ const PopularPlugin = () => {
         totalUserCount: parsedData.totalUserCount,
       })
     }
+  }
+
+  const onBlurUpdate = () => {
+    updateConfiguration(popularConfig)
   }
 
   const updateConfiguration = async (config: any) => {
@@ -79,6 +83,7 @@ const PopularPlugin = () => {
                 name='totalUserCount'
                 value={popularConfig.totalUserCount}
                 onChange={(event) => handleChange(event)}
+                onBlur={onBlurUpdate}
               />
             </div>
           </div>

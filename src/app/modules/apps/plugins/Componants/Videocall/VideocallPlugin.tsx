@@ -34,7 +34,7 @@ const VideocallPlugin = () => {
       name === 'recordVideocallSpecificGender'
     ) {
       setVideocallConfig({...videoCallConfig, [name]: event.target.value})
-      if (event.target.value.length !== 0) {
+      if (name === 'recordVideocallSpecificGender') {
         updateConfiguration({...videoCallConfig, [name]: event.target.value})
       }
     } else {
@@ -61,6 +61,10 @@ const VideocallPlugin = () => {
         IsRecordedVideocallUploadToAmazonS3: parsedData?.IsRecordedVideocallUploadToAmazonS3,
       })
     }
+  }
+
+  const onBlurUpdate = () => {
+    updateConfiguration(videoCallConfig)
   }
 
   const updateConfiguration = async (config: any) => {
@@ -165,6 +169,7 @@ const VideocallPlugin = () => {
                 name='creditPerMin'
                 value={videoCallConfig.creditPerMin}
                 onChange={(event) => handleChange(event)}
+                onBlur={onBlurUpdate}
               />
             </div>
           </div>
@@ -188,6 +193,7 @@ const VideocallPlugin = () => {
                 name='transferCreditPercentage'
                 value={videoCallConfig.transferCreditPercentage}
                 onChange={(event) => handleChange(event)}
+                onBlur={onBlurUpdate}
               />
             </div>
           </div>
