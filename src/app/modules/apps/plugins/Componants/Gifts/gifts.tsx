@@ -9,7 +9,7 @@ import {
 } from '../../../../../../API/api-endpoint'
 import {toAbsoluteUrl} from '../../../../../../_metronic/helpers'
 import clsx from 'clsx'
-import ToastUtils from '../../../../../../utils/ToastUtils'
+import ToastUtils, {ErrorToastUtils} from '../../../../../../utils/ToastUtils'
 
 const Gifts = () => {
   const hiddenFileInput = useRef<HTMLInputElement>(document.createElement('input'))
@@ -64,7 +64,7 @@ const Gifts = () => {
         setGiftName('')
         setFile('')
       } else {
-        ToastUtils({type: 'error', message: 'Something Went Wrong'})
+        ErrorToastUtils()
       }
     }
   }
@@ -75,7 +75,7 @@ const Gifts = () => {
       getAllGiftsList()
       ToastUtils({type: 'success', message: 'Gift Is Deleted'})
     } else {
-      ToastUtils({type: 'error', message: 'Something Went Wrong'})
+      ErrorToastUtils()
     }
   }
 
@@ -93,7 +93,7 @@ const Gifts = () => {
         setCurrentImageTempPath('')
         setisImageUploaded(false)
       } else {
-        ToastUtils({type: 'error', message: 'Something Went Wrong'})
+        ErrorToastUtils()
       }
     }
   }

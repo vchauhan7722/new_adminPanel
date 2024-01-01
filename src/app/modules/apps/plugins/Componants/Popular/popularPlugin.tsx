@@ -3,7 +3,7 @@ import {
   getConfigurationByName,
   updateConfigurationByConfigID,
 } from '../../../../../../API/api-endpoint'
-import ToastUtils from '../../../../../../utils/ToastUtils'
+import ToastUtils, {ErrorToastUtils} from '../../../../../../utils/ToastUtils'
 
 const PopularPlugin = () => {
   const [configID, setConfigId] = useState(0)
@@ -55,7 +55,7 @@ const PopularPlugin = () => {
       getConfiguration()
       ToastUtils({type: 'success', message: 'Configuration Saved SuccessFully'})
     } else {
-      ToastUtils({type: 'error', message: 'Something Went Wrong'})
+      ErrorToastUtils()
     }
   }
 

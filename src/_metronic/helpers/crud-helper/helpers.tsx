@@ -99,7 +99,6 @@ function groupingOnSelectAll<T>(
   }
   setSelected(data.filter((item) => item.userId).map((item) => item.userId))
 }
-
 // Hook
 function useDebounce(value: string | undefined, delay: number) {
   // State and setters for debounced value

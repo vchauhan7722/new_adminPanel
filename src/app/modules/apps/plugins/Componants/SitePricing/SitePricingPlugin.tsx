@@ -10,7 +10,7 @@ import {
   updatePremiumPackageAmountConfig,
   updatePremiumPackageAmountPlan,
 } from '../../../../../../API/api-endpoint'
-import ToastUtils from '../../../../../../utils/ToastUtils'
+import ToastUtils, {ErrorToastUtils} from '../../../../../../utils/ToastUtils'
 
 let configName = [
   {
@@ -54,6 +54,7 @@ const SitePricingPlugin = () => {
   const [CreditPackageCredits, setCreditPackageCredits] = useState<any>('')
 
   const [premiumAmountPackages, setPremiumAmountPackages] = useState<any>([])
+  const [oldPremiumAmountPackages, setOldPremiumAmountPackages] = useState<any>([])
   const [PremiumPackageAmount, setPremiumPackageAmount] = useState<any>('')
   const [PremiumPackageCredits, setPremiumPackageCredits] = useState<any>('')
   const [PremiumPackageName, setPremiumPackageName] = useState<any>('')
@@ -90,7 +91,7 @@ const SitePricingPlugin = () => {
       setCreditPackageAmount('')
       setCreditPackageCredits('')
     } else {
-      ToastUtils({type: 'error', message: 'Something Went Wrong'})
+      ErrorToastUtils()
     }
   }
 
@@ -98,6 +99,7 @@ const SitePricingPlugin = () => {
     let result = await getPremiumPackageAmountPlans()
     if (result.status === 200) {
       setPremiumAmountPackages(result.data)
+      setOldPremiumAmountPackages(result.data)
     }
   }
 
@@ -114,7 +116,7 @@ const SitePricingPlugin = () => {
       setPremiumPackageCredits('')
       setPremiumPackageName('')
     } else {
-      ToastUtils({type: 'error', message: 'Something Went Wrong'})
+      ErrorToastUtils()
     }
   }
 
@@ -152,7 +154,7 @@ const SitePricingPlugin = () => {
     if (result.status === 200) {
       ToastUtils({type: 'success', message: 'Credit Amount Package is Updated'})
     } else {
-      ToastUtils({type: 'error', message: 'Something Went Wrong'})
+      ErrorToastUtils()
     }
   }
 
@@ -199,7 +201,7 @@ const SitePricingPlugin = () => {
     if (result.status === 200) {
       ToastUtils({type: 'success', message: 'Premium Amount Package is Updated'})
     } else {
-      ToastUtils({type: 'error', message: 'Something Went Wrong'})
+      ErrorToastUtils()
     }
   }
 
@@ -209,7 +211,7 @@ const SitePricingPlugin = () => {
     if (result.status === 200) {
       ToastUtils({type: 'success', message: 'Premium Amount Package Config is Updated'})
     } else {
-      ToastUtils({type: 'error', message: 'Something Went Wrong'})
+      ErrorToastUtils()
     }
   }
 
@@ -241,10 +243,11 @@ const SitePricingPlugin = () => {
       oldPremiumPackage[premiumPkgIndex]['premiumPackageConfig'][index]['value'] =
         event.target.checked
       setPremiumAmountPackages(oldPremiumPackage)
+
       updatePremiumAmountConfig(
         premiumPkgId,
-        premiumPkgObject.days,
-        premiumPkgObject.amount,
+        premiumPkgObject[0].days,
+        premiumPkgObject[0].amount,
         oldPremiumPackage
       )
     }
@@ -254,12 +257,20 @@ const SitePricingPlugin = () => {
     let premiumPkgObject = premiumAmountPackages.filter(
       (pkg: any) => pkg.premiumPackageAmountId === premiumPkgId
     )
-    updatePremiumAmountConfig(
-      premiumPkgId,
-      premiumPkgObject.days,
-      premiumPkgObject.amount,
-      premiumPkgObject.premiumPackageConfig
+
+    let oldpremiumPkgObject = oldPremiumAmountPackages.filter(
+      (pkg: any) => pkg.premiumPackageAmountId === premiumPkgId
     )
+
+    // if any changes then and then only update
+    if (premiumPkgObject[0].premiumPackageConfig !== oldpremiumPkgObject[0].premiumPackageConfig) {
+      updatePremiumAmountConfig(
+        premiumPkgId,
+        premiumPkgObject[0].days,
+        premiumPkgObject[0].amount,
+        premiumPkgObject[0].premiumPackageConfig
+      )
+    }
   }
 
   return (
@@ -341,7 +352,7 @@ const SitePricingPlugin = () => {
               <thead>
                 <tr>
                   <th>Package Name</th>
-                  <th>Credit</th>
+                  <th>Days</th>
                   <th>Price(Inr)</th>
                 </tr>
               </thead>
@@ -429,7 +440,9 @@ const SitePricingPlugin = () => {
                         (configItem: any, configIndex: any) => (
                           <div key={configIndex}>
                             <div key={configIndex} className='fs-6 mb-1 text-muted'>
-                              {configItem.label}
+                              {configItem.label === 'Live stream'
+                                ? `${configItem.label} (in Minutes)`
+                                : configItem.label}
                             </div>
                             {configItem.type === 'checkbox' ? (
                               <input
@@ -469,7 +482,6 @@ const SitePricingPlugin = () => {
                         )
                       )}
                     </div>
-                    {/* Display premium package name in col-4 */}
                   </div>
                 </div>
                 <br></br>

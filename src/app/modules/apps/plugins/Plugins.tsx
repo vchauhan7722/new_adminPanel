@@ -18,7 +18,7 @@ import LegalInformationPlugin from './Componants/LegalInformation/LegalInformati
 import DiscoverGame from './Componants/DiscoverGame/DiscoverGamePlugin'
 import GeneralPlugin from './Componants/General/GeneralPlugin'
 import VerificationSystemPlugin from './Componants/VerificationSystem/VerificationSystemPlugin'
-import AccountPrivilgesPlugin from './Componants/AccountPrivilges/AccountPrivilgesPlugin'
+import AccountPrivilegesPlugin from './Componants/AccountPrivilges/AccountPrivilgesPlugin'
 
 const usersBreadcrumbs: Array<PageLink> = [
   {
@@ -223,7 +223,7 @@ const Plugins = () => {
           element={
             <>
               <PageTitle>Account Privileges</PageTitle>
-              <AccountPrivilgesPlugin />
+              <AccountPrivilegesPlugin />
             </>
           }
         />
@@ -237,8 +237,6 @@ const Plugins = () => {
           }
         />
       </Routes>
-
-      {/* {selectedPlugins === 'Profile questions and Interest' && <ProfileQuestionsAndInterest />} */}
     </>
   )
 }

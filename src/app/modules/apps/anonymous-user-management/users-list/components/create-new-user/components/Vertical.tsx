@@ -366,7 +366,7 @@ import {Step3} from './steps/Step3'
 import clsx from 'clsx'
 
 const Vertical = () => {
-  const [stepValue, setStepValue] = useState(3)
+  const [stepValue, setStepValue] = useState(1)
   const [currentUserId, setCurrentUserId] = useState(1)
 
   const prevStep = () => {

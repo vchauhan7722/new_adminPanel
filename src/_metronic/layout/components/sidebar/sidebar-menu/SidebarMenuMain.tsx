@@ -105,6 +105,13 @@ const SidebarMenuMain = () => {
         title={intl.formatMessage({id: 'MENU.USERVERIFICATION'})}
         fontIcon='bi-layers'
       />
+
+      <SidebarMenuItem
+        to='/anonymous-user-chat'
+        icon='abstract-28'
+        title={intl.formatMessage({id: 'MENU.ANONYMOUSUSERCHAT'})}
+        fontIcon='bi-layers'
+      />
     </>
   )
 }

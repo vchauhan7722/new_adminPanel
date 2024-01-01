@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react'
 import {useIntl} from 'react-intl'
 import {KTCardBody} from '../../../../../_metronic/helpers'
@@ -78,7 +79,7 @@ const Credit = () => {
   }
 
   return (
-    <div className='card '>
+    <div className='card'>
       <div className='card-title pt-8 px-9 d-flex justify-content-between'>
         <div>
           <h2>{intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.CREDIT'})}</h2>

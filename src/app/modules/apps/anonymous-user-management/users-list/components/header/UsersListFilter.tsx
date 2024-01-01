@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {useEffect, useState} from 'react'
 import {MenuComponent} from '../../../../../../../_metronic/assets/ts/components'
 import {initialQueryState, KTIcon} from '../../../../../../../_metronic/helpers'
@@ -62,6 +63,8 @@ const UsersListFilter = () => {
       completeProfile: '',
     })
   }
+
+  //this 3 useEffect are for Get Location
 
   useEffect(() => {
     getCountry()

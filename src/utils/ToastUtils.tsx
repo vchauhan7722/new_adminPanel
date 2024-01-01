@@ -12,4 +12,8 @@ const ToastUtils = ({type, message}) =>
     timer: 1500,
   })
 
+export const ErrorToastUtils = (message = 'Something Went Wrong') => {
+  ToastUtils({type: 'error', message: message})
+}
+
 export default ToastUtils

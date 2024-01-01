@@ -101,7 +101,7 @@ const PluginData = [
   {
     pluginId: 12,
     icon: '/media/plugins/jstree/vip.jpg',
-    name: 'Account privileges',
+    name: 'Account Privileges',
     type: 'Software',
     description: 'Set the free and premium account settings',
     status: 'Active',
@@ -110,7 +110,7 @@ const PluginData = [
   {
     pluginId: 13,
     icon: '/media/plugins/jstree/terms.jpg',
-    name: 'Legal information (not working)',
+    name: 'Legal information',
     type: 'Pages',
     description: 'Edit your site terms of use, privacy policy and cookies',
     status: 'Active',

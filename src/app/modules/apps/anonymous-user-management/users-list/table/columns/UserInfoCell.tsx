@@ -29,7 +29,7 @@ const UserInfoCell = ({user}) => (
 
     <div className='d-flex flex-column'>
       <Link
-        to={`/apps/users-profile/activity/${user.userId}`}
+        to={`/apps/anonymous-user/users-profile/activity/${user.userId}`}
         className='fw-bolder text-gray-800 text-hover-primary mb-1'
       >
         {user.fullName}

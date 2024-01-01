@@ -7,11 +7,10 @@ import {
   setMediaAsAStoryForUserMedia,
   updateMediaActionForUserMedia,
 } from '../../../../../../API/api-endpoint'
-import ToastUtils from '../../../../../../utils/ToastUtils'
-import {waitForDebugger} from 'inspector'
+import ToastUtils, {ErrorToastUtils} from '../../../../../../utils/ToastUtils'
 import clsx from 'clsx'
-import Lightbox from 'yet-another-react-lightbox'
-import 'yet-another-react-lightbox/styles.css'
+import LightBoxComponent from '../../../../../../_metronic/partials/componants/LightBoxComponent'
+import {DateWithTimeFormatter} from '../../../../../../utils/DateUtils'
 
 const Media = (props: any) => {
   const {user} = props
@@ -23,8 +22,6 @@ const Media = (props: any) => {
   const [getUpdatedStory, setGetUpdatedStory] = useState(1)
   const [isMediaUploaded, setisMediaUploaded] = useState<any>(false)
   const [openLightBox, setOpenLightBox] = React.useState(false)
-  // const [lightBoxArray, setLightBoxArray] = useState<any>([])
-
   const lightBoxArray: any = []
 
   const userId = localStorage.getItem('userId')
@@ -56,7 +53,7 @@ const Media = (props: any) => {
       ToastUtils({type: 'success', message: 'media has been removed'})
       setUserProfileMedia(result.data)
     } else {
-      ToastUtils({type: 'error', message: 'Something Went Wrong'})
+      ErrorToastUtils()
     }
   }
 
@@ -131,15 +128,11 @@ const Media = (props: any) => {
         <div className='p-5'>
           <div className='card-header border-0 row'>
             {userProfileMedia
-              .filter((media) => media.status === true)
+              .sort((a: any, b: any) =>
+                a.isProfileImage === b.isProfileImage ? 0 : a.isProfileImage ? -1 : 1
+              ) // sorting for get profile images first
+              .filter((media: any) => media.status === true)
               .map((userMedia: any, index: any) => {
-                // let url = `${process.env.REACT_APP_SERVER_URL}/${userMedia.media}`
-                // let PhotoObject = {
-                //   src: url,
-                // }
-                // let oldLightBoxArray = [...lightBoxArray]
-                // oldLightBoxArray.push(PhotoObject)
-                // setLightBoxArray(oldLightBoxArray)
                 handleaddMediaforLightbox(`${process.env.REACT_APP_SERVER_URL}/${userMedia.media}`)
 
                 return (
@@ -180,39 +173,33 @@ const Media = (props: any) => {
                             {/* begin::Menu item */}
                             {!userMedia.isProfileImage && (
                               <div
-                                className='menu-item px-3'
+                                className='px-3'
                                 onClick={() => ActionsOnMedia('profile', userMedia.id)}
                               >
-                                <a className='menu-link px-3'>Set profile</a>
+                                <p className='px-3'>Set profile</p>
                               </div>
                             )}
                             {/* end::Menu item */}
                             {/* begin::Menu item */}
                             <div
-                              className='menu-item px-3'
+                              className=' px-3'
                               onClick={() => ActionsOnMedia('private', userMedia.id)}
                             >
-                              <a className='menu-link px-3'>Set private</a>
+                              <p className=' px-3'>Set private</p>
                             </div>
                             {/* end::Menu item */}
                             {/* begin::Menu item */}
-                            <div className='menu-item px-3'>
-                              <a
-                                className='menu-link px-3'
-                                onClick={() => uploadMediaAsAStory(userMedia.id)}
-                              >
+                            <div className=' px-3'>
+                              <p className='px-3' onClick={() => uploadMediaAsAStory(userMedia.id)}>
                                 Upload to story
-                              </a>
+                              </p>
                             </div>
                             {/* end::Menu item */}
                             {/* begin::Menu item */}
-                            <div
-                              className='menu-item px-3'
-                              onClick={() => removeMedia(userMedia.id)}
-                            >
-                              <a className='menu-link px-3' data-kt-users-table-filter='delete_row'>
+                            <div className=' px-3' onClick={() => removeMedia(userMedia.id)}>
+                              <p className=' px-3' data-kt-users-table-filter='delete_row'>
                                 Delete
-                              </a>
+                              </p>
                             </div>
                             {/* end::Menu item */}
                           </div>
@@ -220,7 +207,9 @@ const Media = (props: any) => {
                       </span>
                     </div>
 
-                    <div className='text-muted mt-2 text-center'>07 Aug 2023 05:45pm</div>
+                    <div className='text-muted mt-4 text-center'>
+                      {DateWithTimeFormatter(userMedia?.updatedAt)}
+                    </div>
                   </div>
                 )
               })}
@@ -230,7 +219,12 @@ const Media = (props: any) => {
       <div className='p-6'>
         <MediaTable setGetUpdatedStory={setGetUpdatedStory} getUpdatedStory={getUpdatedStory} />
       </div>
-      <Lightbox open={openLightBox} close={() => setOpenLightBox(false)} slides={lightBoxArray} />
+
+      <LightBoxComponent
+        openLightBox={openLightBox}
+        setOpenLightBox={setOpenLightBox}
+        lightBoxArray={lightBoxArray}
+      />
 
       <div className='modal fade' tabIndex={-1} id='full_width_image_modal'>
         <div className='modal-dialog'>

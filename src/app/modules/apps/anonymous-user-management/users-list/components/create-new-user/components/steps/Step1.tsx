@@ -7,9 +7,18 @@ import {
   getCitiesBYSearch,
 } from '../../../../../../../../../API/api-endpoint'
 import clsx from 'clsx'
-import ToastUtils from '../../../../../../../../../utils/ToastUtils'
-import {getEighteenYearsBackAge} from '../../../../../../../../../utils/DateUtils'
-import {getAge} from '../../../../../../../../../utils/Utils'
+import ToastUtils, {ErrorToastUtils} from '../../../../../../../../../utils/ToastUtils'
+
+const getDate = () => {
+  const currentDate = new Date()
+  const maxDate = new Date(
+    currentDate.getFullYear() - 18,
+    currentDate.getMonth(),
+    currentDate.getDate()
+  )
+  let maxDateString = maxDate.toISOString().split('T')[0]
+  return maxDateString
+}
 
 const Step1 = (props: any) => {
   const {submitStep, prevStep} = props
@@ -20,7 +29,7 @@ const Step1 = (props: any) => {
     fullName: '',
     userName: '',
     genderId: '1',
-    birthDate: new Date().toLocaleDateString('en-CA'),
+    birthDate: getDate(),
     country: '',
     state: '',
     city: '',
@@ -61,9 +70,6 @@ const Step1 = (props: any) => {
   }
 
   const onSubmitStep1 = async () => {
-    var enteredAge = getAge(step1Details.birthDate)
-    console.log('enteredAge', enteredAge)
-
     if (step1Details.fullName.length === 0) {
       ToastUtils({type: 'error', message: 'Please Enter Full Name'})
     } else if (step1Details.userName.length === 0) {
@@ -74,15 +80,13 @@ const Step1 = (props: any) => {
       step1Details.city.length === 0
     ) {
       ToastUtils({type: 'error', message: 'Please Select Location'})
-    } else if (enteredAge < 18) {
-      ToastUtils({type: 'error', message: 'Please Select Age above 18'})
     } else {
       let result = await createNewAnonymousUser(step1Details)
       if (result.status === 200) {
         submitStep(result.data.userId)
         ToastUtils({type: 'success', message: 'Saved SuccessFully'})
       } else {
-        ToastUtils({type: 'error', message: 'Something Went Wrong'})
+        ErrorToastUtils()
       }
     }
   }
@@ -154,7 +158,7 @@ const Step1 = (props: any) => {
             autoComplete='off'
             value={new Date(step1Details?.birthDate).toLocaleDateString('en-CA')}
             onChange={(e) => handleStep1Change(e)}
-            //max={getEighteenYearsBackAge()}
+            max={getDate()}
           />
         </div>
       </div>
@@ -204,7 +208,7 @@ const Step1 = (props: any) => {
       </div>
 
       <div className='fv-row mb-2'>
-        <label className='form-label required'>Bio</label>
+        <label className='form-label'>Bio</label>
 
         <textarea
           name='bio'

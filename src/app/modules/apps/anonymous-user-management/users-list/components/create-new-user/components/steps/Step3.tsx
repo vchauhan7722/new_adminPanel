@@ -6,11 +6,12 @@ import {
   createMediaActionForUserMedia,
   getUserMediaImages,
 } from '../../../../../../../../../API/api-endpoint'
-import ToastUtils from '../../../../../../../../../utils/ToastUtils'
-import {Link} from 'react-router-dom'
+import ToastUtils, {ErrorToastUtils} from '../../../../../../../../../utils/ToastUtils'
+
+import {useNavigate} from 'react-router-dom'
 
 const Step3 = (props: any) => {
-  const {submitStep, prevStep, userID = 564} = props
+  const {submitStep, prevStep, userID} = props
 
   const hiddenFileInput = useRef<HTMLInputElement>(document.createElement('input'))
   const hiddenMediaInput = useRef<HTMLInputElement>(document.createElement('input'))
@@ -20,13 +21,14 @@ const Step3 = (props: any) => {
   const [userProfileMedia, setUserProfileMedia] = useState<any>(undefined)
 
   const [file, setFile] = useState('')
+  const navigate = useNavigate()
 
   useEffect(() => {
     getMediaImageList()
   }, [])
 
   const getMediaImageList = async () => {
-    let result = await getUserMediaImages(564)
+    let result = await getUserMediaImages(userID)
 
     if (result.status === 200) {
       setUserProfileMedia(result.data)
@@ -54,7 +56,7 @@ const Step3 = (props: any) => {
       setisImageUploaded(true)
       ToastUtils({type: 'success', message: 'Your Profile Picture Updated'})
     } else {
-      ToastUtils({type: 'error', message: 'Something Went Wrong'})
+      ErrorToastUtils()
     }
   }
 
@@ -77,8 +79,10 @@ const Step3 = (props: any) => {
   }
 
   const onSubmitStep3 = async () => {
+    console.log('isImageUploaded', isImageUploaded)
     if (isImageUploaded) {
       submitStep()
+      navigate('/apps/anonymous-user-management/users')
     } else {
       ToastUtils({type: 'error', message: 'Please Update Profile Picture'})
     }
@@ -191,14 +195,12 @@ const Step3 = (props: any) => {
         </div> */}
 
         <div>
-          <Link to='/apps/anonymous-user-management/users'>
-            <button type='button' className='btn btn-sm btn-primary me-3' onClick={onSubmitStep3}>
-              <span className='indicator-label'>
-                Submit
-                <KTIcon iconName='arrow-right' className='fs-3 ms-2 me-0' />
-              </span>
-            </button>
-          </Link>
+          <button type='button' className='btn btn-sm btn-primary me-3' onClick={onSubmitStep3}>
+            <span className='indicator-label'>
+              Submit
+              <KTIcon iconName='arrow-right' className='fs-3 ms-2 me-0' />
+            </span>
+          </button>
         </div>
       </div>
     </div>

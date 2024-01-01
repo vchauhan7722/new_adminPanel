@@ -69,8 +69,8 @@ const CustomPagination = (props) => {
         </div> */}
         <div>
           <ReactPaginate
-            previousLabel={'Previous'}
-            nextLabel={'Next'}
+            previousLabel={<i className='fa-solid fa-chevron-left'></i>}
+            nextLabel={<i className='fa-solid fa-chevron-right'></i>}
             pageCount={totalPage}
             onPageChange={updatePage}
             pageRangeDisplayed={3}

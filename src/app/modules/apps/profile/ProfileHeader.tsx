@@ -13,7 +13,7 @@ import {
   UpdateVerifyStatusByUID,
   getPremiumPackageAmountPlans,
 } from '../../../../API/api-endpoint'
-import ToastUtils from '../../../../utils/ToastUtils'
+import ToastUtils, {ErrorToastUtils} from '../../../../utils/ToastUtils'
 import {Form} from 'react-bootstrap'
 
 const ProfileHeader = (props) => {
@@ -21,6 +21,13 @@ const ProfileHeader = (props) => {
 
   const location = useLocation()
   const intl = useIntl()
+
+  // for normal user -> /apps/users-profile
+  // for anonymous user -> /apps/anonymous-user/users-profile
+  let routeForProfileDetails =
+    location.pathname.substring(6, 15) === 'anonymous'
+      ? '/apps/anonymous-user/users-profile'
+      : '/apps/users-profile'
 
   let UserID = localStorage.getItem('userId')
 
@@ -43,7 +50,7 @@ const ProfileHeader = (props) => {
         message: !user?.isVerify ? 'User is Verified' : 'User Verification is Removed',
       })
     } else {
-      ToastUtils({type: 'error', message: 'Something Went Wrong'})
+      ErrorToastUtils()
     }
   }
 
@@ -56,7 +63,7 @@ const ProfileHeader = (props) => {
         message: `User is added in Spotlight For ${spotlightDays} days`,
       })
     } else {
-      ToastUtils({type: 'error', message: 'Something Went Wrong'})
+      ErrorToastUtils()
     }
   }
 
@@ -72,7 +79,7 @@ const ProfileHeader = (props) => {
           : `User is added in Popular For ${popularDays} days`,
       })
     } else {
-      ToastUtils({type: 'error', message: 'Something Went Wrong'})
+      ErrorToastUtils()
     }
   }
 
@@ -86,7 +93,7 @@ const ProfileHeader = (props) => {
         message: addUpdateCredit.type === 'add' ? 'User Credit is Added' : 'User Credit is Updated',
       })
     } else {
-      ToastUtils({type: 'error', message: 'Something Went Wrong'})
+      ErrorToastUtils()
     }
   }
 
@@ -106,7 +113,7 @@ const ProfileHeader = (props) => {
       })
       setUserUpdateFlag(userUpdateFlag + 1)
     } else {
-      ToastUtils({type: 'error', message: 'Something Went Wrong'})
+      ErrorToastUtils()
     }
   }
 
@@ -145,13 +152,6 @@ const ProfileHeader = (props) => {
                       <a href='#' className='text-gray-800 text-hover-primary fs-2 fw-bolder me-1'>
                         {user.fullName}
                       </a>
-                      {/* {user.isVerify && <KTIcon iconName='verify' className='fs-1 text-primary' />}
-                      {user.isSpotlightUser && (
-                        <KTIcon iconName='verify' className='fs-1 text-primary' />
-                      )}
-                      {user.isSpotlightUser && (
-                        <KTIcon iconName='verify' className='fs-1 text-primary' />
-                      )} */}
                       &nbsp;
                       {user?.isPremium && <i className='text-primary fa-solid fa-award fa-2xl'></i>}
                       &nbsp;
@@ -236,7 +236,7 @@ const ProfileHeader = (props) => {
                           <Link
                             className='menu-link px-3'
                             data-kt-users-table-filter='delete_row'
-                            to={`/apps/users-profile/edit-profile/${UserID}`}
+                            to={`${routeForProfileDetails}/edit-profile/${UserID}`}
                           >
                             Edit Account
                           </Link>
@@ -387,9 +387,10 @@ const ProfileHeader = (props) => {
                   <Link
                     className={
                       `nav-link text-active-primary me-6 ` +
-                      (location.pathname === `/apps/users-profile/activity/${UserID}` && 'active')
+                      (location.pathname === `${routeForProfileDetails}/activity/${UserID}` &&
+                        'active')
                     }
-                    to={`/apps/users-profile/activity/${UserID}`}
+                    to={`${routeForProfileDetails}/activity/${UserID}`}
                   >
                     {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.ACTIVITY'})}
                   </Link>
@@ -398,9 +399,10 @@ const ProfileHeader = (props) => {
                   <Link
                     className={
                       `nav-link text-active-primary me-6 ` +
-                      (location.pathname === `/apps/users-profile/overview/${UserID}` && 'active')
+                      (location.pathname === `${routeForProfileDetails}/overview/${UserID}` &&
+                        'active')
                     }
-                    to={`/apps/users-profile/overview/${UserID}`}
+                    to={`${routeForProfileDetails}/overview/${UserID}`}
                   >
                     {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.OVERVIEW'})}
                   </Link>
@@ -409,10 +411,10 @@ const ProfileHeader = (props) => {
                   <Link
                     className={
                       `nav-link text-active-primary me-6 ` +
-                      (location.pathname === `/apps/users-profile/edit-profile/${UserID}` &&
+                      (location.pathname === `${routeForProfileDetails}/edit-profile/${UserID}` &&
                         'active')
                     }
-                    to={`/apps/users-profile/edit-profile/${UserID}`}
+                    to={`${routeForProfileDetails}/edit-profile/${UserID}`}
                   >
                     {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.EDITPROFILE'})}
                   </Link>
@@ -421,9 +423,9 @@ const ProfileHeader = (props) => {
                   <Link
                     className={
                       `nav-link text-active-primary me-6 ` +
-                      (location.pathname === `/apps/users-profile/chat/${UserID}` && 'active')
+                      (location.pathname === `${routeForProfileDetails}/chat/${UserID}` && 'active')
                     }
-                    to={`/apps/users-profile/chat/${UserID}`}
+                    to={`${routeForProfileDetails}/chat/${UserID}`}
                   >
                     {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.CHAT'})}
                   </Link>
@@ -432,9 +434,10 @@ const ProfileHeader = (props) => {
                   <Link
                     className={
                       `nav-link text-active-primary me-6 ` +
-                      (location.pathname === `/apps/users-profile/videocall/${UserID}` && 'active')
+                      (location.pathname === `${routeForProfileDetails}/videocall/${UserID}` &&
+                        'active')
                     }
-                    to={`/apps/users-profile/videocall/${UserID}`}
+                    to={`${routeForProfileDetails}/videocall/${UserID}`}
                   >
                     {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.VIDEOCALL'})}
                   </Link>
@@ -443,9 +446,10 @@ const ProfileHeader = (props) => {
                   <Link
                     className={
                       `nav-link text-active-primary me-6 ` +
-                      (location.pathname === `/apps/users-profile/media/${UserID}` && 'active')
+                      (location.pathname === `${routeForProfileDetails}/media/${UserID}` &&
+                        'active')
                     }
-                    to={`/apps/users-profile/media/${UserID}`}
+                    to={`${routeForProfileDetails}/media/${UserID}`}
                   >
                     {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.MEDIA'})}
                   </Link>
@@ -454,10 +458,10 @@ const ProfileHeader = (props) => {
                   <Link
                     className={
                       `nav-link text-active-primary me-6 ` +
-                      (location.pathname === `/apps/users-profile/live-stream/${UserID}` &&
+                      (location.pathname === `${routeForProfileDetails}/live-stream/${UserID}` &&
                         'active')
                     }
-                    to={`/apps/users-profile/live-stream/${UserID}`}
+                    to={`${routeForProfileDetails}/live-stream/${UserID}`}
                   >
                     {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.LIVESTREAM'})}
                   </Link>
@@ -466,9 +470,10 @@ const ProfileHeader = (props) => {
                   <Link
                     className={
                       `nav-link text-active-primary me-6 ` +
-                      (location.pathname === `/apps/users-profile/reels/${UserID}` && 'active')
+                      (location.pathname === `${routeForProfileDetails}/reels/${UserID}` &&
+                        'active')
                     }
-                    to={`/apps/users-profile/reels/${UserID}`}
+                    to={`${routeForProfileDetails}/reels/${UserID}`}
                   >
                     {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.REELS'})}
                   </Link>
@@ -477,9 +482,10 @@ const ProfileHeader = (props) => {
                   <Link
                     className={
                       `nav-link text-active-primary me-6 ` +
-                      (location.pathname === `/apps/users-profile/credit/${UserID}` && 'active')
+                      (location.pathname === `${routeForProfileDetails}/credit/${UserID}` &&
+                        'active')
                     }
-                    to={`/apps/users-profile/credit/${UserID}`}
+                    to={`${routeForProfileDetails}/credit/${UserID}`}
                   >
                     {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.CREDIT'})}
                   </Link>
@@ -488,9 +494,10 @@ const ProfileHeader = (props) => {
                   <Link
                     className={
                       `nav-link text-active-primary me-6 ` +
-                      (location.pathname === `/apps/users-profile/history/${UserID}` && 'active')
+                      (location.pathname === `${routeForProfileDetails}/history/${UserID}` &&
+                        'active')
                     }
-                    to={`/apps/users-profile/history/${UserID}`}
+                    to={`${routeForProfileDetails}/history/${UserID}`}
                   >
                     {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.HISTORY'})}
                   </Link>
@@ -499,9 +506,10 @@ const ProfileHeader = (props) => {
                   <Link
                     className={
                       `nav-link text-active-primary me-6 ` +
-                      (location.pathname === `/apps/users-profile/referrals/${UserID}` && 'active')
+                      (location.pathname === `${routeForProfileDetails}/referrals/${UserID}` &&
+                        'active')
                     }
-                    to={`/apps/users-profile/referrals/${UserID}`}
+                    to={`${routeForProfileDetails}/referrals/${UserID}`}
                   >
                     {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.REFERRALS'})}
                   </Link>
@@ -510,9 +518,10 @@ const ProfileHeader = (props) => {
                   <Link
                     className={
                       `nav-link text-active-primary me-6 ` +
-                      (location.pathname === `/apps/users-profile/security/${UserID}` && 'active')
+                      (location.pathname === `${routeForProfileDetails}/security/${UserID}` &&
+                        'active')
                     }
-                    to={`/apps/users-profile/security/${UserID}`}
+                    to={`${routeForProfileDetails}/security/${UserID}`}
                   >
                     {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.SECURITY'})}
                   </Link>

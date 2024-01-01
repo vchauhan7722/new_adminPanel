@@ -8,7 +8,7 @@ import {
   getUserQuestionAnswerForProfile,
   removeUserInterest,
 } from '../../../../../../../../../API/api-endpoint'
-import ToastUtils from '../../../../../../../../../utils/ToastUtils'
+import ToastUtils, {ErrorToastUtils} from '../../../../../../../../../utils/ToastUtils'
 
 const Step2 = (props: any) => {
   const {submitStep, prevStep, userID} = props
@@ -83,7 +83,7 @@ const Step2 = (props: any) => {
     } else {
       let oldSelectedQuestionList = [...selectedQuestionList]
       let questionObject = {
-        userQuestionId: questionID,
+        questionId: questionID,
         answerId: e.target.value,
       }
       oldSelectedQuestionList.push(questionObject)
@@ -102,7 +102,7 @@ const Step2 = (props: any) => {
         ToastUtils({type: 'success', message: 'Details Saved SuccessFully'})
         submitStep(userID)
       } else {
-        ToastUtils({type: 'error', message: 'Something Went Wrong'})
+        ErrorToastUtils()
       }
     }
   }

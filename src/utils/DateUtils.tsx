@@ -93,7 +93,3 @@ export const oldCalculateDateTimeDifference = (pastDateString: any) => {
 
   return finalTime
 }
-
-export const getEighteenYearsBackAge = () => {
-  return moment(new Date()).isBefore(moment().subtract(18, 'years'))
-}

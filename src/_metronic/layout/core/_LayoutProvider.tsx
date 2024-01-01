@@ -25,6 +25,7 @@ export interface LayoutContextModel {
   setLayout: (config: LayoutSetup) => void
   setLayoutType: (layoutType: LayoutType) => void
   setToolbarType: (toolbarType: ToolbarType) => void
+  setSideBarType: () => any
 }
 
 const LayoutContext = createContext<LayoutContextModel>({
@@ -35,6 +36,7 @@ const LayoutContext = createContext<LayoutContextModel>({
   setLayout: (config: LayoutSetup) => {},
   setLayoutType: (layoutType: LayoutType) => {},
   setToolbarType: (toolbarType: ToolbarType) => {},
+  setSideBarType: () => {},
 })
 
 const enableSplashScreen = () => {
@@ -81,6 +83,36 @@ const LayoutProvider: FC<WithChildren> = ({children}) => {
     window.location.reload()
   }
 
+  // const setSideBarType = () => {
+  //   const updatedConfig = {...config}
+  //   // if (updatedConfig?.app?.sidebar?.default?.minimize?.desktop?.enabled) {
+  //   //   //updatedConfig.app.sidebar.toggle = true
+  //   //   updatedConfig?.app?.sidebar = true
+  //   // }
+  //   setLayoutIntoLocalStorage(updatedConfig)
+  // }
+
+  const setSideBarType = () => {
+    const updatedConfig = {...config}
+
+    if (
+      updatedConfig &&
+      updatedConfig.app &&
+      updatedConfig.app.sidebar &&
+      updatedConfig.app.sidebar.default &&
+      updatedConfig.app.sidebar.default.minimize &&
+      updatedConfig.app.sidebar.default.minimize.desktop &&
+      updatedConfig.app.sidebar.default.minimize.desktop.default
+    ) {
+      // Update the property only if it exists
+      updatedConfig.app.sidebar.default.minimize.desktop.default = true
+      updatedConfig.app.sidebar.default.minimize.desktop.enabled = true
+      updatedConfig.app.sidebar.default.minimize.desktop.hoverable = true
+    }
+
+    setLayoutIntoLocalStorage(updatedConfig)
+  }
+
   const setLayoutType = (layoutType: LayoutType) => {
     const updatedLayout = {...config, layoutType}
     setLayoutIntoLocalStorage(updatedLayout)
@@ -95,6 +127,7 @@ const LayoutProvider: FC<WithChildren> = ({children}) => {
     setLayout,
     setLayoutType,
     setToolbarType,
+    setSideBarType,
   }
 
   useEffect(() => {

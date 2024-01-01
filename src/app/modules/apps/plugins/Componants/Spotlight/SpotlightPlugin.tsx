@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+
 import React, {useEffect, useState} from 'react'
 import {
   getConfigurationByName,
@@ -5,7 +7,7 @@ import {
   removeSpotlightUser,
   updateConfigurationByConfigID,
 } from '../../../../../../API/api-endpoint'
-import ToastUtils from '../../../../../../utils/ToastUtils'
+import ToastUtils, {ErrorToastUtils} from '../../../../../../utils/ToastUtils'
 import {KTCardBody} from '../../../../../../_metronic/helpers'
 import {Link} from 'react-router-dom'
 import CustomPagination from '../../../../../../_metronic/partials/componants/Pagination'
@@ -23,10 +25,16 @@ const SpotlightPlugin = () => {
     spotLightArea: 'city',
   })
 
+  const [tabValue, setTabValue] = useState('app')
+
   useEffect(() => {
     getConfiguration()
-    getspotlightUserList(1, pageSize)
+    getSpotlightUserList(1, pageSize)
   }, [])
+
+  useEffect(() => {
+    getSpotlightUserList(1, pageSize)
+  }, [tabValue])
 
   const handleChange = (event: any) => {
     let name = event.target.name
@@ -68,12 +76,12 @@ const SpotlightPlugin = () => {
       getConfiguration()
       ToastUtils({type: 'success', message: 'Configuration Saved SuccessFully'})
     } else {
-      ToastUtils({type: 'error', message: 'Something Went Wrong'})
+      ErrorToastUtils()
     }
   }
 
-  const getspotlightUserList = async (page: any, pageSize: any) => {
-    let result = await getSpotlightUsers(page, pageSize)
+  const getSpotlightUserList = async (page: any, pageSize: any) => {
+    let result = await getSpotlightUsers(page, pageSize, tabValue)
     if (result.status === 200) {
       setSpotlightUsers(result?.data)
       setTotalPage(result?.totalPage)
@@ -84,7 +92,7 @@ const SpotlightPlugin = () => {
     if (page === 0 || page === 1) {
       page = 1
     }
-    getspotlightUserList(page, pageSize)
+    getSpotlightUserList(page, pageSize)
   }
 
   const removeSpotLightUserFromList = async (userId: any) => {
@@ -101,7 +109,7 @@ const SpotlightPlugin = () => {
         let result = await removeSpotlightUser(userId)
         if (result.status === 200) {
           ToastUtils({type: 'success', message: 'User is Removed From Spotlight'})
-          getspotlightUserList(1, pageSize)
+          getSpotlightUserList(1, pageSize)
         }
       }
     })
@@ -213,6 +221,28 @@ const SpotlightPlugin = () => {
       </div>
 
       <KTCardBody className='py-4'>
+        <div className='d-flex mb-4'>
+          <ul className='nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bolder flex-nowrap'>
+            <li className='nav-item'>
+              <div
+                className={`nav-link text-active-primary me-6 ` + (tabValue === 'app' && 'active')}
+                onClick={() => setTabValue('app')}
+              >
+                Normal Users
+              </div>
+            </li>
+            <li className='nav-item'>
+              <div
+                className={
+                  `nav-link text-active-primary me-6 ` + (tabValue === 'anonyms' && 'active')
+                }
+                onClick={() => setTabValue('anonyms')}
+              >
+                Anonymous Users
+              </div>
+            </li>
+          </ul>
+        </div>
         <div className='table-responsive'>
           <table
             id='kt_table_users'

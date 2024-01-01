@@ -140,7 +140,7 @@ const MediaTable = (props) => {
                           <div className='symbol symbol-50px overflow-visible me-3'>
                             <img
                               src={
-                                `${process.env.REACT_APP_SERVER_URL}/${story.media}` ||
+                                `${process.env.REACT_APP_SERVER_URL}/${story.url}` ||
                                 `https://preview.keenthemes.com/metronic8/react/demo1//media/avatars/300-6.jpg`
                               }
                               alt='icon'

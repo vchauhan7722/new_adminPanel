@@ -16,14 +16,18 @@ const SidebarLogo = (props: PropsType) => {
 
   const appSidebarDefaultMinimizeDesktopEnabled =
     config?.app?.sidebar?.default?.minimize?.desktop?.enabled
+
   const appSidebarDefaultCollapseDesktopEnabled =
     config?.app?.sidebar?.default?.collapse?.desktop?.enabled
+
   const toggleType = appSidebarDefaultCollapseDesktopEnabled
     ? 'collapse'
     : appSidebarDefaultMinimizeDesktopEnabled
     ? 'minimize'
     : ''
+
   const toggleState = appSidebarDefaultMinimizeDesktopEnabled ? 'active' : ''
+
   const appSidebarDefaultMinimizeDefault = config.app?.sidebar?.default?.minimize?.desktop?.default
 
   useEffect(() => {
@@ -71,12 +75,6 @@ const SidebarLogo = (props: PropsType) => {
             />
           </>
         )}
-
-        {/* <img
-          alt='Logo'
-          src={toAbsoluteUrl('/media/logos/default-small.svg')}
-          className='h-20px app-sidebar-logo-minimize'
-        /> */}
       </Link>
       <Navbar />
 

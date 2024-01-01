@@ -6,7 +6,7 @@ import {
   getAllGiftCategory,
   updateGiftsCategory,
 } from '../../../../../../API/api-endpoint'
-import ToastUtils from '../../../../../../utils/ToastUtils'
+import ToastUtils, {ErrorToastUtils} from '../../../../../../utils/ToastUtils'
 
 const GiftsCategory = (props) => {
   const {setGetGiftsOnCategoryChange, getGiftsOnCategoryChange} = props
@@ -36,7 +36,7 @@ const GiftsCategory = (props) => {
         setGetGiftsOnCategoryChange(getGiftsOnCategoryChange + 1)
         ToastUtils({type: 'success', message: 'Gift Category Is Created'})
       } else {
-        ToastUtils({type: 'error', message: 'Something Went Wrong'})
+        ErrorToastUtils()
       }
     }
   }
@@ -52,7 +52,7 @@ const GiftsCategory = (props) => {
         setIsEditCategory(false)
         ToastUtils({type: 'success', message: 'Gift Category Is Updated'})
       } else {
-        ToastUtils({type: 'error', message: 'Something Went Wrong'})
+        ErrorToastUtils()
       }
     }
   }
@@ -64,7 +64,7 @@ const GiftsCategory = (props) => {
       setGetGiftsOnCategoryChange(getGiftsOnCategoryChange + 1)
       ToastUtils({type: 'success', message: 'Gift Category Is Deleted'})
     } else {
-      ToastUtils({type: 'error', message: 'Something Went Wrong'})
+      ErrorToastUtils()
     }
   }
 

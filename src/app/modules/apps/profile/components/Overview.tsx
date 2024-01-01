@@ -152,7 +152,7 @@ export function Overview(props: any) {
           {user?.userInterests.map((interest: any) => {
             return (
               <>
-                <div className='badge badge-light text-center me-3 mb-5 fs-6  fw-bold'>
+                <div className='badge badge-light text-center me-3 mb-5 fs-6 fw-normal'>
                   {interest?.interests?.name}
                 </div>{' '}
               </>

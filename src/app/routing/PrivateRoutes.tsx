@@ -3,12 +3,13 @@ import {Route, Routes, Navigate} from 'react-router-dom'
 import {MasterLayout} from '../../_metronic/layout/MasterLayout'
 import TopBarProgress from 'react-topbar-progress-indicator'
 import {DashboardWrapper} from '../pages/dashboard/DashboardWrapper'
-import {MenuTestPage} from '../pages/MenuTestPage'
 import {getCSSVariableValue} from '../../_metronic/assets/ts/_utils'
 import {WithChildren} from '../../_metronic/helpers'
 import BuilderPageWrapper from '../pages/layout-builder/BuilderPageWrapper'
 import Plugins from '../modules/apps/plugins/Plugins'
 import UserVerification from '../modules/apps/user-verification/UserVerification'
+import {AnonymousChat} from '../modules/apps/anonymous-user-chat/AnonymousChat'
+import {PageLink, PageTitle, useLayout} from '../../_metronic/layout/core'
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import('../modules/apps/profile/ProfilePage'))
@@ -26,6 +27,23 @@ const PrivateRoutes = () => {
     () => import('../modules/apps/anonymous-user-management/AnonymousUsersPage')
   )
 
+  const AnonymousUserChatBreadCrumbs: Array<PageLink> = [
+    {
+      title: 'Anonymous User Chat',
+      path: '/anonymous-user-chat',
+      isSeparator: false,
+      isActive: false,
+    },
+    {
+      title: '',
+      path: '',
+      isSeparator: true,
+      isActive: false,
+    },
+  ]
+
+  const {setSideBarType} = useLayout()
+
   return (
     <Routes>
       <Route element={<MasterLayout />}>
@@ -34,9 +52,7 @@ const PrivateRoutes = () => {
         {/* Pages */}
         <Route path='dashboard' element={<DashboardWrapper />} />
         <Route path='builder' element={<BuilderPageWrapper />} />
-        <Route path='menu-test' element={<MenuTestPage />} />
         {/* Lazy Modules */}
-
         <Route
           path='crafted/widgets/*'
           element={
@@ -61,7 +77,6 @@ const PrivateRoutes = () => {
             </SuspensedView>
           }
         />
-
         <Route
           path='apps/anonymous-user-management/*'
           element={
@@ -78,8 +93,17 @@ const PrivateRoutes = () => {
             </SuspensedView>
           }
         />
+        {/* we have created 2 routes for profile page bcs we need a differentiate between normal user and anonymous user */}
         <Route
           path='apps/users-profile/*'
+          element={
+            <SuspensedView>
+              <ProfilePage />
+            </SuspensedView>
+          }
+        />
+        <Route
+          path='apps/anonymous-user/users-profile/*'
           element={
             <SuspensedView>
               <ProfilePage />
@@ -100,6 +124,16 @@ const PrivateRoutes = () => {
           element={
             <SuspensedView>
               <UserVerification />
+            </SuspensedView>
+          }
+        />
+        <Route
+          path='anonymous-user-chat/*'
+          element={
+            <SuspensedView>
+              {/* {setSideBarType()} */}
+              <PageTitle breadcrumbs={AnonymousUserChatBreadCrumbs}>Anonymous User Chat</PageTitle>
+              <AnonymousChat />
             </SuspensedView>
           }
         />

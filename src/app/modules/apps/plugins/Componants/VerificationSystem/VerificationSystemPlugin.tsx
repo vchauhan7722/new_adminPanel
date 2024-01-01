@@ -3,7 +3,7 @@ import {
   getConfigurationByName,
   updateConfigurationByConfigID,
 } from '../../../../../../API/api-endpoint'
-import ToastUtils from '../../../../../../utils/ToastUtils'
+import ToastUtils, {ErrorToastUtils} from '../../../../../../utils/ToastUtils'
 
 const VerificationSystemPlugin = () => {
   const hiddenFileInput = useRef<HTMLInputElement>(document.createElement('input'))
@@ -48,7 +48,7 @@ const VerificationSystemPlugin = () => {
       setisImageUploaded(false)
       ToastUtils({type: 'success', message: 'Configuration Saved SuccessFully'})
     } else {
-      ToastUtils({type: 'error', message: 'Something Went Wrong'})
+      ErrorToastUtils()
     }
   }
 

@@ -1,63 +1,58 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, {FC, useEffect, useState} from 'react'
-import {KTIcon, toAbsoluteUrl} from '../../../../../_metronic/helpers'
+import React, {FC, useEffect, useRef, useState} from 'react'
+import {KTIcon, toAbsoluteUrl} from '../../../../_metronic/helpers'
 import {
   getAllGifts,
   getAllGiftsCategory,
+  getAllNormalUserChatMembers,
   getChatMemberByUserID,
-} from '../../../../../API/api-endpoint'
-import {calculateTimeDifferenceForChatMessage} from '../../../../../utils/DateUtils'
-import CustomPagination from '../../../../../_metronic/partials/componants/Pagination'
-import {ErrorToastUtils} from '../../../../../utils/ToastUtils'
-import {ChatInner} from './ChatInner'
+} from '../../../../API/api-endpoint'
+import {calculateTimeDifferenceForChatMessage} from '../../../../utils/DateUtils'
+import CustomPagination from '../../../../_metronic/partials/componants/Pagination'
+import ToastUtils, {ErrorToastUtils} from '../../../../utils/ToastUtils'
+import {AnonymousChatInner} from './AnonymousChatInner'
+import AnonymousUser from './AnonymousUser'
+import {useLayout} from '../../../../_metronic/layout/core'
+import clsx from 'clsx'
 
-const Chat = (props) => {
+const AnonymousChat = (props) => {
   const {CurrentUser} = props
   const [chatMemberList, setChatMemberList] = useState<any>(undefined)
   const [page, setPage] = useState<any>(1)
   const [pageSize, setPageSize] = useState<any>(10)
   const [totalPage, setTotalPage] = useState(0)
-  const [receiverUserDetails, setReceiverUserDetails] = useState<any>(undefined)
+  const [selectedNormalUser, setSelectedNormalUser] = useState<any>(undefined)
+  const [selectedAnonymousUser, setSelectedAnonymousUser] = useState<any>(undefined)
   const [giftCategoriesList, setGiftCategoriesList] = useState<any>([])
   const [giftList, setGiftList] = useState<any>([])
-  const [actionFlag, setActionFlag] = useState<any>(1)
-  const [userTypeTabValue, setUserTypeTabValue] = useState<any>('app')
-  const [isLoading, setIsLoading] = useState(false)
+  const [actionFlag, setActionFlag] = useState<any>(0)
+  const [updateAnonymousUserFlag, setUpdateAnonymousUserFlag] = useState(0)
 
-  let userID = localStorage.getItem('userId')
+  let userID = '531' //localStorage.getItem('userId')
+
+  const {config} = useLayout()
+  console.log('config', config)
 
   useEffect(() => {
-    getChatMemberByUID(page, pageSize, 1)
     getAllGiftCategoryList()
     getAllGiftLists()
   }, [])
 
   useEffect(() => {
-    getChatMemberByUID(page, pageSize, 1)
-  }, [userTypeTabValue])
-
-  useEffect(() => {
-    getChatMemberByUID(page, pageSize, actionFlag)
+    getChatMemberByUID(page, pageSize)
   }, [actionFlag])
 
-  const getChatMemberByUID = async (page: number, pageSize: number, pageRefreshCount: any) => {
-    if (pageRefreshCount === 1) {
-      setIsLoading(true)
-      setChatMemberList(undefined)
-    }
-
-    let result = await getChatMemberByUserID(userID, page, pageSize, userTypeTabValue)
+  const getChatMemberByUID = async (page: number, pageSize: number) => {
+    //let result = await getChatMemberByUserID(userID, page, pageSize, 'app')
+    let result = await getAllNormalUserChatMembers(page, pageSize)
     if (result.status === 200) {
       setChatMemberList(result.data)
-      setReceiverUserDetails(receiverUserDetails)
+      setSelectedNormalUser(undefined)
+      //setSelectedAnonymousUser(undefined)
       setTotalPage(result.totalPage)
-      setIsLoading(false)
     } else {
       ErrorToastUtils()
-      setTimeout(() => {
-        setIsLoading(false)
-      }, 500)
     }
   }
 
@@ -72,11 +67,13 @@ const Chat = (props) => {
   }
 
   const getRoom = (memberDetails: any) => {
-    if (memberDetails !== receiverUserDetails) {
+    if (memberDetails !== selectedNormalUser) {
       //when selected user and chatinner side is not same
-      setReceiverUserDetails(undefined)
+      setSelectedNormalUser(undefined)
+      setSelectedAnonymousUser(undefined)
       setTimeout(() => {
-        setReceiverUserDetails(memberDetails)
+        setSelectedNormalUser(memberDetails)
+        //setSelectedAnonymousUser(memberDetails)
       }, 500)
     }
   }
@@ -85,60 +82,35 @@ const Chat = (props) => {
     if (page === 0 || page === 1) {
       page = 1
     }
-    getChatMemberByUID(page, pageSize, actionFlag)
+    getChatMemberByUID(page, pageSize)
   }
 
   return (
-    <div className='d-flex flex-column flex-lg-row mt-5'>
-      <div className='flex-column flex-lg-row-auto w-100 w-lg-300px w-xl-400px mb-10 mb-lg-0'>
-        <div className='card'>
-          <div className='card-title mt-1'>
-            <div className='d-flex overflow-auto ms-5 justify-content-center'>
-              <ul className='nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bolder flex-nowrap'>
-                <li className='nav-item'>
-                  <div
-                    className={
-                      `nav-link text-active-primary me-6 ` +
-                      (userTypeTabValue === 'app' && 'active')
-                    }
-                    onClick={() => setUserTypeTabValue('app')}
-                  >
-                    Normal User
-                  </div>
-                </li>
-                <li className='nav-item'>
-                  <div
-                    className={
-                      `nav-link text-active-primary me-6 ` +
-                      (userTypeTabValue === 'anonyms' && 'active')
-                    }
-                    onClick={() => setUserTypeTabValue('anonyms')}
-                  >
-                    Anonymous User
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div className='p-3'>
-              <form className='w-100 position-relative' autoComplete='off'>
-                <KTIcon
-                  iconName='magnifier'
-                  className='fs-2 text-lg-1 text-gray-500 position-absolute mt-7 ms-5 translate-middle-y'
-                />
+    <div className='row mt-5'>
+      {' '}
+      {/*d-flex flex-column flex-lg-row */}
+      <div className='col-3'>
+        {/*flex-column flex-lg-row-auto w-100 w-lg-300px w-xl-400px */}
+        <div className='card card-flush'>
+          <div className='card-header pt-7' id='kt_chat_contacts_header'>
+            <form className='w-100 position-relative' autoComplete='off'>
+              <KTIcon
+                iconName='magnifier'
+                className='fs-2 text-lg-1 text-gray-500 position-absolute top-50 ms-5 translate-middle-y'
+              />
 
-                <input
-                  type='text'
-                  className='form-control form-control-solid px-15'
-                  name='search'
-                  placeholder='Search by username or email...'
-                />
-              </form>
-            </div>
+              <input
+                type='text'
+                className='form-control form-control-solid px-15'
+                name='search'
+                placeholder='Search by username or email...'
+              />
+            </form>
           </div>
 
-          <div id='kt_chat_contacts_body'>
+          <div className='card-body pt-5' id='kt_chat_contacts_body'>
             <div
-              className='scroll-y me-n5 pe-9 ps-4 h-500px'
+              className='scroll-y me-n5 pe-5 h-450px'
               data-kt-scroll='true'
               data-kt-scroll-activate='{default: false, lg: true}'
               data-kt-scroll-max-height='auto'
@@ -147,14 +119,6 @@ const Chat = (props) => {
               data-kt-scroll-offset='0px'
             >
               <div className='separator separator-dashed d-none'></div>
-
-              {isLoading && (
-                <div className='d-flex justify-content-center'>
-                  <div className='spinner-border' role='status'>
-                    <span className='visually-hidden'>Loading...</span>
-                  </div>
-                </div>
-              )}
 
               {chatMemberList !== undefined &&
                 chatMemberList.map((member: any, index: any) => {
@@ -188,14 +152,9 @@ const Chat = (props) => {
                                 member?.messageDetail?.type}
                               {member?.messageDetail?.type === 'media' &&
                                 member?.messageDetail?.type}
-                              {member?.messageDetail?.type === 'text' &&
-                                member?.messageDetail?.message}
-                              {member?.messageDetail?.type === 'credit' &&
-                                member?.messageDetail?.message}
-                              {/* {(member?.messageDetail?.type === 'message' ||
-                                member?.messageDetails?.type === 'text' ||
+                              {(member?.messageDetail?.type === 'message' ||
                                 member?.messageDetail?.type === 'credit') &&
-                                member?.messageDetail?.message} */}
+                                member?.messageDetail?.message}
                             </div>
                           </div>
                         </div>
@@ -214,9 +173,9 @@ const Chat = (props) => {
                             <span>
                               {member?.like === 1 && <i className='fa-solid fa-heart me-3'></i>}
                             </span>
-                            {member?.unreadMessageCount !== 0 && (
+                            {member?.unreadCount !== 0 && (
                               <span className='badge badge-circle badge-light-success me-2'>
-                                {member?.unreadMessageCount}
+                                {member?.unreadCount}
                               </span>
                             )}
                           </div>
@@ -242,25 +201,50 @@ const Chat = (props) => {
           </div>
         </div>
       </div>
-
-      <div className='flex-lg-row-fluid ms-lg-7 ms-xl-10'>
+      <div className='col-6'>
         <div className='card' id='kt_chat_messenger'>
-          {receiverUserDetails !== undefined ? (
-            <ChatInner
-              receiverUserDetails={receiverUserDetails}
+          {selectedAnonymousUser !== undefined ? (
+            <AnonymousChatInner
+              selectedNormalUser={selectedNormalUser}
+              selectedAnonymousUser={selectedAnonymousUser}
               giftCategoriesList={giftCategoriesList}
               giftList={giftList}
               setActionFlag={setActionFlag}
               actionFlag={actionFlag}
               CurrentUser={CurrentUser}
+              updateAnonymousUserFlag={updateAnonymousUserFlag}
+              setUpdateAnonymousUserFlag={setUpdateAnonymousUserFlag}
             />
           ) : (
-            <div className='card-header h-700px' id='kt_chat_messenger_header '></div>
+            <div className='card-header h-650px' id='kt_chat_messenger_header '></div>
           )}
         </div>
+        {/*flex-lg-row-fluid */}
+      </div>
+      <div className='col-3'>
+        <div className='card' id='kt_chat_messenger'>
+          {selectedNormalUser !== undefined ? (
+            <AnonymousUser
+              selectedNormalUser={selectedNormalUser}
+              setSelectedNormalUser={setSelectedNormalUser}
+              selectedAnonymousUser={selectedAnonymousUser}
+              setSelectedAnonymousUser={setSelectedAnonymousUser}
+              giftCategoriesList={giftCategoriesList}
+              giftList={giftList}
+              setActionFlag={setActionFlag}
+              actionFlag={actionFlag}
+              CurrentUser={CurrentUser}
+              updateAnonymousUserFlag={updateAnonymousUserFlag}
+              setUpdateAnonymousUserFlag={setUpdateAnonymousUserFlag}
+            />
+          ) : (
+            <div className='card-header h-650px' id='kt_chat_messenger_header '></div>
+          )}
+        </div>
+        {/*flex-lg-row-fluid */}
       </div>
     </div>
   )
 }
 
-export {Chat}
+export {AnonymousChat}

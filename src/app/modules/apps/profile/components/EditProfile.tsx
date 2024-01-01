@@ -14,7 +14,7 @@ import {
   updateUserQuestionAnswerForProfile,
 } from '../../../../../API/api-endpoint'
 import '../../../../../_metronic/assets/css/react-phone-number-input.css'
-import ToastUtils from '../../../../../utils/ToastUtils'
+import ToastUtils, {ErrorToastUtils} from '../../../../../utils/ToastUtils'
 import PhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/lib/style.css'
 
@@ -46,6 +46,8 @@ const EditProfile = (props) => {
     gender: 1,
     bio: '',
   })
+
+  const [oldUserName, setOldUserName] = useState(user?.userName)
 
   useEffect(() => {
     setProfileDetailsFormValue({
@@ -167,7 +169,7 @@ const EditProfile = (props) => {
         setUserUpdateFlag(userUpdateFlag + 1)
         ToastUtils({type: 'success', message: 'User Question Was Deleted'})
       } else {
-        ToastUtils({type: 'error', message: 'Something Went Wrong'})
+        ErrorToastUtils()
       }
     } else {
       if (matchedAnswerIds.length !== 0) {
@@ -176,7 +178,7 @@ const EditProfile = (props) => {
           setUserUpdateFlag(userUpdateFlag + 1)
           ToastUtils({type: 'success', message: 'Answer Is Updated'})
         } else {
-          ToastUtils({type: 'error', message: 'Something Went Wrong'})
+          ErrorToastUtils()
         }
       } else {
         let result = await createUserQuestionAnswerForProfile(userID, questionID, answerId)
@@ -184,7 +186,7 @@ const EditProfile = (props) => {
           setUserUpdateFlag(userUpdateFlag + 1)
           ToastUtils({type: 'success', message: 'Question Is Created With Answer'})
         } else {
-          ToastUtils({type: 'error', message: 'Something Went Wrong'})
+          ErrorToastUtils()
         }
       }
     }
@@ -194,7 +196,26 @@ const EditProfile = (props) => {
     if (profileDetailsFormValue?.mobileNo.length !== 10) {
       ToastUtils({type: 'error', message: 'Enter 10 digits Number Only'})
     } else {
-      let result = await UpdateUserDetailsByUID(userID, profileDetailsFormValue)
+      let updatedData: any
+      // this is used for checked username if it is updated or not
+      if (profileDetailsFormValue.userName === oldUserName) {
+        let oldData = {
+          fullName: profileDetailsFormValue.fullName,
+          email: profileDetailsFormValue.email,
+          mobileNo: profileDetailsFormValue.mobileNo,
+          countryCode: profileDetailsFormValue.countryCode,
+          city: profileDetailsFormValue.city,
+          state: profileDetailsFormValue.state,
+          country: profileDetailsFormValue.country,
+          birthDate: profileDetailsFormValue.birthDate,
+          gender: profileDetailsFormValue.gender,
+          bio: profileDetailsFormValue.bio,
+        }
+        updatedData = oldData
+      } else {
+        updatedData = profileDetailsFormValue
+      }
+      let result = await UpdateUserDetailsByUID(userID, updatedData)
       if (result.status === 200) {
         setUserUpdateFlag(userUpdateFlag + 1)
         ToastUtils({type: 'success', message: 'Profile Update SuccessFully'})

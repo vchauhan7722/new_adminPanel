@@ -3,7 +3,7 @@ import {PageLink, PageTitle} from '../../../../_metronic/layout/core'
 import {KTCardBody} from '../../../../_metronic/helpers'
 import CustomPagination from '../../../../_metronic/partials/componants/Pagination'
 import {getUserVerificationList, updateUserVerification} from '../../../../API/api-endpoint'
-import ToastUtils from '../../../../utils/ToastUtils'
+import ToastUtils, {ErrorToastUtils} from '../../../../utils/ToastUtils'
 import {Link} from 'react-router-dom'
 import clsx from 'clsx'
 import Swal from 'sweetalert2'
@@ -25,7 +25,7 @@ const profileBreadCrumbs: Array<PageLink> = [
 
 const UserVerification = () => {
   const [UserVerificationList, setUserVerificationList] = useState<any>([])
-  const [pageSize, setPageSize] = useState(100)
+  const [pageSize, setPageSize] = useState(10)
   const [totalPage, setTotalPage] = useState(0)
   const [userVerification, setuserVerification] = useState<any>({verifyStatus: 'pending'})
 
@@ -46,7 +46,7 @@ const UserVerification = () => {
       setUserVerificationList(result.data)
       setTotalPage(result.totalPage)
     } else {
-      ToastUtils({type: 'error', message: 'Something Went Wrong'})
+      ErrorToastUtils()
     }
   }
 
@@ -104,7 +104,7 @@ const UserVerification = () => {
           verifyStatus === 'verified' ? 'User Verified SuccessFully' : 'User Rejected SuccessFully',
       })
     } else {
-      ToastUtils({type: 'error', message: 'Something Went Wrong'})
+      ErrorToastUtils()
     }
   }
 
@@ -244,7 +244,6 @@ const UserVerification = () => {
                 </button>
                 {userVerification?.verifyStatus === 'pending' && (
                   <>
-                    {' '}
                     <button
                       type='button'
                       className='btn btn-danger'

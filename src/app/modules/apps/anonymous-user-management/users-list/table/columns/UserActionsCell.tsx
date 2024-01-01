@@ -73,7 +73,7 @@ const UserActionsCell: FC<Props> = ({userId}) => {
             className='menu-link px-3'
             data-kt-users-table-filter='delete_row'
             onClick={() => deleteItem()}
-            to={`/apps/users-profile/edit-profile/${userId}`}
+            to={`/apps/anonymous-user/users-profile/edit-profile/${userId}`}
           >
             Edit Account
           </Link>
@@ -86,7 +86,7 @@ const UserActionsCell: FC<Props> = ({userId}) => {
             className='menu-link px-3'
             data-kt-users-table-filter='delete_row'
             onClick={() => deleteItem()}
-            to={`/apps/users-profile/media/${userId}`}
+            to={`/apps/anonymous-user/users-profile/media/${userId}`}
           >
             Edit Media Files
           </Link>

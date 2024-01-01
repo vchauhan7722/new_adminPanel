@@ -13,10 +13,11 @@ import {
   DateWithTimeFormatter,
   TimeFormatter,
 } from '../../../../../../../utils/DateUtils'
-import ToastUtils from '../../../../../../../utils/ToastUtils'
+import ToastUtils, {ErrorToastUtils} from '../../../../../../../utils/ToastUtils'
 import {Link} from 'react-router-dom'
 import {Dropdown} from 'react-bootstrap'
 import clsx from 'clsx'
+import LightBoxComponent from '../../../../../../../_metronic/partials/componants/LightBoxComponent'
 
 const Photos = () => {
   const UserId = localStorage.getItem('userId')
@@ -27,7 +28,8 @@ const Photos = () => {
   const [mediaList, setMediaList] = useState([])
   const [filter, setFilter] = useState({userId: '', isPrivate: ''})
   const [selectedUser, setSelectedUser] = useState<any>([])
-  //id
+  const [openLightBox, setOpenLightBox] = useState(false)
+  const [lightBoxArrayList, setLightBoxArrayList] = useState<any>([])
 
   useEffect(() => {
     getAllMediaList(page, pageSize, filter.isPrivate, filter.userId)
@@ -88,7 +90,7 @@ const Photos = () => {
       ToastUtils({type: 'success', message: 'Media Is Deleted'})
       getAllMediaList(page, pageSize, filter.isPrivate, filter.userId)
     } else {
-      ToastUtils({type: 'error', message: 'Something Went Wrong'})
+      ErrorToastUtils()
     }
   }
 
@@ -97,7 +99,7 @@ const Photos = () => {
     if (result.status === 200) {
       ToastUtils({type: 'success', message: 'Media Is Uploaded As a Story'})
     } else {
-      ToastUtils({type: 'error', message: 'Something Went Wrong'})
+      ErrorToastUtils()
     }
   }
 
@@ -107,7 +109,7 @@ const Photos = () => {
       getAllMediaList(page, pageSize, filter.isPrivate, filter.userId)
       ToastUtils({type: 'success', message: 'Media Is Deleted'})
     } else {
-      ToastUtils({type: 'error', message: 'Something Went Wrong'})
+      ErrorToastUtils()
     }
   }
 
@@ -117,8 +119,15 @@ const Photos = () => {
       getAllMediaList(page, pageSize, filter.isPrivate, filter.userId)
       ToastUtils({type: 'success', message: !typeValue ? 'Media Is Public' : 'Media Is Private'})
     } else {
-      ToastUtils({type: 'error', message: 'Something Went Wrong'})
+      ErrorToastUtils()
     }
+  }
+
+  const handleaddMediaforLightbox = (url: string) => {
+    let PhotoObject = {
+      src: url,
+    }
+    setLightBoxArrayList([PhotoObject])
   }
 
   return (
@@ -229,7 +238,15 @@ const Photos = () => {
                       />
                     </td>
                     <td>
-                      <div className='symbol symbol-50px overflow-visible me-3'>
+                      <div
+                        className='symbol symbol-50px overflow-visible me-3'
+                        onClick={() => {
+                          handleaddMediaforLightbox(
+                            `${process.env.REACT_APP_SERVER_URL}/${media.media}`
+                          )
+                          setOpenLightBox(true)
+                        }}
+                      >
                         <img
                           src={
                             `${process.env.REACT_APP_SERVER_URL}/${media.media}` ||
@@ -263,7 +280,15 @@ const Photos = () => {
                     </td>
                     <td>
                       <div className='d-flex align-items-center '>
-                        <div className='symbol symbol-50px overflow-visible me-3'>
+                        <div
+                          className='symbol symbol-40px symbol-circle overflow-visible me-3'
+                          onClick={() => {
+                            handleaddMediaforLightbox(
+                              `${process.env.REACT_APP_SERVER_URL}/${media?.userDetail?.profileImage}`
+                            )
+                            setOpenLightBox(true)
+                          }}
+                        >
                           <img
                             src={
                               `${process.env.REACT_APP_SERVER_URL}/${media?.userDetail?.profileImage}` ||
@@ -333,6 +358,11 @@ const Photos = () => {
               })}
             </tbody>
           </table>
+          <LightBoxComponent
+            openLightBox={openLightBox}
+            setOpenLightBox={setOpenLightBox}
+            lightBoxArray={lightBoxArrayList}
+          />
           <div className='card-footer'>
             <CustomPagination
               pageSize={pageSize}

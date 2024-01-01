@@ -29,3 +29,6 @@ export const GetIDFromURL = (location: any) => {
 export const getAge = (DOB: any) => {
   return moment().diff(DOB, 'years')
 }
+
+export const isImage = ['.gif', '.jpg', '.jpeg', '.png'] //you can add more
+export const isVideo = ['.mpg', '.mp2', '.mpeg', '.mpe', '.mpv', '.mp4'] // you can add more extention

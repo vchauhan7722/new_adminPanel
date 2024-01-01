@@ -4,7 +4,7 @@ import {Dropdown} from 'react-bootstrap'
 import clsx from 'clsx'
 import {KTCardBody} from '../../../../../../../_metronic/helpers'
 import CustomPagination from '../../../../../../../_metronic/partials/componants/Pagination'
-import ToastUtils from '../../../../../../../utils/ToastUtils'
+import ToastUtils, {ErrorToastUtils} from '../../../../../../../utils/ToastUtils'
 import {DateTimeFormatter, TimeFormatter} from '../../../../../../../utils/DateUtils'
 import {
   ReUploadSelectedStory,
@@ -14,6 +14,7 @@ import {
   deleteUserStory,
   getAllStories,
 } from '../../../../../../../API/api-endpoint'
+import LightBoxComponent from '../../../../../../../_metronic/partials/componants/LightBoxComponent'
 
 const Stories = () => {
   const UserId = localStorage.getItem('userId')
@@ -28,6 +29,8 @@ const Stories = () => {
   const [storyUserId, setstoryUserId] = useState<any>(0)
   const [storyId, setStoryId] = useState<any>(0)
   const [storyCount, setStoryCount] = useState<any>(0)
+  const [openLightBox, setOpenLightBox] = useState(false)
+  const [lightBoxArrayList, setLightBoxArrayList] = useState<any>([])
 
   useEffect(() => {
     getAllStoryList(page, pageSize, filter.isPrivate, filter.userId)
@@ -89,7 +92,7 @@ const Stories = () => {
       ToastUtils({type: 'success', message: 'Story Is Deleted'})
       getAllStoryList(page, pageSize, filter.isPrivate, filter.userId)
     } else {
-      ToastUtils({type: 'error', message: 'Something Went Wrong'})
+      ErrorToastUtils()
     }
   }
 
@@ -132,7 +135,7 @@ const Stories = () => {
       ToastUtils({type: 'success', message: 'Story Is Reuploaded'})
       getAllStoryList(page, pageSize, filter.isPrivate, filter.userId)
     } else {
-      ToastUtils({type: 'error', message: 'Something Went Wrong'})
+      ErrorToastUtils()
     }
   }
 
@@ -147,6 +150,13 @@ const Stories = () => {
   const clearFilter = () => {
     setFilter({userId: '', isPrivate: ''})
     getAllStoryList(page, pageSize, '', '')
+  }
+
+  const handleaddMediaforLightbox = (url: string) => {
+    let PhotoObject = {
+      src: url,
+    }
+    setLightBoxArrayList([PhotoObject])
   }
 
   return (
@@ -284,7 +294,15 @@ const Stories = () => {
                       />
                     </td>
                     <td>
-                      <div className='symbol symbol-50px overflow-visible me-3'>
+                      <div
+                        className='symbol symbol-50px overflow-visible me-3'
+                        onClick={() => {
+                          handleaddMediaforLightbox(
+                            `${process.env.REACT_APP_SERVER_URL}/${story.media}`
+                          )
+                          setOpenLightBox(true)
+                        }}
+                      >
                         <img
                           src={
                             `${process.env.REACT_APP_SERVER_URL}/${story.media}` ||
@@ -325,7 +343,15 @@ const Stories = () => {
                         className='d-flex align-items-center'
                         onClick={() => filterUsingUid(story?.userDetail?.userId, story.storyId)}
                       >
-                        <div className='symbol symbol-50px overflow-visible me-3'>
+                        <div
+                          className='symbol symbol-40px symbol-circle overflow-visible me-3'
+                          onClick={() => {
+                            handleaddMediaforLightbox(
+                              `${process.env.REACT_APP_SERVER_URL}/${story?.userDetail?.profileImage}`
+                            )
+                            setOpenLightBox(true)
+                          }}
+                        >
                           <img
                             src={
                               `${process.env.REACT_APP_SERVER_URL}/${story?.userDetail?.profileImage}` ||
@@ -402,6 +428,11 @@ const Stories = () => {
               })}
             </tbody>
           </table>
+          <LightBoxComponent
+            openLightBox={openLightBox}
+            setOpenLightBox={setOpenLightBox}
+            lightBoxArray={lightBoxArrayList}
+          />
           <div className='card-footer'>
             <CustomPagination
               pageSize={pageSize}

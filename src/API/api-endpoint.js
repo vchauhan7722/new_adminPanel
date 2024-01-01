@@ -978,12 +978,12 @@ export const AddOrUpdatePremiumByUID = async (UID,type,days,premiumPackageAmount
   
 }
 
-export const getSpotlightUsers = async (Page,pageSize) => {
+export const getSpotlightUsers = async (Page,pageSize,userType) => {
   try {
   let accessToken = localStorage.getItem('accessToken')
  
                    
-  const apiUrl = `${APIURL}/api/v1/web/users/spotlight?page=${Page}&pageSize=${pageSize}&userType=normalUser`
+  const apiUrl = `${APIURL}/api/v1/web/users/spotlight?page=${Page}&pageSize=${pageSize}&registerFrom=${userType}`
 
   let response = await axios.get(apiUrl, {
     headers: {
@@ -1043,11 +1043,11 @@ export const getMessagesByUserID = async (userID,chatroomID,page,pageSize) => {
   }
 }
 
-export const getChatMemberByUserID = async (userID,page,pageSize) => {
+export const getChatMemberByUserID = async (userID,page,pageSize,userType) => {
   try {
     let accessToken = localStorage.getItem('accessToken')
 
-    const apiUrl = `${APIURL}/api/v1/communications/chat/users/${userID}?page=${page}&pageSize=${pageSize}`
+    const apiUrl = `${APIURL}/api/v1/communications/chat/users/${userID}?page=${page}&pageSize=${pageSize}&registerFrom=${userType}`
 
     let response = await axios.get(apiUrl, {
       headers: {
@@ -1327,9 +1327,7 @@ export const sendMessageUsingApi = async (message,userId,receiverId,chatRoomID,c
 }
 
 export const getAllMedia = async (page,pageSize,isPrivate,userID) => {
- 
   try {
-    
     let accessToken = localStorage.getItem('accessToken')  
     //  /api/v1/users/profile/media?page=1&pageSize=10&isPrivate=false&userId=35
     const apiUrl = `${APIURL}/api/v1/users/profile/media?page=${page}&pageSize=${pageSize}&isPrivate=${isPrivate}&userId=${userID}`
@@ -1857,10 +1855,10 @@ export const updatePremiumPackageAmountPlan = async (pkgId,days,amount,pkgName) 
 
 export const updatePremiumPackageAmountConfig = async (pkgId,days,amount,premiumPackageConfig) => {
   try { 
+   
     let accessToken = localStorage.getItem('accessToken')  
     const apiUrl = `${APIURL}/api/v1/masters/packages/premium/amounts/${pkgId}`
 
-     
      let formData = {
       days : days,
       amount : amount,
@@ -2137,6 +2135,29 @@ export const UpdatePolicy = async (policyId, htmlText) => {
     let response = await axios.put(apiUrl,formData, {
       headers: {
         'Content-Type': `application/x-www-form-urlencoded`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+// anonymous users chat 
+
+export const getAllNormalUserChatMembers = async (page,pageSize) => {
+  try { 
+    let accessToken = localStorage.getItem('accessToken')  
+    
+    const apiUrl = `${APIURL}/api/v1/web/communications/all/app/chatMembers?page=${page}&pageSize=${pageSize}`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
         'x-access-token': accessToken
       }
     })
