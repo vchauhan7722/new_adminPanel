@@ -11,6 +11,9 @@ import ToastUtils, {ErrorToastUtils} from '../../../../../../utils/ToastUtils'
 import clsx from 'clsx'
 import LightBoxComponent from '../../../../../../_metronic/partials/componants/LightBoxComponent'
 import {DateWithTimeFormatter} from '../../../../../../utils/DateUtils'
+import {Dropdown} from 'react-bootstrap'
+import {CustomToggle} from '../../../../../../_metronic/partials/componants/CustomToggle'
+import {ImageCompressor} from '../../../../../../utils/ImageCompresser'
 
 const Media = (props: any) => {
   const {user} = props
@@ -70,7 +73,8 @@ const Media = (props: any) => {
   const handleMediaChange = async (event: any) => {
     setisMediaUploaded(true)
     if (event.target.files[0]) {
-      let result = await createMediaActionForUserMedia(event.target.files[0], userId)
+      // let response = await ImageCompressor(event.target.files[0])
+      let result = await createMediaActionForUserMedia(event.target.files[0], userId, false)
       if (result.status === 200) {
         let oldmedia = [...userProfileMedia]
         oldmedia.push(result.data[0])
@@ -170,7 +174,6 @@ const Media = (props: any) => {
                             className='menu menu-sub menu-sub-dropdown w-150px py-4 menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold'
                             data-kt-menu='true'
                           >
-                            {/* begin::Menu item */}
                             {!userMedia.isProfileImage && (
                               <div
                                 className='px-3'
@@ -179,29 +182,22 @@ const Media = (props: any) => {
                                 <p className='px-3'>Set profile</p>
                               </div>
                             )}
-                            {/* end::Menu item */}
-                            {/* begin::Menu item */}
                             <div
                               className=' px-3'
                               onClick={() => ActionsOnMedia('private', userMedia.id)}
                             >
                               <p className=' px-3'>Set private</p>
                             </div>
-                            {/* end::Menu item */}
-                            {/* begin::Menu item */}
                             <div className=' px-3'>
                               <p className='px-3' onClick={() => uploadMediaAsAStory(userMedia.id)}>
                                 Upload to story
                               </p>
                             </div>
-                            {/* end::Menu item */}
-                            {/* begin::Menu item */}
                             <div className=' px-3' onClick={() => removeMedia(userMedia.id)}>
                               <p className=' px-3' data-kt-users-table-filter='delete_row'>
-                                Delete
+                                Delete Media
                               </p>
                             </div>
-                            {/* end::Menu item */}
                           </div>
                         </div>
                       </span>

@@ -15,6 +15,7 @@ import {
   getAllStories,
 } from '../../../../../../../API/api-endpoint'
 import LightBoxComponent from '../../../../../../../_metronic/partials/componants/LightBoxComponent'
+import {CustomToggle} from '../../../../../../../_metronic/partials/componants/CustomToggle'
 
 const Stories = () => {
   const UserId = localStorage.getItem('userId')
@@ -376,6 +377,7 @@ const Stories = () => {
                     <td>
                       <Dropdown>
                         <Dropdown.Toggle
+                          as={CustomToggle}
                           id='dropdown-basic'
                           className='bg-body-secondary bg-body-secondary:hover'
                           size='sm'

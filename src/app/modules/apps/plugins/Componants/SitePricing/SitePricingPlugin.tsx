@@ -56,7 +56,7 @@ const SitePricingPlugin = () => {
   const [premiumAmountPackages, setPremiumAmountPackages] = useState<any>([])
   const [oldPremiumAmountPackages, setOldPremiumAmountPackages] = useState<any>([])
   const [PremiumPackageAmount, setPremiumPackageAmount] = useState<any>('')
-  const [PremiumPackageCredits, setPremiumPackageCredits] = useState<any>('')
+  const [PremiumPackageDays, setPremiumPackageDays] = useState<any>('')
   const [PremiumPackageName, setPremiumPackageName] = useState<any>('')
 
   const [CreditAmountPackagesChanges, setCreditAmountPackagesChanges] = useState<any>({
@@ -105,7 +105,7 @@ const SitePricingPlugin = () => {
 
   const createPremiumAmountPackages = async () => {
     let result = await CreatePremiumPackageAmountPlan(
-      PremiumPackageCredits,
+      PremiumPackageDays,
       PremiumPackageAmount,
       PremiumPackageName
     )
@@ -113,7 +113,7 @@ const SitePricingPlugin = () => {
       ToastUtils({type: 'success', message: 'Premium Amount Package is Created'})
       getPremiumAmountpackages()
       setPremiumPackageAmount('')
-      setPremiumPackageCredits('')
+      setPremiumPackageDays('')
       setPremiumPackageName('')
     } else {
       ErrorToastUtils()
@@ -218,10 +218,6 @@ const SitePricingPlugin = () => {
   const handleChangePremiumAmountPackagesConfig = (event: any, premiumPkgId: any, index: any) => {
     let name = event.target.name
 
-    let premiumPkgObject = premiumAmountPackages.filter(
-      (pkg: any) => pkg.premiumPackageAmountId === premiumPkgId
-    )
-
     let premiumPkgIndex = premiumAmountPackages.findIndex(
       (pkg: any) => pkg.premiumPackageAmountId === premiumPkgId
     )
@@ -243,13 +239,7 @@ const SitePricingPlugin = () => {
       oldPremiumPackage[premiumPkgIndex]['premiumPackageConfig'][index]['value'] =
         event.target.checked
       setPremiumAmountPackages(oldPremiumPackage)
-
-      updatePremiumAmountConfig(
-        premiumPkgId,
-        premiumPkgObject[0].days,
-        premiumPkgObject[0].amount,
-        oldPremiumPackage
-      )
+      onBlurUpdatePremiumAmountConfig(premiumPkgId)
     }
   }
 
@@ -258,19 +248,35 @@ const SitePricingPlugin = () => {
       (pkg: any) => pkg.premiumPackageAmountId === premiumPkgId
     )
 
-    let oldpremiumPkgObject = oldPremiumAmountPackages.filter(
-      (pkg: any) => pkg.premiumPackageAmountId === premiumPkgId
+    // let oldpremiumPkgObject = oldPremiumAmountPackages?.filter(
+    //   (pkg: any) => pkg.premiumPackageAmountId === premiumPkgId
+    // )
+
+    //console.log('premiumPkgObject', premiumPkgObject[0].premiumPackageConfig)
+
+    updatePremiumAmountConfig(
+      premiumPkgId,
+      premiumPkgObject[0].days,
+      premiumPkgObject[0].amount,
+      premiumPkgObject[0].premiumPackageConfig
     )
 
+    //console.log('premiumPkgObject', premiumPkgObject[0].premiumPackageConfig)
+    //console.log('oldpremiumPkgObject', oldPremiumAmountPackages)
+    // console.log(
+    //   premiumPkgObject[0].premiumPackageConfig !== oldpremiumPkgObject[0].premiumPackageConfig
+    // )
+
     // if any changes then and then only update
-    if (premiumPkgObject[0].premiumPackageConfig !== oldpremiumPkgObject[0].premiumPackageConfig) {
-      updatePremiumAmountConfig(
-        premiumPkgId,
-        premiumPkgObject[0].days,
-        premiumPkgObject[0].amount,
-        premiumPkgObject[0].premiumPackageConfig
-      )
-    }
+    // if (premiumPkgObject[0].premiumPackageConfig !== oldpremiumPkgObject[0].premiumPackageConfig) {
+    //   console.log('272')
+    //   // updatePremiumAmountConfig(
+    //   //   premiumPkgId,
+    //   //   premiumPkgObject[0].days,
+    //   //   premiumPkgObject[0].amount,
+    //   //   premiumPkgObject[0].premiumPackageConfig
+    //   // )
+    // }
   }
 
   return (
@@ -344,7 +350,13 @@ const SitePricingPlugin = () => {
           <div className='card-title p-4'>
             <div className='d-flex justify-content-between'>
               <h4 className='mt-4'>Price in INR to buy Premium</h4>
-              <button className='btn btn-primary'>Add Plan</button>
+              <button
+                className='btn btn-primary'
+                data-bs-toggle='modal'
+                data-bs-target='#add_premium_plan'
+              >
+                Add Plan
+              </button>
             </div>
           </div>
           <div className='card-body'>
@@ -490,446 +502,6 @@ const SitePricingPlugin = () => {
         </div>
       </div>
 
-      {/* <div className='col-lg-12 mt-4'>
-        <div className='card'>
-          <div className='card-title p-4'>
-            <div className='d-flex justify-content-between'>
-              <h2 className='mt-4'>Premium Packages Configuration</h2>
-            </div>
-          </div>
-
-          <div className='card-body'>
-            <div className='row'>
-              <div className='col-lg-4 fw-bold fs-6'></div>
-              <div className='col-lg-2'>
-                <div className=' fw-bold fs-4'>Premium Package 1</div>
-              </div>
-              <div className='col-lg-2'>
-                <div className=' fw-bold fs-4'>Premium Package 2</div>
-              </div>
-              <div className='col-lg-2'>
-                <div className=' fw-bold fs-4'>Premium Package 3</div>
-              </div>
-            </div>
-            <br />
-            <div className='row'>
-              <div className='col-lg-4 fw-bold fs-6'>Chat/day</div>
-              <div className='col-lg-2'>
-                <input
-                  placeholder='0'
-                  type='number'
-                  name='package_credit'
-                  className={clsx('form-control form-control-solid mb-3 mb-lg-0')}
-                  autoComplete='off'
-                  // value={CreditPackageCredits}
-                  // onChange={(e) => setCreditPackageCredits(Math.abs(parseInt(e.target.value)))}
-                />
-              </div>
-              <div className='col-lg-2'>
-                <input
-                  placeholder='0'
-                  type='number'
-                  name='package_credit'
-                  className={clsx('form-control form-control-solid mb-3 mb-lg-0')}
-                  autoComplete='off'
-                  // value={CreditPackageCredits}
-                  // onChange={(e) => setCreditPackageCredits(Math.abs(parseInt(e.target.value)))}
-                />
-              </div>
-              <div className='col-lg-2'>
-                <input
-                  placeholder='0'
-                  type='number'
-                  name='package_credit'
-                  className={clsx('form-control form-control-solid mb-3 mb-lg-0')}
-                  autoComplete='off'
-                  // value={CreditPackageCredits}
-                  // onChange={(e) => setCreditPackageCredits(Math.abs(parseInt(e.target.value)))}
-                />
-              </div>
-            </div>
-            <br />
-            <div className='row'>
-              <div className='col-lg-4 fw-bold fs-6'>See who likes you</div>
-              <div className='col-lg-2'>
-                <input
-                  className='form-check-input'
-                  type='checkbox'
-                  id='onlinenow'
-                  name='isOnline'
-
-                  // onChange={(e) => handleChange(e)}
-                  // checked={formValue.isOnline}
-                />
-              </div>
-              <div className='col-lg-2'>
-                <input
-                  className='form-check-input'
-                  type='checkbox'
-                  id='onlinenow'
-                  name='isOnline'
-                  // onChange={(e) => handleChange(e)}
-                  // checked={formValue.isOnline}
-                />
-              </div>
-              <div className='col-lg-2'>
-                <input
-                  className='form-check-input'
-                  type='checkbox'
-                  id='onlinenow'
-                  name='isOnline'
-                  // onChange={(e) => handleChange(e)}
-                  // checked={formValue.isOnline}
-                />
-              </div>
-            </div>
-            <br />
-            <div className='row'>
-              <div className='col-lg-4 fw-bold fs-6'>See who visit you</div>
-              <div className='col-lg-2'>
-                <input
-                  className='form-check-input'
-                  type='checkbox'
-                  id='onlinenow'
-                  name='isOnline'
-                  // onChange={(e) => handleChange(e)}
-                  // checked={formValue.isOnline}
-                />
-              </div>
-              <div className='col-lg-2'>
-                <input
-                  className='form-check-input'
-                  type='checkbox'
-                  id='onlinenow'
-                  name='isOnline'
-                  // onChange={(e) => handleChange(e)}
-                  // checked={formValue.isOnline}
-                />
-              </div>
-              <div className='col-lg-2'>
-                <input
-                  className='form-check-input'
-                  type='checkbox'
-                  id='onlinenow'
-                  name='isOnline'
-                  // onChange={(e) => handleChange(e)}
-                  // checked={formValue.isOnline}
-                />
-              </div>
-            </div>
-            <br />
-            <div className='row'>
-              <div className='col-lg-4 fw-bold fs-6'>Video call</div>
-              <div className='col-lg-2'>
-                <input
-                  className='form-check-input'
-                  type='checkbox'
-                  id='onlinenow'
-                  name='isOnline'
-                  // onChange={(e) => handleChange(e)}
-                  // checked={formValue.isOnline}
-                />
-              </div>
-              <div className='col-lg-2'>
-                <input
-                  className='form-check-input'
-                  type='checkbox'
-                  id='onlinenow'
-                  name='isOnline'
-                  // onChange={(e) => handleChange(e)}
-                  // checked={formValue.isOnline}
-                />
-              </div>
-              <div className='col-lg-2'>
-                <input
-                  className='form-check-input'
-                  type='checkbox'
-                  id='onlinenow'
-                  name='isOnline'
-                  // onChange={(e) => handleChange(e)}
-                  // checked={formValue.isOnline}
-                />
-              </div>
-            </div>
-            <br />
-            <div className='row'>
-              <div className='col-lg-4 fw-bold fs-6'>Undo profile/day</div>
-              <div className='col-lg-2'>
-                <input
-                  placeholder='0'
-                  type='number'
-                  name='package_credit'
-                  className={clsx('form-control form-control-solid mb-3 mb-lg-0')}
-                  autoComplete='off'
-                  // value={CreditPackageCredits}
-                  // onChange={(e) => setCreditPackageCredits(Math.abs(parseInt(e.target.value)))}
-                />
-              </div>
-              <div className='col-lg-2'>
-                <input
-                  placeholder='0'
-                  type='number'
-                  name='package_credit'
-                  className={clsx('form-control form-control-solid mb-3 mb-lg-0')}
-                  autoComplete='off'
-                  // value={CreditPackageCredits}
-                  // onChange={(e) => setCreditPackageCredits(Math.abs(parseInt(e.target.value)))}
-                />
-              </div>
-              <div className='col-lg-2'>
-                <input
-                  placeholder='0'
-                  type='number'
-                  name='package_credit'
-                  className={clsx('form-control form-control-solid mb-3 mb-lg-0')}
-                  autoComplete='off'
-                  // value={CreditPackageCredits}
-                  // onChange={(e) => setCreditPackageCredits(Math.abs(parseInt(e.target.value)))}
-                />
-              </div>
-            </div>
-            <br />
-            <div className='row'>
-              <div className='col-lg-4 fw-bold fs-6'>Private photo</div>
-              <div className='col-lg-2'>
-                <input
-                  className='form-check-input'
-                  type='checkbox'
-                  id='onlinenow'
-                  name='isOnline'
-                  // onChange={(e) => handleChange(e)}
-                  // checked={formValue.isOnline}
-                />
-              </div>
-              <div className='col-lg-2'>
-                <input
-                  className='form-check-input'
-                  type='checkbox'
-                  id='onlinenow'
-                  name='isOnline'
-                  // onChange={(e) => handleChange(e)}
-                  // checked={formValue.isOnline}
-                />
-              </div>
-              <div className='col-lg-2'>
-                <input
-                  className='form-check-input'
-                  type='checkbox'
-                  id='onlinenow'
-                  name='isOnline'
-                  // onChange={(e) => handleChange(e)}
-                  // checked={formValue.isOnline}
-                />
-              </div>
-            </div>
-            <br />
-            <div className='row'>
-              <div className='col-lg-4 fw-bold fs-6'>Live stream</div>
-              <div className='col-lg-2'>
-                <input
-                  placeholder='0'
-                  type='text'
-                  name='package_credit'
-                  className={clsx('form-control form-control-solid mb-3 mb-lg-0')}
-                  autoComplete='off'
-                  // value={CreditPackageCredits}
-                  // onChange={(e) => setCreditPackageCredits(Math.abs(parseInt(e.target.value)))}
-                />
-              </div>
-              <div className='col-lg-2'>
-                <input
-                  placeholder='0'
-                  type='text'
-                  name='package_credit'
-                  className={clsx('form-control form-control-solid mb-3 mb-lg-0')}
-                  autoComplete='off'
-                  // value={CreditPackageCredits}
-                  // onChange={(e) => setCreditPackageCredits(Math.abs(parseInt(e.target.value)))}
-                />
-              </div>
-              <div className='col-lg-2'>
-                <input
-                  placeholder='0'
-                  type='text'
-                  name='package_credit'
-                  className={clsx('form-control form-control-solid mb-3 mb-lg-0')}
-                  autoComplete='off'
-                  // value={CreditPackageCredits}
-                  // onChange={(e) => setCreditPackageCredits(Math.abs(parseInt(e.target.value)))}
-                />
-              </div>
-            </div>
-            <br />
-            <div className='row'>
-              <div className='col-lg-4 fw-bold fs-6'>Upload reels</div>
-              <div className='col-lg-2'>
-                <input
-                  placeholder='0'
-                  type='number'
-                  name='package_credit'
-                  className={clsx('form-control form-control-solid mb-3 mb-lg-0')}
-                  autoComplete='off'
-                  // value={CreditPackageCredits}
-                  // onChange={(e) => setCreditPackageCredits(Math.abs(parseInt(e.target.value)))}
-                />
-              </div>
-              <div className='col-lg-2'>
-                <input
-                  placeholder='0'
-                  type='number'
-                  name='package_credit'
-                  className={clsx('form-control form-control-solid mb-3 mb-lg-0')}
-                  autoComplete='off'
-                  // value={CreditPackageCredits}
-                  // onChange={(e) => setCreditPackageCredits(Math.abs(parseInt(e.target.value)))}
-                />
-              </div>
-              <div className='col-lg-2'>
-                <input
-                  placeholder='0'
-                  type='number'
-                  name='package_credit'
-                  className={clsx('form-control form-control-solid mb-3 mb-lg-0')}
-                  autoComplete='off'
-                  // value={CreditPackageCredits}
-                  // onChange={(e) => setCreditPackageCredits(Math.abs(parseInt(e.target.value)))}
-                />
-              </div>
-            </div>
-            <br />
-            <div className='row'>
-              <div className='col-lg-4 fw-bold fs-6'>Free Credits</div>
-              <div className='col-lg-2'>
-                <input
-                  placeholder='0'
-                  type='number'
-                  name='package_credit'
-                  className={clsx('form-control form-control-solid mb-3 mb-lg-0')}
-                  autoComplete='off'
-                  // value={CreditPackageCredits}
-                  // onChange={(e) => setCreditPackageCredits(Math.abs(parseInt(e.target.value)))}
-                />
-              </div>
-              <div className='col-lg-2'>
-                <input
-                  placeholder='0'
-                  type='number'
-                  name='package_credit'
-                  className={clsx('form-control form-control-solid mb-3 mb-lg-0')}
-                  autoComplete='off'
-                  // value={CreditPackageCredits}
-                  // onChange={(e) => setCreditPackageCredits(Math.abs(parseInt(e.target.value)))}
-                />
-              </div>
-              <div className='col-lg-2'>
-                <input
-                  placeholder='0'
-                  type='number'
-                  name='package_credit'
-                  className={clsx('form-control form-control-solid mb-3 mb-lg-0')}
-                  autoComplete='off'
-                  // value={CreditPackageCredits}
-                  // onChange={(e) => setCreditPackageCredits(Math.abs(parseInt(e.target.value)))}
-                />
-              </div>
-            </div>
-            <br />
-            <div className='row'>
-              <div className='col-lg-4 fw-bold fs-6'>Spotlight</div>
-              <div className='col-lg-2'>
-                <select
-                  className='form-select form-select-solid fw-bolder'
-                  data-kt-select2='true'
-                  data-placeholder='Select option'
-                  data-allow-clear='true'
-                  data-kt-user-table-filter='spotlight'
-                  data-hide-search='true'
-                  name='spotlight'
-                  // value={formValue.city}
-                  // onChange={(e) => handleChange(e)}
-                >
-                  <option value=''>Free</option>
-                  <option value={'1'}>1 Days</option>
-                  <option value={'7'}>1 Week</option>
-                  <option value={'30'}>1 Month</option>
-                </select>
-              </div>
-              <div className='col-lg-2'>
-                <select
-                  className='form-select form-select-solid fw-bolder'
-                  data-kt-select2='true'
-                  data-placeholder='Select option'
-                  data-allow-clear='true'
-                  data-kt-user-table-filter='spotlight'
-                  data-hide-search='true'
-                  name='spotlight'
-                  // value={formValue.city}
-                  // onChange={(e) => handleChange(e)}
-                >
-                  <option value=''>Free</option>
-                  <option value={'1'}>1 Days</option>
-                  <option value={'7'}>1 Week</option>
-                  <option value={'30'}>1 Month</option>
-                </select>
-              </div>
-              <div className='col-lg-2'>
-                <select
-                  className='form-select form-select-solid fw-bolder'
-                  data-kt-select2='true'
-                  data-placeholder='Select option'
-                  data-allow-clear='true'
-                  data-kt-user-table-filter='spotlight'
-                  data-hide-search='true'
-                  name='spotlight'
-                  // value={formValue.city}
-                  // onChange={(e) => handleChange(e)}
-                >
-                  <option value=''>Free</option>
-                  <option value={'1'}>1 Days</option>
-                  <option value={'7'}>1 Week</option>
-                  <option value={'30'}>1 Month</option>
-                </select>
-              </div>
-            </div>
-            <br />
-            <div className='row'>
-              <div className='col-lg-4 fw-bold fs-6'>Global online</div>
-              <div className='col-lg-2'>
-                <input
-                  className='form-check-input'
-                  type='checkbox'
-                  id='onlinenow'
-                  name='isOnline'
-                  // onChange={(e) => handleChange(e)}
-                  // checked={formValue.isOnline}
-                />
-              </div>
-              <div className='col-lg-2'>
-                <input
-                  className='form-check-input'
-                  type='checkbox'
-                  id='onlinenow'
-                  name='isOnline'
-                  // onChange={(e) => handleChange(e)}
-                  // checked={formValue.isOnline}
-                />
-              </div>
-              <div className='col-lg-2'>
-                <input
-                  className='form-check-input'
-                  type='checkbox'
-                  id='onlinenow'
-                  name='isOnline'
-                  // onChange={(e) => handleChange(e)}
-                  // checked={formValue.isOnline}
-                />
-              </div>
-            </div>
-            <br />
-          </div>
-        </div>
-      </div> */}
-
       <div className='modal fade' tabIndex={-1} id='add_credit_plan'>
         <div className='modal-dialog'>
           <div className='modal-content'>
@@ -1005,13 +577,13 @@ const SitePricingPlugin = () => {
               />
               &nbsp;&nbsp;&nbsp;
               <input
-                placeholder='0'
+                placeholder='Enter Package Days'
                 type='number'
-                name='package_credit'
+                name='package_days'
                 className={clsx('form-control form-control-solid mb-3 mb-lg-0')}
                 autoComplete='off'
-                value={PremiumPackageCredits}
-                onChange={(e) => setPremiumPackageCredits(Math.abs(parseInt(e.target.value)))}
+                value={PremiumPackageDays}
+                onChange={(e) => setPremiumPackageDays(Math.abs(parseInt(e.target.value)))}
               />
               &nbsp;&nbsp;&nbsp;
               <input

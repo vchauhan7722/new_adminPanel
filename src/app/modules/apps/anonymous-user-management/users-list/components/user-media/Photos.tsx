@@ -14,6 +14,8 @@ import {
 } from '../../../../../../../API/api-endpoint'
 import {DateTimeFormatter, TimeFormatter} from '../../../../../../../utils/DateUtils'
 import LightBoxComponent from '../../../../../../../_metronic/partials/componants/LightBoxComponent'
+import React from 'react'
+import {CustomToggle} from '../../../../../../../_metronic/partials/componants/CustomToggle'
 
 const Photos = () => {
   const UserId = localStorage.getItem('userId')
@@ -26,6 +28,7 @@ const Photos = () => {
   const [selectedUser, setSelectedUser] = useState<any>([])
   const [openLightBox, setOpenLightBox] = useState(false)
   const [lightBoxArrayList, setLightBoxArrayList] = useState<any>([])
+  const [photosCount, setPhotosCount] = useState<any>(0)
 
   useEffect(() => {
     getAllMediaList(page, pageSize, filter.isPrivate, filter.userId)
@@ -36,6 +39,7 @@ const Photos = () => {
     if (result.status === 200) {
       setMediaList(result.data)
       setTotalPage(result.totalPage)
+      setPhotosCount(result.count)
     }
   }
 
@@ -126,6 +130,16 @@ const Photos = () => {
     setLightBoxArrayList([PhotoObject])
   }
 
+  const filterUsingUid = (userID: any, mediaId: any) => {
+    getAllMediaList(page, pageSize, filter.isPrivate, userID)
+    setFilter({userId: userID, isPrivate: ''})
+  }
+
+  const clearFilter = () => {
+    setFilter({userId: '', isPrivate: ''})
+    getAllMediaList(page, pageSize, '', '')
+  }
+
   return (
     <>
       <div className='card py-4 px-4 mb-5'>
@@ -161,17 +175,30 @@ const Photos = () => {
             </div>
           </div>
           <div>
-            <button
-              type='submit'
-              className={'btn btn-primary'}
-              onClick={filterMedia}
-              // disabled={!isAnyProfileChanges}
-            >
+            <button type='submit' className={'btn btn-primary'} onClick={filterMedia}>
               <i className='fa-solid fa-rotate-right'></i>
             </button>
           </div>
         </div>
       </div>
+
+      {selectedUser.length === 0 && (
+        <div className='card py-4 px-4 mb-5'>
+          <div className='d-flex justify-content-between'>
+            <div className='row'>
+              <h4>SEARCH RESULT {photosCount} PHOTOS </h4>
+            </div>
+
+            {filter.userId.length !== 0 && (
+              <div>
+                <button type='submit' className={'btn btn-primary'} onClick={clearFilter}>
+                  <i className='fa-solid fa-close'></i>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {selectedUser.length !== 0 && (
         <div className='card py-4 px-4 mb-5'>
@@ -298,7 +325,10 @@ const Photos = () => {
                           <a href='#' className='text-gray-800 text-hover-primary fw-bold fs-4'>
                             {media?.userDetail?.fullName}
                           </a>
-                          <span className='text-muted fw-semibold d-block fs-6'>
+                          <span
+                            className='text-muted fw-semibold d-block fs-6'
+                            onClick={() => filterUsingUid(media?.userDetail?.userId, media.id)}
+                          >
                             ID : {media?.userDetail?.userId}
                           </span>
                         </div>
@@ -307,12 +337,11 @@ const Photos = () => {
                     <td>
                       <Dropdown>
                         <Dropdown.Toggle
+                          as={CustomToggle}
                           id='dropdown-basic'
                           className='bg-body-secondary bg-body-secondary:hover'
                           size='sm'
-                        >
-                          <i className='bi bi-three-dots fs-3'></i>
-                        </Dropdown.Toggle>
+                        ></Dropdown.Toggle>
 
                         <Dropdown.Menu>
                           <Dropdown.Item>

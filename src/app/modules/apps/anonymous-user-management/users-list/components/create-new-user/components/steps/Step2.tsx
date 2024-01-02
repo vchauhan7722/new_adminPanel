@@ -104,6 +104,8 @@ const Step2 = (props: any) => {
       } else {
         ErrorToastUtils()
       }
+    } else {
+      submitStep(userID)
     }
   }
 

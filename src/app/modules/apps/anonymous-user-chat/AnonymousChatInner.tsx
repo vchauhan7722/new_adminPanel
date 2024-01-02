@@ -15,6 +15,8 @@ import {fileToBase64} from '../../../../utils/FileUtils'
 import {DateTimeFormatter, TimeFormatter} from '../../../../utils/DateUtils'
 import LightBoxComponent from '../../../../_metronic/partials/componants/LightBoxComponent'
 import {LinkItUrl, LinkItJira, LinkItEmail, LinkItTwitter, LinkIt, urlRegex} from 'react-linkify-it'
+import {Dropdown} from 'react-bootstrap'
+import {CustomToggle} from '../../../../_metronic/partials/componants/CustomToggle'
 
 const AnonymousChatInner = (props: any) => {
   const {
@@ -441,7 +443,18 @@ const AnonymousChatInner = (props: any) => {
         </div>
 
         <div className='card-toolbar'>
-          <div className='d-flex '>
+          <Dropdown>
+            <Dropdown.Toggle as={CustomToggle} id='dropdown-custom-components'></Dropdown.Toggle>
+            <Dropdown.Menu>
+              <Dropdown.Item onClick={() => updateChatmember('like')}>
+                {selectedAnonymousUser.like === 1 ? 'Unlike Profile' : 'Like Profile'}
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => updateChatmember('pin')}>
+                {selectedAnonymousUser.pin === 1 ? 'UnPin Profile' : 'Pin Profile'}
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+          {/* <div className='d-flex '>
             <div className='me-0'>
               <div className='dropdown'>
                 <button className='dropbtn'>
@@ -454,11 +467,11 @@ const AnonymousChatInner = (props: any) => {
                   <span onClick={() => updateChatmember('pin')}>
                     {selectedAnonymousUser?.pin === 1 ? 'UnPin Profile' : 'Pin Profile'}
                   </span>
-                  {/* <span>Clear All Messages</span> */}
+                 <span>Clear All Messages</span> 
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
       <div className='card-body' id={'kt_chat_messenger_body'}>

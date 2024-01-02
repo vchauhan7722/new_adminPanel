@@ -14,7 +14,8 @@ import {
   getPremiumPackageAmountPlans,
 } from '../../../../API/api-endpoint'
 import ToastUtils, {ErrorToastUtils} from '../../../../utils/ToastUtils'
-import {Form} from 'react-bootstrap'
+import {Dropdown, Form} from 'react-bootstrap'
+import {CustomToggle} from '../../../../_metronic/partials/componants/CustomToggle'
 
 const ProfileHeader = (props) => {
   const {user, userProfilePercentage, setUserUpdateFlag, userUpdateFlag} = props
@@ -186,122 +187,72 @@ const ProfileHeader = (props) => {
                   </div>
 
                   <div className='d-flex my-4'>
-                    <div className='me-0'>
-                      <button
-                        className='btn btn-sm btn-icon btn-bg-light btn-active-color-primary'
-                        data-kt-menu-trigger='click'
-                        data-kt-menu-placement='bottom-end'
-                        data-kt-menu-flip='top-end'
-                      >
-                        <i className='bi bi-three-dots fs-3'></i>
-                      </button>
-                      <div
-                        className='menu menu-sub menu-sub-dropdown w-200px py-4 menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold'
-                        data-kt-menu='true'
-                      >
-                        {/* begin::Menu item */}
-                        {/* <div className='menu-item px-3'>
-                          <a className='menu-link px-3'>Open a live Profile</a>
-                        </div> */}
-                        {/* end::Menu item */}
+                    <Dropdown>
+                      <Dropdown.Toggle
+                        as={CustomToggle}
+                        id='dropdown-basic'
+                        className='bg-body-secondary bg-body-secondary:hover'
+                        size='sm'
+                      ></Dropdown.Toggle>
 
-                        {/* begin::Menu item */}
-                        <div className='menu-item px-3'>
-                          <a
-                            className='menu-link px-3'
-                            data-kt-users-table-filter='delete_row'
-                            data-bs-toggle='modal'
-                            data-bs-target='#add_update_credit_for_user'
-                          >
-                            Add/Update Credit
-                          </a>
-                        </div>
-                        {/* end::Menu item */}
+                      <Dropdown.Menu>
+                        <Dropdown.Item
+                          data-bs-toggle='modal'
+                          data-bs-target='#add_update_credit_for_user'
+                        >
+                          Add/Update Credit
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                          data-bs-toggle='modal'
+                          data-bs-target='#add_update_premium_for_user'
+                        >
+                          Add/Update Premium
+                        </Dropdown.Item>
 
-                        {/* begin::Menu item */}
-                        <div className='menu-item px-3'>
-                          <a
-                            className='menu-link px-3'
-                            data-kt-users-table-filter='delete_row'
-                            data-bs-toggle='modal'
-                            data-bs-target='#add_update_premium_for_user'
-                          >
-                            Add/Update Premium
-                          </a>
-                        </div>
-                        {/* end::Menu item */}
-
-                        {/* begin::Menu item */}
-                        <div className='menu-item px-3'>
+                        <Dropdown.Item>
                           <Link
-                            className='menu-link px-3'
                             data-kt-users-table-filter='delete_row'
                             to={`${routeForProfileDetails}/edit-profile/${UserID}`}
+                            className='text-black'
                           >
-                            Edit Account
+                            Edit Account{' '}
                           </Link>
-                        </div>
-                        {/* end::Menu item */}
+                        </Dropdown.Item>
 
-                        {/* begin::Menu item */}
-                        <div
-                          className='menu-item px-3'
-                          data-bs-toggle='modal'
-                          data-bs-target='#kt_modal_2'
-                        >
-                          <a className='menu-link px-3' data-kt-users-table-filter='delete_row'>
+                        <Dropdown.Item data-bs-toggle='modal' data-bs-target='#kt_modal_2'>
+                          <a className='text-black' data-kt-users-table-filter='delete_row'>
                             {!user.isPopular ? 'Set as Popular' : 'Remove From Popular'}
                           </a>
-                        </div>
-                        {/* end::Menu item */}
-
-                        {/* begin::Menu item */}
-                        <div className='menu-item px-3' onClick={() => verifyUser()}>
-                          <a className='menu-link px-3' data-kt-users-table-filter='delete_row'>
+                        </Dropdown.Item>
+                        <Dropdown.Item onClick={() => verifyUser()}>
+                          <a className='text-black' data-kt-users-table-filter='delete_row'>
                             {user?.isVerify ? 'Remove Verification' : 'Verify User'}
                           </a>
-                        </div>
-                        {/* end::Menu item */}
-
-                        {/* begin::Menu item */}
+                        </Dropdown.Item>
                         {!user?.isSpotlightUser && (
-                          <div
-                            className='menu-item px-3'
-                            data-bs-toggle='modal'
-                            data-bs-target='#kt_modal_1'
-                          >
-                            <a className='menu-link px-3' data-kt-users-table-filter='delete_row'>
+                          <Dropdown.Item data-bs-toggle='modal' data-bs-target='#kt_modal_1'>
+                            <a className='text-black' data-kt-users-table-filter='delete_row'>
                               Add To Spotlight
                             </a>
-                          </div>
+                          </Dropdown.Item>
                         )}
-                        {/* end::Menu item */}
-
-                        {/* begin::Menu item */}
-                        <div className='menu-item px-3'>
-                          <a className='menu-link px-3' data-kt-users-table-filter='delete_row'>
+                        <Dropdown.Item>
+                          <a className='text-black' data-kt-users-table-filter='delete_row'>
                             Delete Account
                           </a>
-                        </div>
-                        {/* end::Menu item */}
-
-                        {/* begin::Menu item */}
-                        <div className='menu-item px-3'>
-                          <a className='menu-link px-3' data-kt-users-table-filter='delete_row'>
+                        </Dropdown.Item>
+                        <Dropdown.Item onClick={() => verifyUser()}>
+                          <a className='text-black' data-kt-users-table-filter='delete_row'>
                             Ban Email User
                           </a>
-                        </div>
-                        {/* end::Menu item */}
-
-                        {/* begin::Menu item */}
-                        <div className='menu-item px-3'>
-                          <a className='menu-link px-3' data-kt-users-table-filter='delete_row'>
+                        </Dropdown.Item>
+                        <Dropdown.Item onClick={() => verifyUser()}>
+                          <a className='text-black' data-kt-users-table-filter='delete_row'>
                             Ban Ip User
                           </a>
-                        </div>
-                        {/* end::Menu item */}
-                      </div>
-                    </div>
+                        </Dropdown.Item>
+                      </Dropdown.Menu>
+                    </Dropdown>
                   </div>
                 </div>
 

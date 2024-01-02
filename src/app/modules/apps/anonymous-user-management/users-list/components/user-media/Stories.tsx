@@ -19,6 +19,7 @@ import {
   getAllUserAnonymousStories,
 } from '../../../../../../../API/api-endpoint'
 import LightBoxComponent from '../../../../../../../_metronic/partials/componants/LightBoxComponent'
+import {CustomToggle} from '../../../../../../../_metronic/partials/componants/CustomToggle'
 
 const Stories = () => {
   const UserId = localStorage.getItem('userId')
@@ -341,10 +342,7 @@ const Stories = () => {
                       <span>{story?.status ? 'visible' : 'Not Visible'}</span>
                     </td>
                     <td>
-                      <div
-                        className='d-flex align-items-center'
-                        onClick={() => filterUsingUid(story?.userDetail?.userId, story.storyId)}
-                      >
+                      <div className='d-flex align-items-center'>
                         <div
                           className='symbol symbol-40px symbol-circle overflow-visible me-3'
                           onClick={() => {
@@ -369,7 +367,10 @@ const Stories = () => {
                           <a href='#' className='text-gray-800 text-hover-primary fw-bold fs-4'>
                             {story?.userDetail?.fullName}
                           </a>
-                          <span className='text-muted fw-semibold d-block fs-6'>
+                          <span
+                            className='text-muted fw-semibold d-block fs-6'
+                            onClick={() => filterUsingUid(story?.userDetail?.userId, story.storyId)}
+                          >
                             ID : {story?.userDetail?.userId}
                           </span>
                         </div>
@@ -378,6 +379,7 @@ const Stories = () => {
                     <td>
                       <Dropdown>
                         <Dropdown.Toggle
+                          as={CustomToggle}
                           id='dropdown-basic'
                           className='bg-body-secondary bg-body-secondary:hover'
                           size='sm'

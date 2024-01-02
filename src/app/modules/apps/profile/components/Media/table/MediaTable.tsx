@@ -12,6 +12,7 @@ import {DateWithTimeFormatter} from '../../../../../../../utils/DateUtils'
 import ToastUtils from '../../../../../../../utils/ToastUtils'
 import {DropdownButton, Dropdown, Form} from 'react-bootstrap'
 import clsx from 'clsx'
+import {CustomToggle} from '../../../../../../../_metronic/partials/componants/CustomToggle'
 
 const MediaTable = (props) => {
   const {getUpdatedStory, setGetUpdatedStory} = props
@@ -175,7 +176,7 @@ const MediaTable = (props) => {
                       <td>
                         <div className='d-flex my-4'>
                           <Dropdown>
-                            <Dropdown.Toggle id='dropdown-basic'>
+                            <Dropdown.Toggle id='dropdown-basic' as={CustomToggle}>
                               <i className='bi bi-three-dots fs-3'></i>
                             </Dropdown.Toggle>
 

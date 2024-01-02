@@ -63,7 +63,7 @@ const Step3 = (props: any) => {
   const handleMediaChange = async (event: any) => {
     setMediaisImageUploaded(true)
     if (event.target.files[0]) {
-      let result = await createMediaActionForUserMedia(event.target.files[0], userID)
+      let result = await createMediaActionForUserMedia(event.target.files[0], userID, true)
       if (result.status === 200) {
         let oldmedia = [...userProfileMedia]
 
@@ -79,7 +79,6 @@ const Step3 = (props: any) => {
   }
 
   const onSubmitStep3 = async () => {
-    console.log('isImageUploaded', isImageUploaded)
     if (isImageUploaded) {
       submitStep()
       navigate('/apps/anonymous-user-management/users')
@@ -130,7 +129,6 @@ const Step3 = (props: any) => {
             className='ms-4 btn btn-primary'
             onClick={(e) => {
               handleMediaClick(e)
-              setisImageUploaded(false)
             }}
           >
             Upload Media

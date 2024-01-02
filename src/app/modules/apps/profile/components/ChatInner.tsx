@@ -12,6 +12,8 @@ import {DateTimeFormatter, TimeFormatter} from '../../../../../utils/DateUtils'
 import {useLocation} from 'react-router-dom'
 import LightBoxComponent from '../../../../../_metronic/partials/componants/LightBoxComponent'
 import {LinkItUrl, LinkItJira, LinkItEmail, LinkItTwitter, LinkIt, urlRegex} from 'react-linkify-it'
+import {CustomToggle} from '../../../../../_metronic/partials/componants/CustomToggle'
+import {Dropdown} from 'react-bootstrap'
 
 const ChatInner = (props: any) => {
   const {
@@ -421,7 +423,19 @@ const ChatInner = (props: any) => {
         </div>
 
         <div className='card-toolbar'>
-          <div className='d-flex my-4'>
+          <Dropdown>
+            <Dropdown.Toggle as={CustomToggle} id='dropdown-custom-components'></Dropdown.Toggle>
+
+            <Dropdown.Menu>
+              <Dropdown.Item onClick={() => updateChatmember('like')}>
+                {receiverUserDetails.like === 1 ? 'Unlike Profile' : 'Like Profile'}
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => updateChatmember('pin')}>
+                {receiverUserDetails.pin === 1 ? 'UnPin Profile' : 'Pin Profile'}
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+          {/* <div className='d-flex my-4'>
             <div className='me-0'>
               <div className='dropdown'>
                 <button className='dropbtn'>
@@ -434,11 +448,11 @@ const ChatInner = (props: any) => {
                   <span onClick={() => updateChatmember('pin')}>
                     {receiverUserDetails.pin === 1 ? 'UnPin Profile' : 'Pin Profile'}
                   </span>
-                  {/* <span>Clear All Messages</span> */}
+                  {/* <span>Clear All Messages</span> 
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
       <div className='card-body' id={'kt_chat_messenger_body'}>

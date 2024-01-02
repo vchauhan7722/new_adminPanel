@@ -746,14 +746,23 @@ export const removeMediaActionForUserMedia = async (userID, mediaID) => {
   }
 }
 
-export const createMediaActionForUserMedia = async (fileData,userID) => {
+export const createMediaActionForUserMedia = async (fileData,userID,fromWeb) => {
   try {
     let accessToken = localStorage.getItem('accessToken')
 
     let formData = new FormData()
-    formData = {
-      profileMedia : fileData,
-      mediaTypes : [{mediaType:"photo"}]  
+    if(fromWeb){
+      formData = {
+        anonymousProfileMedia : fileData,
+        mediaTypes : [{mediaType:"photo"}],
+        fromWeb :  fromWeb 
+      }
+    }else{
+      formData = {
+        profileMedia : fileData,
+        mediaTypes : [{mediaType:"photo"}],
+        fromWeb :  fromWeb 
+      }
     }
     
     const apiUrl = `${APIURL}/api/v1/users/${userID}/upload/profiles`
@@ -2031,7 +2040,8 @@ export const UpdateUserProfilePicture = async (UID, fileData) => {
   let accessToken = localStorage.getItem('accessToken')
   let formdata = new FormData()
   formdata = {
-    profile: fileData,
+    anonymousprofile: fileData,
+    fromWeb : true
   }
 
   const apiUrl = `${APIURL}/api/v1/users/update/${UID}`
