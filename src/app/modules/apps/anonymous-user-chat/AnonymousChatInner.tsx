@@ -92,17 +92,6 @@ const AnonymousChatInner = (props: any) => {
     ws1.addEventListener('message', (event) => {
       const receivedMessage = event.data
       const JsonMessageData = JSON.parse(receivedMessage)
-      // if (JsonMessageData.type !== 'join') {
-      //   if (JsonMessageData.message !== "User doesn't have credit") {
-      //     let messages = JSON.parse(sessionStorage.getItem('messageList') || '')
-      //     const oldMessage = [...messages]
-      //     oldMessage.push(JsonMessageData)
-      //     sessionStorage.setItem('messageList', JSON.stringify(oldMessage))
-      //     setMessageList(oldMessage)
-      //   } else {
-      //     ToastUtils({type: 'error', message: JsonMessageData.message})
-      //   }
-      // }
       if (JsonMessageData?.status === 500) {
         ToastUtils({type: 'error', message: JsonMessageData.message})
       }
@@ -119,7 +108,7 @@ const AnonymousChatInner = (props: any) => {
         setMessageList(updatedMessages)
         setTimeout(() => {
           scrollToBottom()
-        }, 500)
+        }, 200)
       }
     })
 
@@ -402,44 +391,6 @@ const AnonymousChatInner = (props: any) => {
               />
             </div>
           </div>
-          {/*send gift and credit end */}
-
-          {/* <div className='d-flex ms-5'>
-            <div className='d-flex justify-content-center flex-column me-1'>
-              <a
-                href='#'
-                className='fs-4 fw-bolder text-gray-900 text-hover-primary me-1 mb-1 lh-1'
-              >
-                {selectedNormalUser?.fullName}
-              </a>
-              {selectedNormalUser?.isOnline == '1' && (
-                <div className='mb-0 lh-1'>
-                  <span className='badge badge-success badge-circle w-10px h-10px me-1'></span>
-                  <span className='fs-7 fw-bold text-gray-400'>Active</span>
-                </div>
-              )}
-            </div>
-            {selectedNormalUser?.isPremium == '1' && (
-              <div className='ms-3'>
-                <img
-                  alt='Pic'
-                  src={toAbsoluteUrl(`/media/logos/Premiuim.png`)}
-                  width='17px'
-                  height='17px'
-                />
-              </div>
-            )}
-
-            <div className='symbol  symbol-36px symbol-circle me-3'>
-              <img
-                alt='Pic'
-                src={
-                  `${process.env.REACT_APP_SERVER_URL}/${selectedNormalUser?.profileImage}` ||
-                  toAbsoluteUrl(`/media/avatars/300-5.jpg`)
-                }
-              />
-            </div>
-          </div> */}
         </div>
 
         <div className='card-toolbar'>

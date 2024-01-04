@@ -3,6 +3,7 @@ import {toAbsoluteUrl} from '../../../../../../_metronic/helpers'
 import MediaTable from './table/MediaTable'
 import {
   createMediaActionForUserMedia,
+  createMediaActionForUserMediaForAnonymousUser,
   removeMediaActionForUserMedia,
   setMediaAsAStoryForUserMedia,
   updateMediaActionForUserMedia,
@@ -14,9 +15,13 @@ import {DateWithTimeFormatter} from '../../../../../../utils/DateUtils'
 import {Dropdown} from 'react-bootstrap'
 import {CustomToggle} from '../../../../../../_metronic/partials/componants/CustomToggle'
 import {ImageCompressor} from '../../../../../../utils/ImageCompresser'
+import {useLocation} from 'react-router-dom'
 
 const Media = (props: any) => {
   const {user} = props
+
+  const location = useLocation()
+  let currentUserType = location.pathname.substring(6, 15) === 'anonymous' ? 'Anonymous' : 'Normal'
 
   const hiddenMediaInput = useRef<HTMLInputElement>(document.createElement('input'))
 
@@ -74,7 +79,13 @@ const Media = (props: any) => {
     setisMediaUploaded(true)
     if (event.target.files[0]) {
       // let response = await ImageCompressor(event.target.files[0])
-      let result = await createMediaActionForUserMedia(event.target.files[0], userId, false)
+      let result
+      // if (currentUserType !== 'Normal') {
+      //   result = await createMediaActionForUserMediaForAnonymousUser(event.target.files[0], userId)
+      // } else {
+      // result = await createMediaActionForUserMedia(event.target.files[0], userId)
+      // }
+      result = await createMediaActionForUserMedia(event.target.files[0], userId)
       if (result.status === 200) {
         let oldmedia = [...userProfileMedia]
         oldmedia.push(result.data[0])

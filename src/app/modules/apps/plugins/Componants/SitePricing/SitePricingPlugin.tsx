@@ -424,81 +424,78 @@ const SitePricingPlugin = () => {
       <div className='card p-3 mt-5'>
         <div className='card-title fs-2 fw-bold'>Premium Packages Config</div>
         <div className='row mt-4'>
-          {premiumAmountPackages !== undefined &&
-            premiumAmountPackages.map((packageItem: any, index: any) => (
-              <>
-                <div className='col-3'>
-                  <div className='mb-4'>
-                    <div className='fs-3 fw-bold'>{packageItem.premiumPackageName}</div>
-                  </div>
-                  <hr />
-                  <div key={index} className=' mb-4'>
-                    {' '}
-                    {/*className='row mb-4' */}
-                    {/* Display labels in col-4 */}
-                    {/* <div className='col-6'>
-                      {packageItem?.premiumPackageConfig.map(
-                        (configItem: any, configIndex: any) => (
-                          <div key={configIndex} className='fs-6 fw-bold mb-7'>
-                            {configItem.label}
-                          </div>
-                        )
-                      )}
-                    </div> */}
-                    {/* Display inputs in col-4 */}
-                    <div className=''>
-                      {/*className='col-4' */}
-                      {packageItem?.premiumPackageConfig.map(
-                        (configItem: any, configIndex: any) => (
-                          <div key={configIndex}>
-                            <div key={configIndex} className='fs-6 mb-1 text-muted'>
-                              {configItem.label === 'Live stream'
-                                ? `${configItem.label} (in Minutes)`
-                                : configItem.label}
+          <div className='col-3 mt-13'>
+            {configName.map((config: any, index: any) => {
+              return (
+                <div key={index} className='fs-4 mb-4 text-black'>
+                  {config.name === 'Live stream' ? `${config.name} (in Minutes)` : config.name}
+                </div>
+              )
+            })}
+          </div>
+          <div className='row col-9'>
+            {premiumAmountPackages !== undefined &&
+              premiumAmountPackages.map((packageItem: any, index: any) => (
+                <>
+                  <div className='col-2'>
+                    <div className='mb-4'>
+                      <div className='fs-7 fw-bold'>{packageItem.premiumPackageName}</div>
+                    </div>
+                    <hr />
+                    <div key={index} className='row mb-4 '>
+                      {/*className='row mb-4' */}
+
+                      {/* Display inputs in col-4 */}
+                      <div className=''>
+                        {/*className='col-4' */}
+                        {packageItem?.premiumPackageConfig.map(
+                          (configItem: any, configIndex: any) => (
+                            <div key={configIndex}>
+                              {configItem.type === 'checkbox' ? (
+                                <input
+                                  type='checkbox'
+                                  className='form-check-input mb-4'
+                                  checked={configItem.value}
+                                  name={configItem.name}
+                                  onChange={(e) =>
+                                    handleChangePremiumAmountPackagesConfig(
+                                      e,
+                                      packageItem.premiumPackageAmountId,
+                                      configIndex
+                                    )
+                                  }
+                                />
+                              ) : (
+                                <input
+                                  type='number'
+                                  className={clsx('form-control form-control-solid mb-4')}
+                                  style={{height: '25px'}}
+                                  value={configItem.value}
+                                  name={configItem.name}
+                                  onChange={(e) =>
+                                    handleChangePremiumAmountPackagesConfig(
+                                      e,
+                                      packageItem.premiumPackageAmountId,
+                                      configIndex
+                                    )
+                                  }
+                                  onBlur={() =>
+                                    onBlurUpdatePremiumAmountConfig(
+                                      packageItem.premiumPackageAmountId
+                                    )
+                                  }
+                                />
+                              )}
                             </div>
-                            {configItem.type === 'checkbox' ? (
-                              <input
-                                type='checkbox'
-                                className='form-check-input mb-4'
-                                checked={configItem.value}
-                                name={configItem.name}
-                                onChange={(e) =>
-                                  handleChangePremiumAmountPackagesConfig(
-                                    e,
-                                    packageItem.premiumPackageAmountId,
-                                    configIndex
-                                  )
-                                }
-                              />
-                            ) : (
-                              <input
-                                type='number'
-                                className={clsx('form-control form-control-solid mb-3')}
-                                value={configItem.value}
-                                name={configItem.name}
-                                onChange={(e) =>
-                                  handleChangePremiumAmountPackagesConfig(
-                                    e,
-                                    packageItem.premiumPackageAmountId,
-                                    configIndex
-                                  )
-                                }
-                                onBlur={() =>
-                                  onBlurUpdatePremiumAmountConfig(
-                                    packageItem.premiumPackageAmountId
-                                  )
-                                }
-                              />
-                            )}
-                          </div>
-                        )
-                      )}
+                          )
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-                <br></br>
-              </>
-            ))}
+                  <br></br>
+                </>
+              ))}
+          </div>
         </div>
       </div>
 

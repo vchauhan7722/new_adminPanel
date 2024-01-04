@@ -99,7 +99,7 @@ const ChatInner = (props: any) => {
         setMessageList(updatedMessages)
         setTimeout(() => {
           scrollToBottom()
-        }, 500)
+        }, 200)
       }
     })
 

@@ -3,10 +3,17 @@ import {MenuComponent} from '../../../../../../../_metronic/assets/ts/components
 import {initialQueryState, KTIcon} from '../../../../../../../_metronic/helpers'
 import {useQueryRequest} from '../../core/QueryRequestProvider'
 import {useQueryResponse} from '../../core/QueryResponseProvider'
-import {getCityList, getCountriesList, getStateList} from '../../../../../../../API/api-endpoint'
+import {
+  getCitiesBYSearch,
+  getCityList,
+  getCountriesList,
+  getStateBYSearch,
+  getStateList,
+} from '../../../../../../../API/api-endpoint'
 import {useIntl} from 'react-intl'
 import {UsersListSearchComponent} from './UsersListSearchComponent'
 import {OverlayTrigger, Tooltip} from 'react-bootstrap'
+import {AsyncTypeahead} from 'react-bootstrap-typeahead'
 
 const UsersListFilter = () => {
   const intl = useIntl()
@@ -36,6 +43,10 @@ const UsersListFilter = () => {
   const [allCityList, setallCityList] = useState<Array<any> | undefined>([])
   const [selectedCountryID, setSelectedCountryID] = useState<any>(101)
   const [selectedStateID, setSelectedStateID] = useState<any>(4030)
+  const [countrySuggestion, setCountrySuggestion] = useState<any>()
+  const [stateSuggestion, setStateSuggestion] = useState<any>()
+  const [citySuggestion, setCitySuggestion] = useState<any>()
+  const [isStateInputisVisible, setIsStateInputVisible] = useState(false)
 
   useEffect(() => {
     MenuComponent.reinitialization()
@@ -128,6 +139,34 @@ const UsersListFilter = () => {
     setallCityList(response.data)
   }
 
+  const handleSearchCity = async (query: any) => {
+    //setIsLoading(true)
+    const inputValue = query
+    if (inputValue.length > 3) {
+      const filteredSuggestions = await getCitiesBYSearch(inputValue)
+      // setIsLoading(false)
+      setCitySuggestion(filteredSuggestions.data)
+    } else if (inputValue.length === 0) {
+      setCitySuggestion([])
+      //setIsLoading(false)
+    }
+  }
+
+  const handleSearchStates = async (query: any) => {
+    //setIsLoading(true)
+    const inputValue = query
+
+    if (inputValue.length > 3) {
+      const filteredSuggestions = await getStateBYSearch(inputValue)
+      // console.log('filteredSuggestions', filteredSuggestions)
+      //setIsLoading(false)
+      setStateSuggestion(filteredSuggestions.data)
+    } else if (inputValue.length === 0) {
+      setStateSuggestion([])
+      //setIsLoading(false)
+    }
+  }
+
   return (
     <>
       <div className='accordion' id='kt_accordion_1'>
@@ -174,6 +213,34 @@ const UsersListFilter = () => {
 
                   <div className='col-lg-4'>
                     <label className='form-label fs-6 fw-bold'>
+                      {intl.formatMessage({id: 'USERMANAGEMENT.FILTER.STARTREGISTERDATE'})}
+                    </label>
+                    <input
+                      type='date'
+                      className='form-control form-control-lg form-control-solid'
+                      placeholder='Start Register Date'
+                      name='startDate'
+                      value={formValue.startDate}
+                      onChange={(e) => handleChange(e)}
+                    />
+                  </div>
+                  <div className='col-lg-4'>
+                    <label className='form-label fs-6 fw-bold'>
+                      {intl.formatMessage({id: 'USERMANAGEMENT.FILTER.ENDREGISTERDATE'})}
+                    </label>
+                    <input
+                      type='date'
+                      className='form-control form-control-lg form-control-solid'
+                      placeholder='Register Date'
+                      name='endDate'
+                      value={formValue.endDate}
+                      onChange={(e) => handleChange(e)}
+                    />
+                  </div>
+                </div>
+                <div className='row p-4'>
+                  <div className='col-lg-4'>
+                    <label className='form-label fs-6 fw-bold'>
                       {intl.formatMessage({id: 'USERMANAGEMENT.FILTER.ENDAGE'})} {formValue.endAge}
                     </label>
 
@@ -188,46 +255,6 @@ const UsersListFilter = () => {
                     />
                   </div>
 
-                  {/* <div className='col-lg-4'>
-                    <label className='form-label fs-6 fw-bold'>
-                      {intl.formatMessage({id: 'USERMANAGEMENT.FILTER.ENDAGE'})}
-                    </label>
-                    <input
-                      type='number'
-                      className='form-control form-control-lg form-control-solid'
-                      placeholder='End Age'
-                      value={formValue.endAge}
-                      onChange={(e) => handleChange(e)}
-                    />
-                  </div> */}
-                  <div className='col-lg-4'>
-                    <label className='form-label fs-6 fw-bold'>
-                      {intl.formatMessage({id: 'USERMANAGEMENT.FILTER.STARTREGISTERDATE'})}
-                    </label>
-                    <input
-                      type='date'
-                      className='form-control form-control-lg form-control-solid'
-                      placeholder='Start Register Date'
-                      name='startDate'
-                      value={formValue.startDate}
-                      onChange={(e) => handleChange(e)}
-                    />
-                  </div>
-                </div>
-                <div className='row p-4'>
-                  <div className='col-lg-4'>
-                    <label className='form-label fs-6 fw-bold'>
-                      {intl.formatMessage({id: 'USERMANAGEMENT.FILTER.ENDREGISTERDATE'})}
-                    </label>
-                    <input
-                      type='date'
-                      className='form-control form-control-lg form-control-solid'
-                      placeholder='Register Date'
-                      name='endDate'
-                      value={formValue.endDate}
-                      onChange={(e) => handleChange(e)}
-                    />
-                  </div>
                   <div className='col-lg-4'>
                     <label className='form-label fs-6 fw-bold'>
                       {intl.formatMessage({id: 'USERMANAGEMENT.FILTER.GENDER'})}
@@ -308,7 +335,8 @@ const UsersListFilter = () => {
                       <label className='form-label fs-6 fw-bold'>
                         {intl.formatMessage({id: 'USERMANAGEMENT.FILTER.STATE'})}
                       </label>
-                      <select
+
+                      {/* <select
                         className='form-select form-select-solid fw-bolder'
                         data-kt-select2='true'
                         data-placeholder='Select option'
@@ -324,30 +352,80 @@ const UsersListFilter = () => {
                           allStateList.map((state) => {
                             return <option value={state.name}>{state.name}</option>
                           })}
-                      </select>
+                      </select> */}
+                      {isStateInputisVisible ? (
+                        <input
+                          type='text'
+                          className='form-control form-control-lg form-control-solid'
+                          placeholder='Register Date'
+                          name='state'
+                          value={formValue.state}
+                          onChange={(e) => setIsStateInputVisible(false)}
+                        />
+                      ) : (
+                        <AsyncTypeahead
+                          filterBy={['name']}
+                          id='async-example'
+                          isLoading={isLoading}
+                          minLength={3}
+                          onSearch={handleSearchStates}
+                          options={stateSuggestion}
+                          labelKey='name'
+                          defaultInputValue={formValue?.state}
+                          //selected={formValue?.state}
+
+                          onChange={(e: any) => {
+                            if (e.length !== 0) {
+                              let locationName = e[0]
+                              setFormValue({
+                                ...formValue,
+                                state: locationName?.name,
+                                country: locationName?.country,
+                              })
+                              setIsStateInputVisible(true)
+                              setSelectedStateID(locationName.stateId)
+                              setSelectedCountryID(locationName.countryId)
+                              setStateSuggestion([])
+                            }
+                          }}
+                          renderMenuItemChildren={(option: any) => (
+                            <span>{`${option?.name}, ${option?.country}`}</span>
+                          )}
+                        />
+                      )}
                     </div>
                   </div>
                   <div className='col-lg-4'>
                     <label className='form-label fs-6 fw-bold'>
                       {intl.formatMessage({id: 'USERMANAGEMENT.FILTER.CITY'})}
                     </label>
-                    <select
-                      className='form-select form-select-solid fw-bolder'
-                      data-kt-select2='true'
-                      data-placeholder='Select option'
-                      data-allow-clear='true'
-                      data-kt-user-table-filter='city'
-                      data-hide-search='true'
-                      name='city'
-                      value={formValue.city}
-                      onChange={(e) => handleChange(e)}
-                    >
-                      <option value=''></option>
-                      {allCityList !== undefined &&
-                        allCityList.map((city) => {
-                          return <option value={city.name}>{city.name}</option>
-                        })}
-                    </select>
+                    <AsyncTypeahead
+                      filterBy={['name']}
+                      id='async-example'
+                      isLoading={isLoading}
+                      minLength={3}
+                      onSearch={handleSearchCity}
+                      options={citySuggestion}
+                      defaultInputValue={formValue?.city}
+                      labelKey='name'
+                      onChange={(e: any) => {
+                        console.log('e', e)
+                        if (e.length !== 0) {
+                          let locationName = e[0]
+                          setFormValue({
+                            ...formValue,
+                            city: locationName?.name,
+                            state: locationName?.state,
+                            country: locationName?.country,
+                          })
+                          setIsStateInputVisible(true)
+                          setCitySuggestion([])
+                        }
+                      }}
+                      renderMenuItemChildren={(option: any) => (
+                        <span>{`${option?.name}, ${option?.state}, ${option?.country}`}</span>
+                      )}
+                    />
                   </div>
                 </div>
                 <div className='row p-4'>

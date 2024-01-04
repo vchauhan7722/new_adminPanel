@@ -10,6 +10,6 @@ export const CustomToggle = React.forwardRef(({children, onClick}: any, ref: any
     }}
   >
     {children}
-    <i className='fa-solid fa-ellipsis-vertical'></i>
+    <i className='fa-solid fa-ellipsis-vertical text-black'></i>
   </button>
 ))

@@ -176,9 +176,10 @@ const MediaTable = (props) => {
                       <td>
                         <div className='d-flex my-4'>
                           <Dropdown>
-                            <Dropdown.Toggle id='dropdown-basic' as={CustomToggle}>
-                              <i className='bi bi-three-dots fs-3'></i>
-                            </Dropdown.Toggle>
+                            <Dropdown.Toggle
+                              id='dropdown-basic'
+                              as={CustomToggle}
+                            ></Dropdown.Toggle>
 
                             <Dropdown.Menu>
                               <Dropdown.Item

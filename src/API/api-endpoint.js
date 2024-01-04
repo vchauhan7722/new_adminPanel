@@ -154,6 +154,27 @@ export const getCitiesBYSearch = async (searchText) => {
   }
 }
 
+export const getStateBYSearch = async (searchText) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+
+    const apiUrl = `${APIURL}/api/v1/masters/states?search=${searchText}`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken
+      }
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
 export const getCountriesList = async () => {
   try {
     let accessToken = localStorage.getItem('accessToken')
@@ -705,7 +726,6 @@ export const updateMediaActionForUserMedia = async (userID, mediaID, type,typeVa
 
     let body = {
       [`${type}`]: typeValue,
-     
     }
 
     const apiUrl = `${APIURL}/api/v1/users/${userID}/update/media/${mediaID}`
@@ -746,25 +766,16 @@ export const removeMediaActionForUserMedia = async (userID, mediaID) => {
   }
 }
 
-export const createMediaActionForUserMedia = async (fileData,userID,fromWeb) => {
+export const createMediaActionForUserMedia = async (fileData,userID) => {
   try {
     let accessToken = localStorage.getItem('accessToken')
 
     let formData = new FormData()
-    if(fromWeb){
-      formData = {
-        anonymousProfileMedia : fileData,
-        mediaTypes : [{mediaType:"photo"}],
-        fromWeb :  fromWeb 
-      }
-    }else{
-      formData = {
-        profileMedia : fileData,
-        mediaTypes : [{mediaType:"photo"}],
-        fromWeb :  fromWeb 
-      }
+    formData = {
+      profileMedia : fileData,
+      mediaTypes : [{mediaType:"photo"}],
     }
-    
+    console.log("formData",formData)
     const apiUrl = `${APIURL}/api/v1/users/${userID}/upload/profiles`
 
     let response = await axios.post(apiUrl,formData, {
@@ -781,6 +792,33 @@ export const createMediaActionForUserMedia = async (fileData,userID,fromWeb) => 
     return error.message
   }
 }
+
+export const createMediaActionForUserMediaForAnonymousUser = async (fileData, userID) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken');
+
+    let formData = new FormData();
+    for (var i = 0; i < fileData.length; i++) {
+      formData.append('anonymousProfileMedia', fileData[i],fileData[i].name);
+      formData.append(`mediaTypes[${i}][mediaType]`, "photo");
+    }
+   
+    const apiUrl = `${APIURL}/api/v1/users/${userID}/upload/profiles/web`;
+
+    let response = await axios.post(apiUrl, formData, {
+      headers: {
+        'Content-Type': `multipart/form-data;`,
+        'x-access-token': accessToken
+      }
+    });
+
+    return response.data;
+    
+  } catch (error) {
+    console.log(error.message);
+    return error.message;
+  }
+};
 
 export const setMediaAsAStoryForUserMedia = async (userID,mediaId) => {
   try {
@@ -2064,7 +2102,7 @@ export const getUserMediaImages = async (uid) => {
   try { 
     let accessToken = localStorage.getItem('accessToken')  
     
-    const apiUrl = `${APIURL}/api/v1/users/${uid}/all/profile/media`
+    const apiUrl = `${APIURL}/api/v1/users/${uid}/all/profile/media?fromWeb=true`
 
     let response = await axios.get(apiUrl, {
       headers: {

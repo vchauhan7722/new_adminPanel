@@ -4,10 +4,17 @@ import {MenuComponent} from '../../../../../../../_metronic/assets/ts/components
 import {initialQueryState, KTIcon} from '../../../../../../../_metronic/helpers'
 import {useQueryRequest} from '../../core/QueryRequestProvider'
 import {useQueryResponse} from '../../core/QueryResponseProvider'
-import {getCityList, getCountriesList, getStateList} from '../../../../../../../API/api-endpoint'
+import {
+  getCitiesBYSearch,
+  getCityList,
+  getCountriesList,
+  getStateBYSearch,
+  getStateList,
+} from '../../../../../../../API/api-endpoint'
 import {useIntl} from 'react-intl'
 import {UsersListSearchComponent} from './UsersListSearchComponent'
 import {OverlayTrigger, Tooltip} from 'react-bootstrap'
+import {AsyncTypeahead} from 'react-bootstrap-typeahead'
 
 const UsersListFilter = () => {
   const intl = useIntl()
@@ -29,14 +36,16 @@ const UsersListFilter = () => {
     isPremium: '',
     isVerify: '',
     isWithStory: '',
-    isfromReffral: '',
     completeProfile: '',
   })
-  const [allCountryList, setallCountryList] = useState<Array<any> | undefined>([])
+  const [allCountryList, setallCountryList] = useState<any>([])
   const [allStateList, setallStateList] = useState<Array<any> | undefined>([])
   const [allCityList, setallCityList] = useState<Array<any> | undefined>([])
   const [selectedCountryID, setSelectedCountryID] = useState<any>(101)
   const [selectedStateID, setSelectedStateID] = useState<any>(4030)
+  const [stateSuggestion, setStateSuggestion] = useState<any>()
+  const [citySuggestion, setCitySuggestion] = useState<any>()
+  const [isStateInputisVisible, setIsStateInputVisible] = useState(false)
 
   useEffect(() => {
     MenuComponent.reinitialization()
@@ -59,7 +68,6 @@ const UsersListFilter = () => {
       isPremium: '',
       isVerify: '',
       isWithStory: '',
-      isfromReffral: '',
       completeProfile: '',
     })
   }
@@ -74,9 +82,9 @@ const UsersListFilter = () => {
     getStates()
   }, [selectedCountryID])
 
-  useEffect(() => {
-    getCities()
-  }, [selectedStateID])
+  // useEffect(() => {
+  //   getCities()
+  // }, [selectedStateID])
 
   const filterData = () => {
     updateState({
@@ -96,7 +104,6 @@ const UsersListFilter = () => {
       setFormValue({...formValue, [name]: value})
     } else if (name === 'state') {
       const id = allStateList?.filter((state) => state.name === value) || []
-      console.log(id[0].stateId)
       setSelectedStateID(id[0].stateId)
       setFormValue({...formValue, [name]: value})
     } else {
@@ -108,7 +115,6 @@ const UsersListFilter = () => {
       name === 'isPremium' ||
       name === 'isVerify' ||
       name === 'isWithStory' ||
-      name === 'isfromReffral' ||
       name === 'completeProfile'
     ) {
       setFormValue({...formValue, [name]: e.target.checked})
@@ -126,9 +132,37 @@ const UsersListFilter = () => {
     setallStateList(response.data)
   }
 
-  const getCities = async () => {
-    let response = await getCityList(selectedStateID)
-    setallCityList(response.data)
+  // const getCities = async () => {
+  //   let response = await getCityList(selectedStateID)
+  //   setallCityList(response.data)
+  // }
+
+  const handleSearchStates = async (query: any) => {
+    //setIsLoading(true)
+    const inputValue = query
+
+    if (inputValue.length > 3) {
+      const filteredSuggestions = await getStateBYSearch(inputValue)
+      console.log('filteredSuggestions', filteredSuggestions)
+      //setIsLoading(false)
+      setStateSuggestion(filteredSuggestions.data)
+    } else if (inputValue.length === 0) {
+      setStateSuggestion([])
+      //setIsLoading(false)
+    }
+  }
+
+  const handleSearchCity = async (query: any) => {
+    //setIsLoading(true)
+    const inputValue = query
+    if (inputValue.length > 3) {
+      const filteredSuggestions = await getCitiesBYSearch(inputValue)
+      // setIsLoading(false)
+      setCitySuggestion(filteredSuggestions.data)
+    } else if (inputValue.length === 0) {
+      setCitySuggestion([])
+      //setIsLoading(false)
+    }
   }
 
   return (
@@ -175,22 +209,6 @@ const UsersListFilter = () => {
                     />
                   </div>
 
-                  <div className='col-lg-4'>
-                    <label className='form-label fs-6 fw-bold'>
-                      {intl.formatMessage({id: 'USERMANAGEMENT.FILTER.ENDAGE'})} {formValue.endAge}
-                    </label>
-
-                    <input
-                      type='range'
-                      className='form-range'
-                      name='endAge'
-                      value={formValue.endAge}
-                      onChange={(e) => handleChange(e)}
-                      min='18'
-                      max='100'
-                    />
-                  </div>
-
                   {/* <div className='col-lg-4'>
                     <label className='form-label fs-6 fw-bold'>
                       {intl.formatMessage({id: 'USERMANAGEMENT.FILTER.ENDAGE'})}
@@ -216,8 +234,7 @@ const UsersListFilter = () => {
                       onChange={(e) => handleChange(e)}
                     />
                   </div>
-                </div>
-                <div className='row p-4'>
+
                   <div className='col-lg-4'>
                     <label className='form-label fs-6 fw-bold'>
                       {intl.formatMessage({id: 'USERMANAGEMENT.FILTER.ENDREGISTERDATE'})}
@@ -229,6 +246,23 @@ const UsersListFilter = () => {
                       name='endDate'
                       value={formValue.endDate}
                       onChange={(e) => handleChange(e)}
+                    />
+                  </div>
+                </div>
+                <div className='row p-4'>
+                  <div className='col-lg-4'>
+                    <label className='form-label fs-6 fw-bold'>
+                      {intl.formatMessage({id: 'USERMANAGEMENT.FILTER.ENDAGE'})} {formValue.endAge}
+                    </label>
+
+                    <input
+                      type='range'
+                      className='form-range'
+                      name='endAge'
+                      value={formValue.endAge}
+                      onChange={(e) => handleChange(e)}
+                      min='18'
+                      max='100'
                     />
                   </div>
                   <div className='col-lg-4'>
@@ -280,9 +314,10 @@ const UsersListFilter = () => {
                   <div className='col-lg-4'>
                     <div>
                       <label className='form-label fs-6 fw-bold'>
-                        {' '}
                         {intl.formatMessage({id: 'USERMANAGEMENT.FILTER.COUNTRY'})}
                       </label>
+
+                      {/*for country */}
                       <select
                         className='form-select form-select-solid fw-bolder'
                         data-kt-select2='true'
@@ -311,7 +346,8 @@ const UsersListFilter = () => {
                       <label className='form-label fs-6 fw-bold'>
                         {intl.formatMessage({id: 'USERMANAGEMENT.FILTER.STATE'})}
                       </label>
-                      <select
+                      {/*for state */}
+                      {/* <select
                         className='form-select form-select-solid fw-bolder'
                         data-kt-select2='true'
                         data-placeholder='Select option'
@@ -327,30 +363,80 @@ const UsersListFilter = () => {
                           allStateList.map((state) => {
                             return <option value={state.name}>{state.name}</option>
                           })}
-                      </select>
+                      </select> */}
+                      {isStateInputisVisible ? (
+                        <input
+                          type='text'
+                          className='form-control form-control-lg form-control-solid'
+                          placeholder='Register Date'
+                          name='state'
+                          value={formValue.state}
+                          onChange={(e) => setIsStateInputVisible(false)}
+                        />
+                      ) : (
+                        <AsyncTypeahead
+                          filterBy={['name']}
+                          id='async-example'
+                          isLoading={isLoading}
+                          minLength={3}
+                          onSearch={handleSearchStates}
+                          options={stateSuggestion}
+                          labelKey='name'
+                          defaultInputValue={formValue?.state}
+                          //selected={formValue?.state}
+                          onChange={(e: any) => {
+                            if (e.length !== 0) {
+                              let locationName = e[0]
+                              setFormValue({
+                                ...formValue,
+                                state: locationName?.name,
+                                country: locationName?.country,
+                              })
+                              setIsStateInputVisible(true)
+                              setSelectedStateID(locationName.stateId)
+                              setSelectedCountryID(locationName.countryId)
+                              setStateSuggestion([])
+                            }
+                          }}
+                          renderMenuItemChildren={(option: any) => (
+                            <span>{`${option?.name}, ${option?.country}`}</span>
+                          )}
+                        />
+                      )}
                     </div>
                   </div>
                   <div className='col-lg-4'>
                     <label className='form-label fs-6 fw-bold'>
                       {intl.formatMessage({id: 'USERMANAGEMENT.FILTER.CITY'})}
                     </label>
-                    <select
-                      className='form-select form-select-solid fw-bolder'
-                      data-kt-select2='true'
-                      data-placeholder='Select option'
-                      data-allow-clear='true'
-                      data-kt-user-table-filter='city'
-                      data-hide-search='true'
-                      name='city'
-                      value={formValue.city}
-                      onChange={(e) => handleChange(e)}
-                    >
-                      <option value=''></option>
-                      {allCityList !== undefined &&
-                        allCityList.map((city) => {
-                          return <option value={city.name}>{city.name}</option>
-                        })}
-                    </select>
+
+                    <AsyncTypeahead
+                      filterBy={['name']}
+                      id='async-example'
+                      isLoading={isLoading}
+                      minLength={3}
+                      onSearch={handleSearchCity}
+                      options={citySuggestion}
+                      defaultInputValue={formValue?.city}
+                      labelKey='name'
+                      onChange={(e: any) => {
+                        console.log('e', e)
+                        if (e.length !== 0) {
+                          let locationName = e[0]
+                          setFormValue({
+                            ...formValue,
+                            city: locationName?.name,
+                            state: locationName?.state,
+                            country: locationName?.country,
+                          })
+                          setIsStateInputVisible(true)
+                          setCitySuggestion([])
+                        }
+                      }}
+                      renderMenuItemChildren={(option: any) => (
+                        <span>{`${option?.name}, ${option?.state}, ${option?.country}`}</span>
+                      )}
+                    />
                   </div>
                 </div>
                 <div className='row p-4'>
@@ -397,17 +483,6 @@ const UsersListFilter = () => {
                       checked={formValue.isWithStory}
                     />
                     <span className='px-2'>With Story</span>
-                  </div>
-                  <div className='col-lg-2'>
-                    <input
-                      className='form-check-input'
-                      type='checkbox'
-                      id='fromreffreal'
-                      name='isfromReffral'
-                      onChange={(e) => handleChange(e)}
-                      checked={formValue.isfromReffral}
-                    />
-                    <span className='px-2'>From Reffreal</span>
                   </div>
                   <div className='col-lg-2'>
                     <input

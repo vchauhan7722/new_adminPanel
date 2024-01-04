@@ -28,18 +28,17 @@ const Chat = (props) => {
   let userID = localStorage.getItem('userId')
 
   useEffect(() => {
-    getChatMemberByUID(page, pageSize, 1)
     getAllGiftCategoryList()
     getAllGiftLists()
   }, [])
 
-  useEffect(() => {
-    getChatMemberByUID(page, pageSize, 1)
-  }, [userTypeTabValue])
+  // useEffect(() => {
+  //   getChatMemberByUID(page, pageSize, 1)
+  // }, [])
 
   useEffect(() => {
     getChatMemberByUID(page, pageSize, actionFlag)
-  }, [actionFlag])
+  }, [userTypeTabValue, actionFlag])
 
   const getChatMemberByUID = async (page: number, pageSize: number, pageRefreshCount: any) => {
     if (pageRefreshCount === 1) {
@@ -54,10 +53,10 @@ const Chat = (props) => {
       setTotalPage(result.totalPage)
       setIsLoading(false)
     } else {
-      ErrorToastUtils()
       setTimeout(() => {
         setIsLoading(false)
       }, 500)
+      ErrorToastUtils()
     }
   }
 

@@ -8,6 +8,7 @@ import {
 } from '../../../../../../../../../API/api-endpoint'
 import clsx from 'clsx'
 import ToastUtils, {ErrorToastUtils} from '../../../../../../../../../utils/ToastUtils'
+import AsyncTypeahead from 'react-bootstrap-typeahead/types/components/AsyncTypeahead'
 
 const getDate = () => {
   const currentDate = new Date()
@@ -22,13 +23,12 @@ const getDate = () => {
 
 const Step1 = (props: any) => {
   const {submitStep, prevStep} = props
-  const [searchTerm, setSearchTerm] = useState('')
   const [suggestions, setSuggestions] = useState([])
-  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1)
+  const [isLoading, setIsLoading] = useState(false)
   const [step1Details, setStep1Details] = useState<any>({
     fullName: '',
     userName: '',
-    genderId: '1',
+    genderId: '2',
     birthDate: getDate(),
     country: '',
     state: '',
@@ -45,27 +45,17 @@ const Step1 = (props: any) => {
     setStep1Details({...step1Details, [name]: value})
   }
 
-  const handleSearchChange = async (event) => {
-    console.log(event.target.value)
-    const inputValue = event.target.value
-
-    let spiltData = inputValue.split(',')
-    setStep1Details({
-      ...step1Details,
-      city: spiltData[0],
-      state: spiltData[1],
-      country: spiltData[2],
-    })
-
-    setSearchTerm(inputValue)
+  const handleSearchChange = async (query: string) => {
+    setIsLoading(true)
+    const inputValue = query
 
     if (inputValue.length > 3) {
       const filteredSuggestions = await getCitiesBYSearch(inputValue)
-
+      setIsLoading(false)
       setSuggestions(filteredSuggestions.data)
-      setActiveSuggestionIndex(-1)
     } else if (inputValue.length === 0) {
       setSuggestions([])
+      setIsLoading(false)
     }
   }
 
@@ -165,46 +155,34 @@ const Step1 = (props: any) => {
 
       <div className='fv-row mb-2 '>
         <label className='form-label required'>Location</label>
-
-        <input
-          id='search-input'
-          value={searchTerm}
-          onChange={handleSearchChange}
-          className={clsx('form-control form-control-solid ')}
+        <AsyncTypeahead
+          filterBy={['name', 'state', 'country']}
+          id='async-example'
+          isLoading={isLoading}
+          minLength={3}
+          onSearch={handleSearchChange}
+          options={suggestions}
+          labelKey={(option: any) => `${option?.name}, ${option?.state}, ${option?.country}`}
+          onChange={(e: any) => {
+            if (e.length !== 0) {
+              let locationName = e[0]
+              setStep1Details({
+                ...step1Details,
+                city: locationName.name,
+                state: locationName.state,
+                country: locationName.country,
+                lat: locationName.latitude,
+                lng: locationName.longitude,
+              })
+              setSuggestions([])
+            }
+          }}
+          renderMenuItemChildren={(option: any) => (
+            <>
+              <span>{`${option.name}, ${option.state}, ${option.country}`}</span>
+            </>
+          )}
         />
-        <div className={suggestions.length > 3 ? clsx('h-200px scroll-y') : ''}>
-          <ul
-            className='list-group suggestions'
-            style={{
-              display: suggestions.length > 0 ? 'block' : 'none',
-            }}
-          >
-            {suggestions.map((suggestion: any, index: any) => {
-              const isActive = index === activeSuggestionIndex
-              return (
-                <li
-                  key={index}
-                  className={`list-group-item ${isActive ? 'active' : ''}`}
-                  onClick={() => {
-                    setSearchTerm(`${suggestion.name}, ${suggestion.state}, ${suggestion.country}`)
-                    setStep1Details({
-                      ...step1Details,
-                      city: suggestion.name,
-                      state: suggestion.state,
-                      country: suggestion.country,
-                      lat: suggestion.latitude,
-                      lng: suggestion.longitude,
-                    })
-                    setActiveSuggestionIndex(-1)
-                    setSuggestions([])
-                  }}
-                >
-                  {`${suggestion.name}, ${suggestion.state}, ${suggestion.country}`}
-                </li>
-              )
-            })}
-          </ul>
-        </div>
       </div>
 
       <div className='fv-row mb-2'>
