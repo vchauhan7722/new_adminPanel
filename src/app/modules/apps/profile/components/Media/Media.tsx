@@ -4,6 +4,7 @@ import MediaTable from './table/MediaTable'
 import {
   createMediaActionForUserMedia,
   createMediaActionForUserMediaForAnonymousUser,
+  getUserMediaImages,
   removeMediaActionForUserMedia,
   setMediaAsAStoryForUserMedia,
   updateMediaActionForUserMedia,
@@ -77,26 +78,52 @@ const Media = (props: any) => {
 
   const handleMediaChange = async (event: any) => {
     setisMediaUploaded(true)
-    if (event.target.files[0]) {
-      // let response = await ImageCompressor(event.target.files[0])
-      let result
-      // if (currentUserType !== 'Normal') {
-      //   result = await createMediaActionForUserMediaForAnonymousUser(event.target.files[0], userId)
-      // } else {
-      // result = await createMediaActionForUserMedia(event.target.files[0], userId)
-      // }
-      result = await createMediaActionForUserMedia(event.target.files[0], userId)
-      if (result.status === 200) {
-        let oldmedia = [...userProfileMedia]
-        oldmedia.push(result.data[0])
-        setUserProfileMedia(oldmedia)
-        ToastUtils({type: 'success', message: 'Your Media has Uploaded'})
-        setisMediaUploaded(false)
-      } else {
-        ToastUtils({type: 'error', message: 'Error in Media Upload'})
-        setisMediaUploaded(false)
+    // if (event.target.files[0]) {
+    //   let response = await ImageCompressor(event.target.files[0])
+    //   let result: any
+    //   if (currentUserType !== 'Normal') {
+    //     result = await createMediaActionForUserMediaForAnonymousUser(response, userId)
+    //   } else {
+    //     result = await createMediaActionForUserMedia(response, userId)
+    //   }
+    //   // result = await createMediaActionForUserMedia(event.target.files[0], userId)
+    //   if (result.status === 200) {
+    //     let oldmedia = [...userProfileMedia]
+    //     oldmedia.push(result.data[0])
+    //     setUserProfileMedia(oldmedia)
+    //     ToastUtils({type: 'success', message: 'Your Media has Uploaded'})
+    //     setisMediaUploaded(false)
+    //   } else {
+    //     ToastUtils({type: 'error', message: 'Error in Media Upload'})
+    //     setisMediaUploaded(false)
+    //   }
+    // }
+
+    let filesArray = Object.values(event.target.files)
+
+    let compressedfiles: any = []
+
+    await filesArray.map(async (file: any) => {
+      let compressedImg = await ImageCompressor(file)
+      compressedfiles.push(compressedImg)
+      if (filesArray.length === compressedfiles.length) {
+        let result
+        if (currentUserType !== 'Normal') {
+          result = await createMediaActionForUserMediaForAnonymousUser(compressedfiles, userId)
+        } else {
+          result = await createMediaActionForUserMedia(compressedfiles, userId)
+        }
+
+        if (result.status === 200) {
+          getMediaImageList()
+          setisMediaUploaded(false)
+          ToastUtils({type: 'success', message: 'Profile Media Upload SuccessFully'})
+        } else {
+          ToastUtils({type: 'error', message: 'Error in Media Upload'})
+          setisMediaUploaded(false)
+        }
       }
-    }
+    })
   }
 
   const handleClick = () => {
@@ -110,6 +137,14 @@ const Media = (props: any) => {
     }
     //let oldLightBoxArray = [...lightBoxArray]
     lightBoxArray.push(PhotoObject)
+  }
+
+  const getMediaImageList = async () => {
+    let result = await getUserMediaImages(userId)
+
+    if (result.status === 200) {
+      setUserProfileMedia(result.data)
+    }
   }
 
   return (
@@ -135,6 +170,7 @@ const Media = (props: any) => {
             ref={hiddenMediaInput}
             style={{display: 'none'}} // Make the file input element invisible
             accept='image/*'
+            multiple
           />
         </div>
       </div>
@@ -172,6 +208,8 @@ const Media = (props: any) => {
                         }}
                       />
                       <span className='position-absolute top-0 start-100'>
+                        {' '}
+                        {/* start-100 */}
                         <div>
                           <button
                             className='btn btn-sm'
@@ -214,9 +252,9 @@ const Media = (props: any) => {
                       </span>
                     </div>
 
-                    <div className='text-muted mt-4 text-center'>
+                    {/* <div className='text-muted mt-4 text-center'>
                       {DateWithTimeFormatter(userMedia?.updatedAt)}
-                    </div>
+                    </div> */}
                   </div>
                 )
               })}

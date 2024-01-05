@@ -71,8 +71,8 @@ const AuthInit: FC<WithChildren> = ({children}) => {
     const requestUser = async (auth: object) => {
       try {
         if (!didRequest.current) {
-          let email = sessionStorage.getItem('email')
-          let password = sessionStorage.getItem('password')
+          let email = localStorage.getItem('email')
+          let password = localStorage.getItem('password')
           const {data} = await loginWithEmailandPassword(email, password)
           if (data) {
             setCurrentUser(data)
@@ -90,7 +90,7 @@ const AuthInit: FC<WithChildren> = ({children}) => {
       return () => (didRequest.current = true)
     }
 
-    if (auth && auth) {
+    if (auth) {
       requestUser(auth)
     } else {
       logout()

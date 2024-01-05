@@ -23,6 +23,7 @@ const Step3 = (props: any) => {
   const [isImageUploaded, setisImageUploaded] = useState<any>(false)
   const [isMediaImageUploaded, setMediaisImageUploaded] = useState<any>(false)
   const [userProfileMedia, setUserProfileMedia] = useState<any>(undefined)
+  const [tempProfileMedia, setTempProfileMedia] = useState<any>([])
 
   const navigate = useNavigate()
 
@@ -54,7 +55,7 @@ const Step3 = (props: any) => {
     //let compressedImg = await ImageCompressor(Image)
     let result = await updateMediaActionForUserMedia(userID, mediaId, 'isProfileImage', true)
     if (result.status === 200) {
-      getMediaImageList()
+      //getMediaImageList()
       ToastUtils({type: 'success', message: 'Photo Set As A Profile'})
       setMediaisImageUploaded(false)
     } else {
@@ -63,8 +64,16 @@ const Step3 = (props: any) => {
   }
 
   const handleMediaChange = async (event: any) => {
-    setMediaisImageUploaded(true)
     let filesArray = Object.values(event.target.files)
+
+    filesArray.map((file: any) => {
+      var tmppath = URL.createObjectURL(file)
+      tempProfileMedia.push(tmppath)
+    })
+
+    setMediaisImageUploaded(true)
+
+    console.log('tempProfileMedia', tempProfileMedia)
 
     let compressedfiles: any = []
 
@@ -74,10 +83,13 @@ const Step3 = (props: any) => {
       if (filesArray.length === compressedfiles.length) {
         let result = await createMediaActionForUserMediaForAnonymousUser(compressedfiles, userID)
         if (result.status === 200) {
+          await handleIconChange(result.data[0].id) // default select first image as a profile
+          setMediaisImageUploaded(false)
+          getMediaImageList()
           ToastUtils({type: 'success', message: 'Profile Media Upload SuccessFully'})
         } else {
-          ToastUtils({type: 'error', message: 'Error in Media Upload'})
           setMediaisImageUploaded(false)
+          ToastUtils({type: 'error', message: 'Error in Media Upload'})
         }
       }
     })
@@ -94,6 +106,7 @@ const Step3 = (props: any) => {
   }
 
   const onSubmitStep3 = async () => {
+    // here we can call api for create user and update questions answer and Interest and also save media Images
     submitStep()
     navigate('/apps/anonymous-user-management/users')
   }
@@ -124,24 +137,50 @@ const Step3 = (props: any) => {
             multiple
           />
         </div>
-        <div className='row'>
+        <div className='row mt-2'>
+          {isMediaImageUploaded &&
+            tempProfileMedia.map((mediaUrl: any, index: any) => {
+              return (
+                <div className={tempProfileMedia.length >= 6 ? 'col-lg-2' : 'col-lg-3'} key={index}>
+                  <div className='position-relative d-inline-block'>
+                    <img
+                      alt='Pic'
+                      src={mediaUrl}
+                      width={tempProfileMedia.length >= 6 ? '100' : '100'}
+                      height={tempProfileMedia.length >= 6 ? '99' : '99'}
+                      // width='100'
+                      // height='99'
+                      className='rounded d-block'
+                    />
+                    <div
+                      className='position-absolute'
+                      style={{position: 'absolute', top: '40px', right: '40px'}}
+                    >
+                      <div className='spinner-border' role='status'>
+                        <span className='visually-hidden'>Loading...</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
           {userProfileMedia !== undefined &&
             userProfileMedia
               .filter((media: any) => media.status === true)
               .map((userMedia: any, index: any) => {
                 return (
                   <div
-                    className={userProfileMedia.length >= 6 ? 'col-lg-1' : 'col-lg-2'}
+                    className={userProfileMedia.length >= 6 ? 'col-lg-2' : 'col-lg-3'}
                     key={index}
                   >
                     <div className='position-relative d-inline-block'>
                       <img
                         alt='Pic'
                         src={`${process.env.REACT_APP_SERVER_URL}/${userMedia.media}`}
-                        // width={userProfileMedia.length >= 6 ? '50' : '100'}
-                        // height={userProfileMedia.length >= 6 ? '49' : '99'}
-                        width='100'
-                        height='99'
+                        width={userProfileMedia.length >= 6 ? '100' : '100'}
+                        height={userProfileMedia.length >= 6 ? '99' : '99'}
+                        // width='100'
+                        // height='99'
                         className='rounded d-block'
                       />
                       <span className='position-absolute top-0 right-0'>
@@ -168,17 +207,14 @@ const Step3 = (props: any) => {
       </div>
 
       <div className='d-flex flex-end pt-10'>
-        {/* <div className='mr-2'>
-          <button
-            onClick={prevStep}
-            type='button'
-            className='btn btn-lg btn-light-primary me-3'
-            data-kt-stepper-action='previous'
-          >
-            <KTIcon iconName='arrow-left' className='fs-4 me-1' />
-            Back
+        <div className='mr-2'>
+          <button type='button' className='btn btn-sm btn-primary me-3' onClick={prevStep}>
+            <span className='indicator-label'>
+              <KTIcon iconName='arrow-left' className='fs-4 me-1' />
+              Back
+            </span>
           </button>
-        </div> */}
+        </div>
 
         <div>
           <button

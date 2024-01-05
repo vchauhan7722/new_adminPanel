@@ -7,8 +7,7 @@ import {useFormik} from 'formik'
 import {getUserByToken, login} from '../core/_requests'
 import {toAbsoluteUrl} from '../../../../_metronic/helpers'
 import {useAuth} from '../core/Auth'
-import { loginWithEmailandPassword } from '../../../../API/api-endpoint'
-
+import {loginWithEmailandPassword} from '../../../../API/api-endpoint'
 
 const loginSchema = Yup.object().shape({
   email: Yup.string()
@@ -23,8 +22,8 @@ const loginSchema = Yup.object().shape({
 })
 
 const initialValues = {
-  email: 'Vinay@gmail.com',
-  password: 'Vinay@123',
+  email: '',
+  password: '',
 }
 
 export function Login() {
@@ -38,8 +37,8 @@ export function Login() {
       setLoading(true)
       try {
         const Response = await loginWithEmailandPassword(values.email, values.password)
-        sessionStorage.setItem('email',values.email)
-        sessionStorage.setItem('password',values.password)
+        localStorage.setItem('email', values.email)
+        localStorage.setItem('password', values.password)
         saveAuth(Response.data)
         setCurrentUser(Response.data)
       } catch (error) {
@@ -135,7 +134,6 @@ export function Login() {
         </button>
       </div>
       {/* end::Action */}
-
     </form>
   )
 }

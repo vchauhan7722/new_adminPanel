@@ -22,7 +22,7 @@ const Vertical = () => {
     }
   }
 
-  const submitStep = (userId: any) => {
+  const submitStep = (stepValue: any, userId: any) => {
     if (stepValue !== 3) {
       setStepValue(stepValue + 1)
     }

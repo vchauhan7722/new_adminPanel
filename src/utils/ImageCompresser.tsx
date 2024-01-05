@@ -16,19 +16,19 @@ import imageCompression from 'browser-image-compression'
 
 export async function ImageCompressor(file: any) {
   var imageFile = file
-  console.log('originalFile instanceof Blob', imageFile instanceof Blob) // true
-  console.log(`originalFile size ${imageFile.size / 1024 / 1024} MB`)
+  // console.log('originalFile instanceof Blob', imageFile instanceof Blob) // true
+  // console.log(`originalFile size ${imageFile.size / 1024 / 1024} MB`)
 
   var options = {
-    maxSizeMB: 1,
-    maxWidthOrHeight: 1920,
+    maxSizeMB: 0.1,
+    maxWidthOrHeight: 800,
     useWebWorker: true,
   }
   let response = await imageCompression(imageFile, options)
     .then(function (compressedFile) {
-      console.log('compressedFile instanceof Blob', compressedFile instanceof Blob) // true
-      console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`) // smaller than maxSizeMB
-      console.log('compressedFile', typeof compressedFile)
+      // console.log('compressedFile instanceof Blob', compressedFile instanceof Blob) // true
+      // console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`) // smaller than maxSizeMB
+      // console.log('compressedFile', typeof compressedFile)
       return compressedFile // write your own logic
     })
     .catch(function (error) {

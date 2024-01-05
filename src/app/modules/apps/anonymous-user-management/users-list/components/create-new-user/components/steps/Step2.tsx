@@ -92,6 +92,8 @@ const Step2 = (props: any) => {
   }
 
   const onSubmitStep2 = async () => {
+    // store data in local and add useEffect for assign data
+
     if (selectedInterestListWithId.length !== 0 && selectedQuestionList.length !== 0) {
       let result = await UpdateUserInterestAndQuestions(
         userID,
@@ -187,17 +189,14 @@ const Step2 = (props: any) => {
       {/*Interest Div end*/}
 
       <div className='d-flex flex-end pt-10'>
-        {/* <div className='mr-2'>
-          <button
-            onClick={prevStep}
-            type='button'
-            className='btn btn-lg btn-light-primary me-3'
-            data-kt-stepper-action='previous'
-          >
-            <KTIcon iconName='arrow-left' className='fs-4 me-1' />
-            Back
+        <div className='mr-2'>
+          <button type='button' className='btn btn-sm btn-primary me-3' onClick={prevStep}>
+            <span className='indicator-label'>
+              <KTIcon iconName='arrow-left' className='fs-4 me-1' />
+              Back
+            </span>
           </button>
-        </div> */}
+        </div>
 
         <div>
           <button type='button' className='btn btn-sm btn-primary me-3' onClick={onSubmitStep2}>

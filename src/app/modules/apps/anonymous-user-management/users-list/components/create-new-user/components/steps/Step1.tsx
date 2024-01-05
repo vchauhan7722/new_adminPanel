@@ -71,6 +71,9 @@ const Step1 = (props: any) => {
     ) {
       ToastUtils({type: 'error', message: 'Please Select Location'})
     } else {
+      // here we can check if userName is already exists or not
+
+      // store data in local and add useEffect for assign data
       let result = await createNewAnonymousUser(step1Details)
       if (result.status === 200) {
         submitStep(result.data.userId)
