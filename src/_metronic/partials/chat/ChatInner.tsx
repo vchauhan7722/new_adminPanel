@@ -313,6 +313,7 @@ const ChatInner = (props: any) => {
                   `${process.env.REACT_APP_SERVER_URL}/${receiverUserDetails?.profileImage}` ||
                   toAbsoluteUrl(`/media/avatars/300-5.jpg`)
                 }
+                loading='lazy'
               />
             </div>
 
@@ -342,6 +343,7 @@ const ChatInner = (props: any) => {
                   src={toAbsoluteUrl(`/media/logos/Premiuim.png`)}
                   width='17px'
                   height='17px'
+                  loading='lazy'
                 />
               </div>
             )}
@@ -353,6 +355,7 @@ const ChatInner = (props: any) => {
               src={toAbsoluteUrl(`/media/logos/Credits.png`)}
               width='17px'
               height='17px'
+              loading='lazy'
             />
             <span className='text-muted fs-7 ms-3'>{receiverUserDetails?.totalCredit}</span>
           </div>
@@ -365,6 +368,7 @@ const ChatInner = (props: any) => {
                 src={toAbsoluteUrl(`/media/logos/Credits.png`)}
                 width='20px'
                 height='20px'
+                loading='lazy'
               />
             </div>
             <div data-bs-toggle='modal' data-bs-target='#kt_modal_gift' className='me-5'>
@@ -373,6 +377,7 @@ const ChatInner = (props: any) => {
                 src={toAbsoluteUrl(`/media/logos/gift.png`)}
                 width='20px'
                 height='20px'
+                loading='lazy'
               />
             </div>
           </div>
@@ -564,6 +569,7 @@ const ChatInner = (props: any) => {
                                       src={`${process.env.REACT_APP_SERVER_URL}/${message?.giftDetail?.icon}`}
                                       width='50px'
                                       height='50px'
+                                      loading='lazy'
                                     />
                                   </span>
 
@@ -581,6 +587,7 @@ const ChatInner = (props: any) => {
                                       src={`${process.env.REACT_APP_SERVER_URL}/${message?.giftDetail?.icon}`}
                                       width='50px'
                                       height='50px'
+                                      loading='lazy'
                                     />
                                   </span>
                                   <span className='text-muted fs-9'>
@@ -613,6 +620,7 @@ const ChatInner = (props: any) => {
                                     width='100px'
                                     height='100px'
                                     className='me-2'
+                                    loading='lazy'
                                   />{' '}
                                   <span className='text-muted fs-9 me-2'>
                                     {TimeFormatter(message.updatedAt)}
@@ -629,6 +637,7 @@ const ChatInner = (props: any) => {
                                       width='100px'
                                       height='100px'
                                       className='me-2'
+                                      loading='lazy'
                                     />
                                   </span>
                                   <span className='text-muted fs-9'>
@@ -661,6 +670,7 @@ const ChatInner = (props: any) => {
                                     width='20px'
                                     height='20px'
                                     className='me-2'
+                                    loading='lazy'
                                   />{' '}
                                   {message.message} Credits
                                   <span className='text-muted fs-9 ms-1 me-2'>
@@ -678,6 +688,7 @@ const ChatInner = (props: any) => {
                                       width='20px'
                                       height='20px'
                                       className='me-2'
+                                      loading='lazy'
                                     />
                                     {message.message} Credits
                                   </span>
@@ -810,6 +821,7 @@ const ChatInner = (props: any) => {
                           src={`${process.env.REACT_APP_SERVER_URL}/${gift.icon}`}
                           width='50px'
                           height='50px'
+                          loading='lazy'
                         />
                         <span className='text-muted fs-6'>{gift.credit} coins</span>
                       </div>

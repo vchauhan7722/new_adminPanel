@@ -30,8 +30,9 @@ const Media = (props: any) => {
   const [selectedImage, setSelectedImage] = useState({id: 0})
   const [getUpdatedStory, setGetUpdatedStory] = useState(1)
   const [isMediaUploaded, setisMediaUploaded] = useState<any>(false)
-  const [openLightBox, setOpenLightBox] = React.useState(false)
+  const [openLightBox, setOpenLightBox] = useState(false)
   const lightBoxArray: any = []
+  //const [lightBoxArray, setLightBoxArray] = useState<any>([])
 
   const userId = localStorage.getItem('userId')
 
@@ -137,6 +138,7 @@ const Media = (props: any) => {
     }
     //let oldLightBoxArray = [...lightBoxArray]
     lightBoxArray.push(PhotoObject)
+    //setLightBoxArray([PhotoObject])
   }
 
   const getMediaImageList = async () => {
@@ -206,6 +208,7 @@ const Media = (props: any) => {
                           setOpenLightBox(true)
                           setSelectedImage(userMedia.media)
                         }}
+                        loading='lazy'
                       />
                       <span className='position-absolute top-0 start-100'>
                         {' '}
@@ -307,6 +310,7 @@ const Media = (props: any) => {
                               }
                               className=' w-100 '
                               alt='...'
+                              loading='lazy'
                             />
                           </div>
                         )

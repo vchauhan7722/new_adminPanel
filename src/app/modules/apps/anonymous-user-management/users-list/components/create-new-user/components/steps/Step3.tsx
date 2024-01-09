@@ -4,6 +4,7 @@ import {KTIcon} from '../../../../../../../../../_metronic/helpers'
 import {
   UpdateUserProfilePicture,
   createMediaActionForUserMediaForAnonymousUser,
+  createNewAnonymousUser,
   getUserMediaImages,
   removeMediaActionForUserMedia,
   updateMediaActionForUserMedia,
@@ -15,11 +16,10 @@ import {Dropdown} from 'react-bootstrap'
 import {CustomToggle} from '../../../../../../../../../_metronic/partials/componants/CustomToggle'
 
 const Step3 = (props: any) => {
-  const {submitStep, prevStep, userID} = props
+  const {submitStep, prevStep} = props
 
   const hiddenFileInput = useRef<HTMLInputElement>(document.createElement('input'))
   const hiddenMediaInput = useRef<HTMLInputElement>(document.createElement('input'))
-
   const [isImageUploaded, setisImageUploaded] = useState<any>(false)
   const [isMediaImageUploaded, setMediaisImageUploaded] = useState<any>(false)
   const [userProfileMedia, setUserProfileMedia] = useState<any>(undefined)
@@ -31,7 +31,33 @@ const Step3 = (props: any) => {
     getMediaImageList()
   }, [])
 
+  useEffect(() => {
+    let isUserCreated = localStorage.getItem('isUserCreated')
+    if (isUserCreated === 'false') {
+      createAnonymousUser()
+    }
+  }, [])
+
+  const createAnonymousUser = async () => {
+    const step1 = JSON.parse(localStorage.getItem('step1Details') || '[]') || []
+    const step2 = JSON.parse(localStorage.getItem('step2Details') || '[]') || []
+
+    let anonymousUserObject = {
+      ...step1,
+      interests: JSON.stringify(step2.selectedInterestListWithId),
+      questions: JSON.stringify(step2.selectedQuestionList),
+    }
+
+    let response = await createNewAnonymousUser(anonymousUserObject)
+    if (response.status === 200) {
+      localStorage.setItem('isUserCreated', 'true')
+    } else {
+      ErrorToastUtils()
+    }
+  }
+
   const getMediaImageList = async () => {
+    const userID = localStorage.getItem('anonymousUserId')
     let result = await getUserMediaImages(userID)
 
     if (result.status === 200) {
@@ -52,6 +78,7 @@ const Step3 = (props: any) => {
   }
 
   const handleIconChange = async (mediaId: any) => {
+    const userID = localStorage.getItem('anonymousUserId')
     //let compressedImg = await ImageCompressor(Image)
     let result = await updateMediaActionForUserMedia(userID, mediaId, 'isProfileImage', true)
     if (result.status === 200) {
@@ -64,6 +91,7 @@ const Step3 = (props: any) => {
   }
 
   const handleMediaChange = async (event: any) => {
+    const userID = localStorage.getItem('anonymousUserId')
     let filesArray = Object.values(event.target.files)
 
     filesArray.map((file: any) => {
@@ -72,8 +100,6 @@ const Step3 = (props: any) => {
     })
 
     setMediaisImageUploaded(true)
-
-    console.log('tempProfileMedia', tempProfileMedia)
 
     let compressedfiles: any = []
 
@@ -96,6 +122,7 @@ const Step3 = (props: any) => {
   }
 
   const removeMedia = async (mediaId: any) => {
+    const userID = localStorage.getItem('anonymousUserId')
     let result = await removeMediaActionForUserMedia(userID, mediaId)
     if (result.status === 200) {
       ToastUtils({type: 'success', message: 'media has been removed'})
@@ -106,9 +133,16 @@ const Step3 = (props: any) => {
   }
 
   const onSubmitStep3 = async () => {
-    // here we can call api for create user and update questions answer and Interest and also save media Images
-    submitStep()
-    navigate('/apps/anonymous-user-management/users')
+    if (userProfileMedia.length !== 0) {
+      localStorage.removeItem('anonymousUserId')
+      localStorage.removeItem('step1Details')
+      localStorage.removeItem('step2Details')
+      localStorage.removeItem('isUserCreated')
+      submitStep()
+      navigate('/apps/anonymous-user-management/users')
+    } else {
+      ToastUtils({type: 'error', message: 'Must Upload One Photo'})
+    }
   }
 
   return (
@@ -133,7 +167,7 @@ const Step3 = (props: any) => {
             onChange={(e) => handleMediaChange(e)}
             ref={hiddenMediaInput}
             style={{display: 'none'}} // Make the file input element invisible
-            accept='image/*'
+            accept='image/*, image/heic'
             multiple
           />
         </div>
@@ -151,6 +185,7 @@ const Step3 = (props: any) => {
                       // width='100'
                       // height='99'
                       className='rounded d-block'
+                      loading='lazy'
                     />
                     <div
                       className='position-absolute'
@@ -182,6 +217,7 @@ const Step3 = (props: any) => {
                         // width='100'
                         // height='99'
                         className='rounded d-block'
+                        loading='lazy'
                       />
                       <span className='position-absolute top-0 right-0'>
                         <Dropdown>

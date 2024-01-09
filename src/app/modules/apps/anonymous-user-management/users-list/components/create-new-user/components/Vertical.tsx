@@ -22,12 +22,10 @@ const Vertical = () => {
     }
   }
 
-  const submitStep = (stepValue: any, userId: any) => {
+  const submitStep = () => {
     if (stepValue !== 3) {
       setStepValue(stepValue + 1)
     }
-
-    setCurrentUserId(userId)
     // actions.preventDefault()
     // if (!stepper.current) {
     //   return
@@ -59,7 +57,7 @@ const Vertical = () => {
           <div className='d-flex flex-row-fluid flex-center bg-body rounded h-100vh'>
             <div className='py-20 w-100 w-xl-700px px-9'>
               <div className='current' data-kt-stepper-element='content'>
-                <Step2 submitStep={submitStep} prevStep={prevStep} userID={currentUserId} />
+                <Step2 submitStep={submitStep} prevStep={prevStep} />
               </div>
             </div>
           </div>
@@ -70,7 +68,7 @@ const Vertical = () => {
           <div className='d-flex flex-row-fluid flex-center bg-body rounded h-100vh'>
             <div className='py-20 w-100 w-xl-700px px-9'>
               <div className='current' data-kt-stepper-element='content'>
-                <Step3 submitStep={submitStep} prevStep={prevStep} userID={currentUserId} />
+                <Step3 submitStep={submitStep} prevStep={prevStep} />
               </div>
             </div>
           </div>

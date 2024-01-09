@@ -23,6 +23,7 @@ export async function ImageCompressor(file: any) {
     maxSizeMB: 0.1,
     maxWidthOrHeight: 800,
     useWebWorker: true,
+    //fileType: 'image/webp',
   }
   let response = await imageCompression(imageFile, options)
     .then(function (compressedFile) {

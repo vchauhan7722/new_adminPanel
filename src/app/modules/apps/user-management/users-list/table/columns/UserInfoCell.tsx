@@ -21,6 +21,7 @@ const UserInfoCell = ({user}) => (
         alt={user?.userName}
         width='50px'
         height='50px'
+        loading='lazy'
       />
       {user.isOnline && (
         <div className='position-absolute  bottom-0 end-0 bg-success rounded-circle border border-3 border-white h-15px w-15px'></div>

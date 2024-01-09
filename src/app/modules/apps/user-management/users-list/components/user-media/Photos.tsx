@@ -285,6 +285,7 @@ const Photos = () => {
                           alt='icon'
                           width='50px'
                           height='50px'
+                          loading='lazy'
                         />
                       </div>
                     </td>
@@ -327,6 +328,7 @@ const Photos = () => {
                             alt='icon'
                             width='50px'
                             height='50px'
+                            loading='lazy'
                           />
                         </div>
 

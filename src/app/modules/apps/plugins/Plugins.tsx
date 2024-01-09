@@ -19,6 +19,7 @@ import DiscoverGame from './Componants/DiscoverGame/DiscoverGamePlugin'
 import GeneralPlugin from './Componants/General/GeneralPlugin'
 import VerificationSystemPlugin from './Componants/VerificationSystem/VerificationSystemPlugin'
 import AccountPrivilegesPlugin from './Componants/AccountPrivilges/AccountPrivilgesPlugin'
+import ManualPaymentGatewaysPlugin from './Componants/ManualPaymentGateways/ManualPaymentGatewaysPlugin'
 
 const usersBreadcrumbs: Array<PageLink> = [
   {
@@ -75,6 +76,7 @@ const Plugins = () => {
                               alt='icon'
                               width='50px'
                               height='50px'
+                              loading='lazy'
                             />
                           </div>
 
@@ -204,7 +206,7 @@ const Plugins = () => {
           path='/general_plugin'
           element={
             <>
-              <PageTitle>General </PageTitle>
+              <PageTitle>General</PageTitle>
               <GeneralPlugin />
             </>
           }
@@ -233,6 +235,15 @@ const Plugins = () => {
             <>
               <PageTitle>Legal Information</PageTitle>
               <LegalInformationPlugin />
+            </>
+          }
+        />
+        <Route
+          path='/manual_payment_gateways_plugin'
+          element={
+            <>
+              <PageTitle>Manual Payment Gateways</PageTitle>
+              <ManualPaymentGatewaysPlugin />
             </>
           }
         />

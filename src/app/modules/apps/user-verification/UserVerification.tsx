@@ -142,6 +142,7 @@ const UserVerification = () => {
                               alt='logo'
                               width='50px'
                               height='50px'
+                              loading='lazy'
                             />
                             {!userVerification?.userDetail?.isOnline && (
                               <div className='position-absolute  bottom-0 end-0 bg-success rounded-circle border border-3 border-white h-15px w-15px'></div>
@@ -172,6 +173,7 @@ const UserVerification = () => {
                             alt='logo'
                             width='50px'
                             height='50px'
+                            loading='lazy'
                           />
                         </div>
                       </td>
@@ -235,6 +237,7 @@ const UserVerification = () => {
                     alt='logo'
                     className='bg-image '
                     style={{height: '75vh'}}
+                    loading='lazy'
                   />
                 </div>
               </div>

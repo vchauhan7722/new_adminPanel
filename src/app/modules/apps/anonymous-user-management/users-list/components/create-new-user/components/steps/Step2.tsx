@@ -24,8 +24,16 @@ const Step2 = (props: any) => {
     getAllInterestList()
   }, [])
 
+  useEffect(() => {
+    const step2 = JSON.parse(localStorage.getItem('step2Details') || '[]') || []
+    if (step2.length !== 0) {
+      setSelectedQuestionList(step2.selectedQuestionList)
+      setselectedInterestList(step2.selectedInterestList)
+    }
+  }, [])
+
   const getAllQuestionAnswer = async () => {
-    let result = await getUserQuestionAnswerForProfile(userID)
+    let result = await getUserQuestionAnswerForProfile(1)
     setQuestionList(result)
   }
 
@@ -95,20 +103,46 @@ const Step2 = (props: any) => {
     // store data in local and add useEffect for assign data
 
     if (selectedInterestListWithId.length !== 0 && selectedQuestionList.length !== 0) {
-      let result = await UpdateUserInterestAndQuestions(
-        userID,
-        selectedInterestListWithId,
-        selectedQuestionList
-      )
-      if (result.status === 200) {
-        ToastUtils({type: 'success', message: 'Details Saved SuccessFully'})
-        submitStep(userID)
-      } else {
-        ErrorToastUtils()
+      let step2Object = {
+        selectedInterestListWithId: selectedInterestListWithId,
+        selectedQuestionList: selectedQuestionList,
+        selectedInterestList: selectedInterestList,
       }
+      localStorage.setItem('step2Details', JSON.stringify(step2Object))
+      if (localStorage.getItem('isUserCreated') === null) {
+        localStorage.setItem('isUserCreated', 'false')
+      }
+      submitStep()
+      // let result = await UpdateUserInterestAndQuestions(
+      //   userID,
+      //   selectedInterestListWithId,
+      //   selectedQuestionList
+      // )
+      // if (result.status === 200) {
+      //   ToastUtils({type: 'success', message: 'Details Saved SuccessFully'})
+      //   submitStep(userID)
+      // } else {
+      //   ErrorToastUtils()
+      // }
     } else {
+      let step2Object = {
+        selectedInterestListWithId: selectedInterestListWithId,
+        selectedQuestionList: selectedQuestionList,
+        selectedInterestList: selectedInterestList,
+      }
+      localStorage.setItem('step2Details', JSON.stringify(step2Object))
+      if (localStorage.getItem('isUserCreated') === null) {
+        localStorage.setItem('isUserCreated', 'false')
+      }
       submitStep(userID)
     }
+  }
+
+  const getDefaultValueOfAnswer = (questionID) => {
+    const matchedAnswerIds = selectedQuestionList
+      .filter((item) => item.questionId === questionID)
+      .map((item) => item.answerId)
+    return matchedAnswerIds[0]
   }
 
   return (
@@ -129,7 +163,7 @@ const Step2 = (props: any) => {
                   data-allow-clear='true'
                   name='question'
                   data-hide-search='true'
-                  //defaultValue={getDefaultValueOfAnswer(q.questionId)}
+                  defaultValue={getDefaultValueOfAnswer(q.questionId)}
                   onChange={(e) => handleChangeQuestions(e, q.questionId)}
                 >
                   <option value=''>select Option</option>

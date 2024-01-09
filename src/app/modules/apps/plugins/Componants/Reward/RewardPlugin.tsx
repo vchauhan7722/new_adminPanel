@@ -1,12 +1,14 @@
 import React, {useEffect, useState} from 'react'
 import {
   getConfigurationByName,
+  getPremiumPackageAmountPlans,
   updateConfigurationByConfigID,
 } from '../../../../../../API/api-endpoint'
 import ToastUtils, {ErrorToastUtils} from '../../../../../../utils/ToastUtils'
 
 const RewardPlugin = () => {
   const [configID, setConfigId] = useState(0)
+  const [premiumPackageName, setPremiumPackageName] = useState<any>([])
   const [rewardConfig, setRewardConfig] = useState<any>({
     initialCredit: 200,
     isEnableRewards: true,
@@ -18,7 +20,20 @@ const RewardPlugin = () => {
 
   useEffect(() => {
     getConfiguration()
+    getPremiumPlans()
   }, [])
+
+  const getPremiumPlans = async () => {
+    let response = await getPremiumPackageAmountPlans()
+
+    const newArray = response.data.map((item) => {
+      return {
+        premiumPackageAmountId: item.premiumPackageAmountId,
+        premiumPackageName: item.premiumPackageName,
+      }
+    })
+    setPremiumPackageName(newArray)
+  }
 
   const handleChange = (event: any) => {
     let name = event.target.name
@@ -197,9 +212,13 @@ const RewardPlugin = () => {
                 value={rewardConfig.PremiumPackageID}
                 onChange={(event) => handleChange(event)}
               >
-                <option value={1}>Premium Package 1</option>
-                <option value={2}>Premium Package 2</option>
-                <option value={3}>Premium Package 3</option>
+                {premiumPackageName.map((pkg: any, index: any) => {
+                  return (
+                    <option key={index} value={pkg.premiumPackageAmountId}>
+                      {pkg.premiumPackageName}
+                    </option>
+                  )
+                })}
               </select>
             </div>
           </div>

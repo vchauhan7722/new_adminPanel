@@ -129,6 +129,7 @@ export function Overview(props: any) {
                       width='16px'
                       height='16px'
                       className='me-2'
+                      loading='lazy'
                     />
                   </div>
                   <div className='col-lg-5'>

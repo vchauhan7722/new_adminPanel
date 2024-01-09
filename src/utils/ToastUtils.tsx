@@ -12,6 +12,14 @@ const ToastUtils = ({type, message}) =>
     timer: 1500,
   })
 
+// const ToastUtils = ({type, message}) => {
+//   return (
+//     <Alert key='danger' variant='danger'>
+//       {message}
+//     </Alert>
+//   )
+// }
+
 export const ErrorToastUtils = (message = 'Something Went Wrong') => {
   ToastUtils({type: 'error', message: message})
 }

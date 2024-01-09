@@ -126,6 +126,7 @@ const Gifts = () => {
                   height={82}
                   width={82}
                   alt='icon'
+                  loading='lazy'
                 />
               </div>
 
@@ -151,6 +152,7 @@ const Gifts = () => {
                         height={82}
                         width={82}
                         alt='icon'
+                        loading='lazy'
                       />
 
                       <div>
@@ -166,6 +168,7 @@ const Gifts = () => {
                             width='17px'
                             height='17px'
                             className='me-1'
+                            loading='lazy'
                           />
                           {gift.credit}
                         </h4>
@@ -202,6 +205,7 @@ const Gifts = () => {
                       height={82}
                       width={82}
                       alt='icon'
+                      loading='lazy'
                     />
                   </div>
 

@@ -139,6 +139,7 @@ const ProfileHeader = (props) => {
                       toAbsoluteUrl('/media/avatars/300-1.jpg')
                     }
                     alt='ProfileImage'
+                    loading='lazy'
                   />{' '}
                   {user.isOnline && (
                     <div className='position-absolute translate-middle bottom-0 start-100 bg-success rounded-circle border border-4 border-white h-20px w-20px'></div>

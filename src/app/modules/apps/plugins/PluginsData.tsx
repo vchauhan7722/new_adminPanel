@@ -116,6 +116,15 @@ const PluginData = [
     status: 'Active',
     path: 'legal_information_plugin',
   },
+  {
+    pluginId: 13,
+    icon: '/media/plugins/jstree/manualGateways.png',
+    name: 'Manual Payment Gateways',
+    type: 'Payment',
+    description: 'Edit Manual Payment Gateways',
+    status: 'Active',
+    path: 'manual_payment_gateways_plugin',
+  },
 ]
 
 export default PluginData

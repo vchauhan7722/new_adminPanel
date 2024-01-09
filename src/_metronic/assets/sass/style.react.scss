@@ -147,3 +147,11 @@ input[type="number"] {
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   appearance: none;
 }
+
+.select2-container--bootstrap5 .select2-dropdown {
+  border: 0;
+  box-shadow:  "0px 0px 50px 0px rgba(82, 63, 105, 0.15)";
+  border-radius: .475rem;
+  padding: 1rem 0;
+  background-color: #ffffff;
+}

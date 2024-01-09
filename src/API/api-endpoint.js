@@ -2074,6 +2074,31 @@ export const createNewAnonymousUser = async (values) => {
     return error.message
   }
 }
+// /api/v1/users/check/username
+export const checkUserName = async (userName) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+    const apiUrl = `${APIURL}/api/v1/users/check/username`
+
+    let formData = new FormData()
+    formData = {
+      userName : userName
+    }
+
+    let response = await axios.post(apiUrl, formData, {
+      headers: {
+        'Content-Type': `application/x-www-form-urlencoded`,
+        'x-access-token': accessToken,
+      },
+    })
+    console.log("2094",response)
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
 
 export const UpdateUserProfilePicture = async (UID, fileData) => {
   try {

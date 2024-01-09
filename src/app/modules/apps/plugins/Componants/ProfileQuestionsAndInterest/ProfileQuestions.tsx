@@ -258,6 +258,7 @@ const Questions = () => {
                       alt='Icon'
                       width='50px'
                       height='50px'
+                      loading='lazy'
                     />
                   </div>
                 )}
@@ -327,7 +328,13 @@ const Questions = () => {
             <td>
               {isImageUploaded ? (
                 <div className='symbol symbol-50px overflow-visible me-3'>
-                  <img src={currentImageTempPath} alt='Icon' width='50px' height='50px' />
+                  <img
+                    src={currentImageTempPath}
+                    alt='Icon'
+                    width='50px'
+                    height='50px'
+                    loading='lazy'
+                  />
                 </div>
               ) : (
                 <>

@@ -1,8 +1,9 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {FC, useState} from 'react'
+import {FC, useEffect, useState} from 'react'
 import {KTIcon} from '../../../../../../../../../_metronic/helpers'
 import {ErrorMessage, Field} from 'formik'
 import {
+  checkUserName,
   createNewAnonymousUser,
   getCitiesBYSearch,
 } from '../../../../../../../../../API/api-endpoint'
@@ -25,10 +26,12 @@ const Step1 = (props: any) => {
   const {submitStep, prevStep} = props
   const [suggestions, setSuggestions] = useState([])
   const [isLoading, setIsLoading] = useState(false)
+  const [isLocationVisible, setIsLocationVisible] = useState(false)
+  const [currentUserName, setCurrentUserName] = useState('')
   const [step1Details, setStep1Details] = useState<any>({
     fullName: '',
     userName: '',
-    genderId: '2',
+    genderId: 2,
     birthDate: getDate(),
     country: '',
     state: '',
@@ -37,6 +40,27 @@ const Step1 = (props: any) => {
     lat: '',
     lng: '',
   })
+
+  useEffect(() => {
+    const step1 = JSON.parse(localStorage.getItem('step1Details') || '[]') || []
+    if (step1.length !== 0) {
+      console.log('step1', step1?.genderId)
+      setIsLocationVisible(true)
+      setStep1Details({
+        fullName: step1?.fullName,
+        userName: step1?.userName,
+        genderId: parseInt(step1?.genderId),
+        birthDate: step1?.birthDate,
+        country: step1?.country,
+        state: step1?.state,
+        city: step1?.city,
+        bio: step1?.bio,
+        lat: step1?.lat,
+        lng: step1?.lng,
+      })
+      setCurrentUserName(step1?.userName)
+    }
+  }, [])
 
   const handleStep1Change = (e) => {
     let name = e.target.name
@@ -72,15 +96,29 @@ const Step1 = (props: any) => {
       ToastUtils({type: 'error', message: 'Please Select Location'})
     } else {
       // here we can check if userName is already exists or not
+      if (currentUserName !== step1Details.userName) {
+        let response = await checkUserName(step1Details.userName)
+        if (response.status === 200) {
+          setIsLocationVisible(false)
+          localStorage.setItem('step1Details', JSON.stringify(step1Details))
+          submitStep()
+        } else {
+          ToastUtils({type: 'error', message: response.message})
+        }
+      } else {
+        localStorage.setItem('step1Details', JSON.stringify(step1Details))
+        submitStep()
+        setIsLocationVisible(false)
+      }
 
       // store data in local and add useEffect for assign data
-      let result = await createNewAnonymousUser(step1Details)
-      if (result.status === 200) {
-        submitStep(result.data.userId)
-        ToastUtils({type: 'success', message: 'Saved SuccessFully'})
-      } else {
-        ErrorToastUtils()
-      }
+      // let result = await createNewAnonymousUser(step1Details)
+      // if (result.status === 200) {
+      //   submitStep(result.data.userId)
+      //   ToastUtils({type: 'success', message: 'Saved SuccessFully'})
+      // } else {
+      //   ErrorToastUtils()
+      // }
     }
   }
 
@@ -136,8 +174,8 @@ const Step1 = (props: any) => {
             //value={profileDetailsFormValue?.gender}
             onChange={(e) => handleStep1Change(e)}
           >
-            <option value='1'>Male</option>
-            <option value='2'>Female</option>
+            <option value={1}>Male</option>
+            <option value={2}>Female</option>
           </select>
         </div>
         <div className='fv-row mb-2 col-6'>
@@ -158,34 +196,46 @@ const Step1 = (props: any) => {
 
       <div className='fv-row mb-2 '>
         <label className='form-label required'>Location</label>
-        <AsyncTypeahead
-          filterBy={['name', 'state', 'country']}
-          id='async-example'
-          isLoading={isLoading}
-          minLength={3}
-          onSearch={handleSearchChange}
-          options={suggestions}
-          labelKey={(option: any) => `${option?.name}, ${option?.state}, ${option?.country}`}
-          onChange={(e: any) => {
-            if (e.length !== 0) {
-              let locationName = e[0]
-              setStep1Details({
-                ...step1Details,
-                city: locationName.name,
-                state: locationName.state,
-                country: locationName.country,
-                lat: locationName.latitude,
-                lng: locationName.longitude,
-              })
-              setSuggestions([])
-            }
-          }}
-          renderMenuItemChildren={(option: any) => (
-            <>
-              <span>{`${option.name}, ${option.state}, ${option.country}`}</span>
-            </>
-          )}
-        />
+        {isLocationVisible ? (
+          <input
+            type='text'
+            className='form-control form-control-lg form-control-solid'
+            placeholder='Register Date'
+            name='state'
+            value={`${step1Details?.city}, ${step1Details?.state}, ${step1Details?.country}`}
+            onFocus={(e) => setIsLocationVisible(false)}
+          />
+        ) : (
+          <AsyncTypeahead
+            filterBy={['name', 'state', 'country']}
+            id='async-example'
+            isLoading={isLoading}
+            minLength={3}
+            onSearch={handleSearchChange}
+            options={suggestions}
+            labelKey={(option: any) => `${option?.name}, ${option?.state}, ${option?.country}`}
+            onChange={(e: any) => {
+              if (e.length !== 0) {
+                let locationName = e[0]
+                setStep1Details({
+                  ...step1Details,
+                  city: locationName.name,
+                  state: locationName.state,
+                  country: locationName.country,
+                  lat: locationName.latitude,
+                  lng: locationName.longitude,
+                })
+                setSuggestions([])
+                //setIsLocationVisible(true)
+              }
+            }}
+            renderMenuItemChildren={(option: any) => (
+              <>
+                <span>{`${option.name}, ${option.state}, ${option.country}`}</span>
+              </>
+            )}
+          />
+        )}
       </div>
 
       <div className='fv-row mb-2'>

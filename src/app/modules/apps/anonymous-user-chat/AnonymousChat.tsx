@@ -137,6 +137,7 @@ const AnonymousChat = (props) => {
                                 `${process.env.REACT_APP_SERVER_URL}/${member.profileImage}` ||
                                 toAbsoluteUrl('/media/avatars/300-5.jpg')
                               }
+                              loading='lazy'
                             />
                           </div>
 

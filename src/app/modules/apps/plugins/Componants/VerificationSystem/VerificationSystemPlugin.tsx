@@ -109,6 +109,7 @@ const VerificationSystemPlugin = () => {
                     `https://preview.keenthemes.com/metronic8/react/demo1//media/avatars/300-6.jpg`
                   }
                   alt='icon'
+                  loading='lazy'
                 />
                 <button
                   className='ms-4 btn btn-primary'

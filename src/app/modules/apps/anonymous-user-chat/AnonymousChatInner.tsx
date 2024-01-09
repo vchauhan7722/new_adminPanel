@@ -329,6 +329,7 @@ const AnonymousChatInner = (props: any) => {
                   `${process.env.REACT_APP_SERVER_URL}/${selectedNormalUser?.profileImage}` ||
                   toAbsoluteUrl(`/media/avatars/300-5.jpg`)
                 }
+                loading='lazy'
               />
             </div>
 
@@ -361,6 +362,7 @@ const AnonymousChatInner = (props: any) => {
                 width='17px'
                 height='17px'
                 className='me-2'
+                loading='lazy'
               />
             )}
             <img
@@ -368,6 +370,7 @@ const AnonymousChatInner = (props: any) => {
               src={toAbsoluteUrl(`/media/logos/Credits.png`)}
               width='17px'
               height='17px'
+              loading='lazy'
             />
             <span className='text-muted fs-7 ms-3'>{selectedNormalUser?.totalCredit}</span>
           </div>
@@ -380,6 +383,7 @@ const AnonymousChatInner = (props: any) => {
                 src={toAbsoluteUrl(`/media/logos/Credits.png`)}
                 width='20px'
                 height='20px'
+                loading='lazy'
               />
             </div>
             <div data-bs-toggle='modal' data-bs-target='#kt_modal_gift' className='me-5'>
@@ -388,6 +392,7 @@ const AnonymousChatInner = (props: any) => {
                 src={toAbsoluteUrl(`/media/logos/gift.png`)}
                 width='20px'
                 height='20px'
+                loading='lazy'
               />
             </div>
           </div>
@@ -541,6 +546,7 @@ const AnonymousChatInner = (props: any) => {
                                       src={`${process.env.REACT_APP_SERVER_URL}/${message?.giftDetail?.icon}`}
                                       width='50px'
                                       height='50px'
+                                      loading='lazy'
                                     />
                                   </span>
 
@@ -558,6 +564,7 @@ const AnonymousChatInner = (props: any) => {
                                       src={`${process.env.REACT_APP_SERVER_URL}/${message?.giftDetail?.icon}`}
                                       width='50px'
                                       height='50px'
+                                      loading='lazy'
                                     />
                                   </span>
                                   <span className='text-muted fs-9'>
@@ -596,6 +603,7 @@ const AnonymousChatInner = (props: any) => {
                                       )
                                       setOpenLightBox(true)
                                     }}
+                                    loading='lazy'
                                   />{' '}
                                   <span className='text-muted fs-9 me-2'>
                                     {TimeFormatter(message.updatedAt)}
@@ -618,6 +626,7 @@ const AnonymousChatInner = (props: any) => {
                                         )
                                         setOpenLightBox(true)
                                       }}
+                                      loading='lazy'
                                     />
                                   </span>
                                   <span className='text-muted fs-9'>
@@ -649,6 +658,7 @@ const AnonymousChatInner = (props: any) => {
                                     width='20px'
                                     height='20px'
                                     className='me-2'
+                                    loading='lazy'
                                   />{' '}
                                   {message.message} Credits
                                   <span className='text-muted fs-9 ms-1 me-2'>
@@ -666,6 +676,7 @@ const AnonymousChatInner = (props: any) => {
                                       width='20px'
                                       height='20px'
                                       className='me-2'
+                                      loading='lazy'
                                     />
                                     {message.message} Credits
                                   </span>
@@ -805,6 +816,7 @@ const AnonymousChatInner = (props: any) => {
                           src={`${process.env.REACT_APP_SERVER_URL}/${gift.icon}`}
                           width='50px'
                           height='50px'
+                          loading='lazy'
                         />
                         <span className='text-muted fs-6'>{gift.credit} coins</span>
                       </div>

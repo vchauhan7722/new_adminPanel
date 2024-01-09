@@ -58,6 +58,7 @@ const SitePricingPlugin = () => {
   const [PremiumPackageAmount, setPremiumPackageAmount] = useState<any>('')
   const [PremiumPackageDays, setPremiumPackageDays] = useState<any>('')
   const [PremiumPackageName, setPremiumPackageName] = useState<any>('')
+  const [saveTimeout, setSaveTimeout] = useState<any>(null)
 
   const [CreditAmountPackagesChanges, setCreditAmountPackagesChanges] = useState<any>({
     creditAmountPackagesID: 0,
@@ -235,6 +236,7 @@ const SitePricingPlugin = () => {
       oldPremiumPackage[premiumPkgIndex]['premiumPackageConfig'][index]['value'] = value
       setPremiumAmountPackages(oldPremiumPackage)
     } else {
+      console.log('239')
       let oldPremiumPackage = [...premiumAmountPackages]
       oldPremiumPackage[premiumPkgIndex]['premiumPackageConfig'][index]['value'] =
         event.target.checked
@@ -244,15 +246,24 @@ const SitePricingPlugin = () => {
   }
 
   const onBlurUpdatePremiumAmountConfig = (premiumPkgId: any) => {
+    // setSaveTimeout(
+    //   setTimeout(() => {
+    //     let premiumPkgObject = premiumAmountPackages.filter(
+    //       (pkg: any) => pkg.premiumPackageAmountId === premiumPkgId
+    //     )
+
+    //     updatePremiumAmountConfig(
+    //       premiumPkgId,
+    //       premiumPkgObject[0].days,
+    //       premiumPkgObject[0].amount,
+    //       premiumPkgObject[0].premiumPackageConfig
+    //     )
+    //   }, 200)
+    // )
+
     let premiumPkgObject = premiumAmountPackages.filter(
       (pkg: any) => pkg.premiumPackageAmountId === premiumPkgId
     )
-
-    // let oldpremiumPkgObject = oldPremiumAmountPackages?.filter(
-    //   (pkg: any) => pkg.premiumPackageAmountId === premiumPkgId
-    // )
-
-    //console.log('premiumPkgObject', premiumPkgObject[0].premiumPackageConfig)
 
     updatePremiumAmountConfig(
       premiumPkgId,
@@ -260,23 +271,11 @@ const SitePricingPlugin = () => {
       premiumPkgObject[0].amount,
       premiumPkgObject[0].premiumPackageConfig
     )
+  }
 
-    //console.log('premiumPkgObject', premiumPkgObject[0].premiumPackageConfig)
-    //console.log('oldpremiumPkgObject', oldPremiumAmountPackages)
-    // console.log(
-    //   premiumPkgObject[0].premiumPackageConfig !== oldpremiumPkgObject[0].premiumPackageConfig
-    // )
-
-    // if any changes then and then only update
-    // if (premiumPkgObject[0].premiumPackageConfig !== oldpremiumPkgObject[0].premiumPackageConfig) {
-    //   console.log('272')
-    //   // updatePremiumAmountConfig(
-    //   //   premiumPkgId,
-    //   //   premiumPkgObject[0].days,
-    //   //   premiumPkgObject[0].amount,
-    //   //   premiumPkgObject[0].premiumPackageConfig
-    //   // )
-    // }
+  const handleFocus = () => {
+    // Cancel the save timeout when moving to another input
+    clearTimeout(saveTimeout)
   }
 
   return (
@@ -484,6 +483,7 @@ const SitePricingPlugin = () => {
                                       packageItem.premiumPackageAmountId
                                     )
                                   }
+                                  //onFocus={handleFocus}
                                 />
                               )}
                             </div>
