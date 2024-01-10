@@ -84,7 +84,13 @@ const Step1 = (props: any) => {
   }
 
   const onSubmitStep1 = async () => {
-    if (step1Details.fullName.length === 0) {
+    var usernameInput = document.getElementById('userName') as HTMLInputElement
+    if (!usernameInput.checkValidity()) {
+      ToastUtils({
+        type: 'error',
+        message: 'Only small letters, numbers (0-9), and underscores are allowed in Username',
+      })
+    } else if (step1Details.fullName.length === 0) {
       ToastUtils({type: 'error', message: 'Please Enter Full Name'})
     } else if (step1Details.userName.length === 0) {
       ToastUtils({type: 'error', message: 'Please Enter User Name'})
@@ -150,10 +156,13 @@ const Step1 = (props: any) => {
           <input
             type='text'
             name='userName'
+            id='userName'
             className={clsx('form-control form-control-solid mb-3 mb-lg-0')}
             autoComplete='off'
             value={step1Details?.userName}
             onChange={(e) => handleStep1Change(e)}
+            pattern='[a-z0-9_]+'
+            title='Only small letters, numbers (0-9), and underscores are allowed'
           />
         </div>
       </div>

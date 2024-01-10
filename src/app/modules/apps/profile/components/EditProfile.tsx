@@ -193,7 +193,13 @@ const EditProfile = (props) => {
   }
 
   const updateProfile = async () => {
-    if (profileDetailsFormValue?.mobileNo.length !== 10) {
+    var usernameInput = document.getElementById('userName') as HTMLInputElement
+    if (!usernameInput.checkValidity()) {
+      ToastUtils({
+        type: 'error',
+        message: 'Only small letters, numbers (0-9), and underscores are allowed in Username',
+      })
+    } else if (profileDetailsFormValue?.mobileNo.length !== 10) {
       ToastUtils({type: 'error', message: 'Enter 10 digits Number Only'})
     } else {
       let updatedData: any
@@ -281,8 +287,10 @@ const EditProfile = (props) => {
                   placeholder='User Name'
                   type='text'
                   name='userName'
+                  id='userName'
                   className={clsx('form-control form-control-solid mb-3 mb-lg-0')}
                   autoComplete='off'
+                  pattern='[a-z0-9_]+'
                   value={profileDetailsFormValue?.userName}
                   onChange={(e) => handleProfileChange(e)}
                 />
