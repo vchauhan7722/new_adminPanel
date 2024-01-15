@@ -383,9 +383,7 @@ const Stories = () => {
                           id='dropdown-basic'
                           className='bg-body-secondary bg-body-secondary:hover'
                           size='sm'
-                        >
-                          <i className='bi bi-three-dots fs-3'></i>
-                        </Dropdown.Toggle>
+                        ></Dropdown.Toggle>
 
                         <Dropdown.Menu>
                           <Dropdown.Item>

@@ -125,6 +125,42 @@ const PluginData = [
     status: 'Active',
     path: 'manual_payment_gateways_plugin',
   },
+  {
+    pluginId: 14,
+    icon: '/media/plugins/jstree/phonepe.png',
+    name: 'Phone Pay',
+    type: 'Payment',
+    description: 'Edit Phone Pay Gateways',
+    status: 'Active',
+    path: 'phone_pay_payment_plugin',
+  },
+  {
+    pluginId: 15,
+    icon: '/media/plugins/jstree/stripe.jpg',
+    name: 'Stripe',
+    type: 'Payment',
+    description: 'Edit Stripe Gateways (Not integrated)',
+    status: 'Active',
+    path: 'stripe_payment_plugin',
+  },
+  {
+    pluginId: 16,
+    icon: '/media/plugins/jstree/openmoney.jpg',
+    name: 'Open Money',
+    type: 'Payment',
+    description: 'Edit Open Money Gateways (Not integrated)',
+    status: 'Active',
+    path: 'open_money_payment_plugin',
+  },
+  {
+    pluginId: 17,
+    icon: '/media/plugins/jstree/razorpay.png',
+    name: 'Razor Pay',
+    type: 'Payment',
+    description: 'Edit Razor Pay Gateways (Not integrated)',
+    status: 'Active',
+    path: 'razor_pay_payment_plugin',
+  },
 ]
 
 export default PluginData

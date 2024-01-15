@@ -94,6 +94,7 @@ const EditProfile = (props) => {
       oldSelectedInterest.push(newInterest)
       setselectedInterestList(oldSelectedInterest)
       ToastUtils({type: 'success', message: 'Interest Was Added'})
+      setUserUpdateFlag(userUpdateFlag + 1)
     }
   }
 
@@ -105,6 +106,7 @@ const EditProfile = (props) => {
       oldSelectedInterest.splice(index, 1)
       setselectedInterestList(oldSelectedInterest)
       ToastUtils({type: 'success', message: 'Interest Was Deleted'})
+      setUserUpdateFlag(userUpdateFlag + 1)
     }
   }
 
@@ -517,7 +519,7 @@ const EditProfile = (props) => {
               return (
                 <div
                   key={index}
-                  className='badge bg-primary text-center text-white me-3 mb-5 fs-6  fw-bold pointer'
+                  className='badge bg-primary text-center text-white me-3 mb-5 fs-6 fw-bold pointer'
                   onClick={() => removeUserInterestInList(interest.interestId)}
                 >
                   {interest.interests.name}

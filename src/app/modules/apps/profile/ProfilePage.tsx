@@ -136,7 +136,11 @@ const ProfilePage = () => {
               <PageTitle breadcrumbs={profileBreadCrumbs}>
                 {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.MEDIA'})}
               </PageTitle>
-              <Media user={userDetails} />
+              <Media
+                user={userDetails}
+                setUserUpdateFlag={setUserUpdateFlag}
+                userUpdateFlag={userUpdateFlag}
+              />
             </>
           }
         />

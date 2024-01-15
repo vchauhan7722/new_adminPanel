@@ -24,7 +24,7 @@ const Photos = () => {
   const [pageSize, setPageSize] = useState(10)
   const [totalPage, setTotalPage] = useState(15)
   const [mediaList, setMediaList] = useState([])
-  const [filter, setFilter] = useState({userId: '', isPrivate: ''})
+  const [filter, setFilter] = useState({userId: '', isPrivate: ''}) // userName: ''
   const [selectedUser, setSelectedUser] = useState<any>([])
   const [openLightBox, setOpenLightBox] = useState(false)
   const [lightBoxArrayList, setLightBoxArrayList] = useState<any>([])
@@ -325,7 +325,7 @@ const Photos = () => {
 
                         <div className='flex-grow-1'>
                           <a href='#' className='text-gray-800 text-hover-primary fw-bold fs-4'>
-                            {media?.userDetail?.fullName}
+                            {media?.userDetail?.fullName} - {media?.userDetail?.userName}
                           </a>
                           <span
                             className='text-muted fw-semibold d-block fs-6'

@@ -20,6 +20,10 @@ import GeneralPlugin from './Componants/General/GeneralPlugin'
 import VerificationSystemPlugin from './Componants/VerificationSystem/VerificationSystemPlugin'
 import AccountPrivilegesPlugin from './Componants/AccountPrivilges/AccountPrivilgesPlugin'
 import ManualPaymentGatewaysPlugin from './Componants/ManualPaymentGateways/ManualPaymentGatewaysPlugin'
+import StripePaymentPlugin from './Componants/StripePayment/StripePaymentPlugin'
+import OpenMoneyPaymentPlugin from './Componants/OpenMoneyPayment/OpenMoneyPaymentPlugin'
+import RazorpayPaymentPlugin from './Componants/RazorpayPayment/RazorpayPaymentPlugin'
+import PhonePayPlugin from './Componants/PhonePay/PhonePayPlugins'
 
 const usersBreadcrumbs: Array<PageLink> = [
   {
@@ -244,6 +248,42 @@ const Plugins = () => {
             <>
               <PageTitle>Manual Payment Gateways</PageTitle>
               <ManualPaymentGatewaysPlugin />
+            </>
+          }
+        />
+        <Route
+          path='/stripe_payment_plugin'
+          element={
+            <>
+              <PageTitle>Stripe Payment Gateways</PageTitle>
+              <StripePaymentPlugin />
+            </>
+          }
+        />
+        <Route
+          path='/open_money_payment_plugin'
+          element={
+            <>
+              <PageTitle>Open Money Payment Gateways</PageTitle>
+              <OpenMoneyPaymentPlugin />
+            </>
+          }
+        />
+        <Route
+          path='/razor_pay_payment_plugin'
+          element={
+            <>
+              <PageTitle>Razor Pay Payment Gateways</PageTitle>
+              <RazorpayPaymentPlugin />
+            </>
+          }
+        />
+        <Route
+          path='/phone_pay_payment_plugin'
+          element={
+            <>
+              <PageTitle>Phone Pay Payment Gateways</PageTitle>
+              <PhonePayPlugin />
             </>
           }
         />

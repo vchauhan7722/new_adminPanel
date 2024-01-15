@@ -1,6 +1,7 @@
 import imageCompression from 'browser-image-compression'
+import Resizer from 'react-image-file-resizer'
 
-// export const ImageCompressor = async (image: any) => {
+// export const old1ImageCompressor = async (image: any) => {
 //   //const image = e.target.files[0]
 //   return new Compressor(image, {
 //     quality: 0.4, // 0.6 can also be used, but its not recommended to go below.
@@ -14,11 +15,35 @@ import imageCompression from 'browser-image-compression'
 //   })
 // }
 
+const resizeFile = (file) =>
+  new Promise((resolve) => {
+    Resizer.imageFileResizer(
+      file,
+      800,
+      800,
+      'webp',
+      50,
+      0,
+      (uri) => {
+        // console.log('uri', uri)
+        resolve(uri) //setImg(uri)
+      },
+      'file',
+      200,
+      200
+    )
+  })
+
 export async function ImageCompressor(file: any) {
-  var imageFile = file
+  const image = await resizeFile(file)
+  //console.log('image', image)
+  return image
+}
+
+export async function OldImageCompressor(file: any) {
   // console.log('originalFile instanceof Blob', imageFile instanceof Blob) // true
   // console.log(`originalFile size ${imageFile.size / 1024 / 1024} MB`)
-
+  var imageFile = file
   var options = {
     maxSizeMB: 0.1,
     maxWidthOrHeight: 800,

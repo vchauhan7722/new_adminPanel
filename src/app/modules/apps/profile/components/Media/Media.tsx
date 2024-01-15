@@ -19,7 +19,7 @@ import {ImageCompressor} from '../../../../../../utils/ImageCompresser'
 import {useLocation} from 'react-router-dom'
 
 const Media = (props: any) => {
-  const {user} = props
+  const {user, setUserUpdateFlag, userUpdateFlag} = props
 
   const location = useLocation()
   let currentUserType = location.pathname.substring(6, 15) === 'anonymous' ? 'Anonymous' : 'Normal'
@@ -47,6 +47,7 @@ const Media = (props: any) => {
 
     let result = await updateMediaActionForUserMedia(userId, mediaId, actionType, typeValue)
     if (result.status === 200) {
+      setUserUpdateFlag(userUpdateFlag + 1)
       ToastUtils({
         type: 'success',
         message: `Your Media has Set as ${
@@ -171,7 +172,7 @@ const Media = (props: any) => {
             onChange={(e) => handleMediaChange(e)}
             ref={hiddenMediaInput}
             style={{display: 'none'}} // Make the file input element invisible
-            accept='image/*'
+            accept='image/* , image/heic, image/heif'
             multiple
           />
         </div>

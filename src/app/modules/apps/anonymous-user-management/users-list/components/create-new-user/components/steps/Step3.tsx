@@ -115,6 +115,7 @@ const Step3 = (props: any) => {
           ToastUtils({type: 'success', message: 'Profile Media Upload SuccessFully'})
         } else {
           setMediaisImageUploaded(false)
+          setTempProfileMedia([])
           ToastUtils({type: 'error', message: 'Error in Media Upload'})
         }
       }
@@ -167,7 +168,7 @@ const Step3 = (props: any) => {
             onChange={(e) => handleMediaChange(e)}
             ref={hiddenMediaInput}
             style={{display: 'none'}} // Make the file input element invisible
-            accept='image/*, image/heic'
+            accept='image/*, image/heic, image/heif'
             multiple
           />
         </div>

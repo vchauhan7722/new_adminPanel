@@ -237,6 +237,111 @@ export const getCityList = async (stateID) => {
   }
 }
 
+export const getRegisteredCountryList = async () => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+
+    const apiUrl = `${APIURL}/api/v1/masters/registeredCountry`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken,
+      },
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const getRegisteredStateList = async (search) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+
+    const apiUrl = `${APIURL}/api/v1/masters/registeredState/${search}`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken,
+      },
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const getRegisteredStateListFromCountryId = async (countryId) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+
+    const apiUrl = `${APIURL}/api/v1/masters/registeredState/${countryId}`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken,
+      },
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const getRegisteredCityList = async (search) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+
+    const apiUrl = `${APIURL}/api/v1/masters/registeredCity/${search}`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken,
+      },
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const getRegisteredCityListStateId = async (stateId) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+
+    const apiUrl = `${APIURL}/api/v1/masters/registeredCity/${stateId}`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken,
+      },
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
 export const getUserpProfileDetailsUsingUserID = async (userID) => {
   try {
     let accessToken = localStorage.getItem('accessToken')
@@ -804,10 +909,10 @@ export const createMediaActionForUserMedia = async (fileData, userID) => {
 export const createMediaActionForUserMediaForAnonymousUser = async (fileData, userID) => {
   try {
     let accessToken = localStorage.getItem('accessToken')
-
+    
     let formData = new FormData()
     for (var i = 0; i < fileData.length; i++) {
-      formData.append('anonymousProfileMedia', fileData[i], fileData[i].name)
+      formData.append('anonymousProfileMedia', fileData[i], fileData[i].name) // .split(".")[0] + ".webp"
       formData.append(`mediaTypes[${i}][mediaType]`, 'photo')
     }
 
@@ -2035,7 +2140,7 @@ export const getAllUserAnonymousStories = async (page, pageSize, isPrivate, user
 export const getAllUserAnonymousMedia = async (page, pageSize, isPrivate, userID) => {
   try {
     let accessToken = localStorage.getItem('accessToken')
-    const apiUrl = `${APIURL}/api/v1/anonymous/users/media?page=${page}&pageSize=${pageSize}&isPrivate=${isPrivate}&userId=${userID}`
+    const apiUrl = `${APIURL}/api/v1/anonymous/users/media?page=${page}&pageSize=${pageSize}&isPrivate=${isPrivate}&userId=${userID}` //&userName=${userName}
 
     let response = await axios.get(apiUrl, {
       headers: {
@@ -2074,7 +2179,7 @@ export const createNewAnonymousUser = async (values) => {
     return error.message
   }
 }
-// /api/v1/users/check/username
+
 export const checkUserName = async (userName) => {
   try {
     let accessToken = localStorage.getItem('accessToken')

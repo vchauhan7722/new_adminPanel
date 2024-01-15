@@ -5,15 +5,13 @@ import {
 } from '../../../../../../API/api-endpoint'
 import ToastUtils, {ErrorToastUtils} from '../../../../../../utils/ToastUtils'
 
-const ManualPaymentGatewaysPlugin = () => {
+const OpenMoneyPaymentPlugin = () => {
   const [configID, setConfigId] = useState(0)
-  const [manualPaymentGatewayConfig, setManualPaymentGatewayConfig] = useState<any>({
+  const [openMoneyPaymentConfig, setOpenMoneyPaymentConfig] = useState<any>({
     isEnabled: true,
-    upiuid: '',
-    token: '',
-    gateway_url: '',
     secret_key: '',
-    merchant_id: '',
+    api_key: '',
+    test_mode: false,
   })
 
   useEffect(() => {
@@ -24,33 +22,31 @@ const ManualPaymentGatewaysPlugin = () => {
     let name = event.target.name
     let value = event.target.checked
 
-    if (name !== 'isEnabled') {
-      setManualPaymentGatewayConfig({...manualPaymentGatewayConfig, [name]: event.target.value})
+    if (name !== 'isEnabled' && name !== 'test_mode') {
+      setOpenMoneyPaymentConfig({...openMoneyPaymentConfig, [name]: event.target.value})
       // if (event.target.value.length !== 0) {
-      //   updateConfiguration({...manualPaymentGatewayConfig, [name]: event.target.value})
+      //   updateConfiguration({...openMoneyPaymentConfig, [name]: event.target.value})
       // }
     } else {
-      setManualPaymentGatewayConfig({...manualPaymentGatewayConfig, [name]: value})
-      updateConfiguration({...manualPaymentGatewayConfig, [name]: value})
+      setOpenMoneyPaymentConfig({...openMoneyPaymentConfig, [name]: value})
+      updateConfiguration({...openMoneyPaymentConfig, [name]: value})
     }
   }
 
   const onBlurUpdate = () => {
-    updateConfiguration(manualPaymentGatewayConfig)
+    updateConfiguration(openMoneyPaymentConfig)
   }
 
   const getConfiguration = async () => {
-    let result = await getConfigurationByName('manual-gateway')
+    let result = await getConfigurationByName('open-money')
     if (result.status === 200) {
       let parsedData = JSON.parse(result.data.values)
       setConfigId(result.data.id)
-      setManualPaymentGatewayConfig({
+      setOpenMoneyPaymentConfig({
         isEnabled: parsedData?.isEnabled,
-        upiuid: parsedData?.upiuid,
-        token: parsedData?.token,
-        gateway_url: parsedData?.gateway_url,
+        api_key: parsedData?.api_key,
+        test_mode: parsedData?.test_mode,
         secret_key: parsedData?.secret_key,
-        merchant_id: parsedData?.merchant_id,
       })
     }
   }
@@ -68,15 +64,15 @@ const ManualPaymentGatewaysPlugin = () => {
   return (
     <div className='card'>
       <div className='card-title p-8'>
-        <h2>Manual Payment Gateways settings</h2>
+        <h2>Open Money settings</h2>
       </div>
       <div className='card-body'>
         <div className='row no-gutters'>
           <div className='col-lg-4 card-body bg-light'>
             <p>
-              <strong className='headings-color'>Enable Payment plugin</strong>
+              <strong className='headings-color'>Enable Open Money plugin</strong>
             </p>
-            <p className='text-muted'>Enable or disable Payment plugin</p>
+            <p className='text-muted'>Enable or disable Open Money plugin</p>
           </div>
           <div className='col-lg-8 card-form__body card-body d-flex align-items-center bg-white'>
             <div className='form-check form-switch'>
@@ -86,7 +82,7 @@ const ManualPaymentGatewaysPlugin = () => {
                 role='switch'
                 id='flexSwitchCheckDefault'
                 name='isEnabled'
-                checked={manualPaymentGatewayConfig.isEnabled}
+                checked={openMoneyPaymentConfig.isEnabled}
                 onChange={(event) => handleChange(event)}
               />
             </div>
@@ -94,7 +90,27 @@ const ManualPaymentGatewaysPlugin = () => {
 
           <div className='col-lg-4 card-body bg-light'>
             <p>
-              <strong className='headings-color'>Live Qr Code Url</strong>
+              <strong className='headings-color'>Enable Test Mode</strong>
+            </p>
+            <p className='text-muted'>Enable or disable Test Mode</p>
+          </div>
+          <div className='col-lg-8 card-form__body card-body d-flex align-items-center bg-white'>
+            <div className='form-check form-switch'>
+              <input
+                className='form-check-input'
+                type='checkbox'
+                role='switch'
+                id='flexSwitchCheckDefault'
+                name='test_mode'
+                checked={openMoneyPaymentConfig.test_mode}
+                onChange={(event) => handleChange(event)}
+              />
+            </div>
+          </div>
+
+          <div className='col-lg-4 card-body bg-light'>
+            <p>
+              <strong className='headings-color'>Live Api Key</strong>
             </p>
             <p className='text-muted'>-</p>
           </div>
@@ -103,46 +119,8 @@ const ManualPaymentGatewaysPlugin = () => {
               <input
                 type='text'
                 className='form-control'
-                name='upiuid'
-                value={manualPaymentGatewayConfig.upiuid}
-                onChange={(event) => handleChange(event)}
-                onBlur={onBlurUpdate}
-              />
-            </div>
-          </div>
-
-          <div className='col-lg-4 card-body bg-light'>
-            <p>
-              <strong className='headings-color'>Live APi Token Key</strong>
-            </p>
-            <p className='text-muted'>-</p>
-          </div>
-          <div className='col-lg-8 card-form__body card-body d-flex align-items-center bg-white'>
-            <div className='flex'>
-              <input
-                type='text'
-                className='form-control'
-                name='token'
-                value={manualPaymentGatewayConfig.token}
-                onChange={(event) => handleChange(event)}
-                onBlur={onBlurUpdate}
-              />
-            </div>
-          </div>
-
-          <div className='col-lg-4 card-body bg-light'>
-            <p>
-              <strong className='headings-color'>GateWay Url</strong>
-            </p>
-            <p className='text-muted'>-</p>
-          </div>
-          <div className='col-lg-8 card-form__body card-body d-flex align-items-center bg-white'>
-            <div className='flex'>
-              <input
-                type='text'
-                className='form-control'
-                name='gateway_url'
-                value={manualPaymentGatewayConfig.gateway_url}
+                name='api_key'
+                value={openMoneyPaymentConfig.api_key}
                 onChange={(event) => handleChange(event)}
                 onBlur={onBlurUpdate}
               />
@@ -161,26 +139,7 @@ const ManualPaymentGatewaysPlugin = () => {
                 type='text'
                 className='form-control'
                 name='secret_key'
-                value={manualPaymentGatewayConfig.secret_key}
-                onChange={(event) => handleChange(event)}
-                onBlur={onBlurUpdate}
-              />
-            </div>
-          </div>
-
-          <div className='col-lg-4 card-body bg-light'>
-            <p>
-              <strong className='headings-color'>Live Merchant Id</strong>
-            </p>
-            <p className='text-muted'>-</p>
-          </div>
-          <div className='col-lg-8 card-form__body card-body d-flex align-items-center bg-white'>
-            <div className='flex'>
-              <input
-                type='text'
-                className='form-control'
-                name='merchant_id'
-                value={manualPaymentGatewayConfig.merchant_id}
+                value={openMoneyPaymentConfig.secret_key}
                 onChange={(event) => handleChange(event)}
                 onBlur={onBlurUpdate}
               />
@@ -192,4 +151,4 @@ const ManualPaymentGatewaysPlugin = () => {
   )
 }
 
-export default ManualPaymentGatewaysPlugin
+export default OpenMoneyPaymentPlugin

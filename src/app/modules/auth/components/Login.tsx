@@ -8,6 +8,7 @@ import {getUserByToken, login} from '../core/_requests'
 import {toAbsoluteUrl} from '../../../../_metronic/helpers'
 import {useAuth} from '../core/Auth'
 import {loginWithEmailandPassword} from '../../../../API/api-endpoint'
+import ToastUtils from '../../../../utils/ToastUtils'
 
 const loginSchema = Yup.object().shape({
   email: Yup.string()
@@ -41,9 +42,10 @@ export function Login() {
         localStorage.setItem('password', values.password)
         saveAuth(Response.data)
         setCurrentUser(Response.data)
-      } catch (error) {
-        console.error(error)
+      } catch (error: any) {
+        //console.error(error.message)
         saveAuth(undefined)
+        ToastUtils({type: 'error', message: 'User Not Found'})
         setStatus('The login details are incorrect')
         setSubmitting(false)
         setLoading(false)
