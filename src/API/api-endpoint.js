@@ -999,6 +999,8 @@ export const UpdateUserDetailsByUID = async (UID, newUserData) => {
       country: newUserData.country,
       birthDate: newUserData.birthDate,
       bio: newUserData.bio,
+      questions : JSON.stringify(newUserData?.questions),
+      interests : JSON.stringify(newUserData?.interests) 
     }
 
     const apiUrl = `${APIURL}/api/v1/users/update/${UID}`

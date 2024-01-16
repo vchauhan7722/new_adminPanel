@@ -30,9 +30,11 @@ const EditProfile = (props) => {
   const [questionList, setQuestionList] = useState<any>([])
   const [allInterestList, setallInterestList] = useState<any>([])
   const [selectedInterestList, setselectedInterestList] = useState<any>(user.userInterests)
+  const [preSelectedInterestList, setPreselectedInterestList] = useState<any>([])
   const [selectedListQuestionList, setSelectedQuestionList] = useState<any>(
     user.userQuestionAnswers
   )
+  const [preSelectedListQuestionList, setPreSelectedQuestionList] = useState<any>([])
   const [profileDetailsFormValue, setProfileDetailsFormValue] = useState({
     fullName: '',
     userName: '',
@@ -43,13 +45,14 @@ const EditProfile = (props) => {
     state: '',
     country: '',
     birthDate: '',
-    gender: 1,
+    gender: '',
     bio: '',
   })
 
   const [oldUserName, setOldUserName] = useState(user?.userName)
 
   useEffect(() => {
+    console.log('user.genderId', user.genderId)
     setProfileDetailsFormValue({
       fullName: user.fullName,
       userName: user.userName,
@@ -81,32 +84,149 @@ const EditProfile = (props) => {
     setallInterestList(result)
   }
 
-  const addUserInterestInList = async (interestID: any, interestName: any) => {
-    let result = await addUserInterest(userID, interestID)
-    if (result.status == 200) {
-      let newInterest = {
-        interestId: interestID,
-        interests: {
-          name: interestName,
-        },
-      }
-      let oldSelectedInterest = [...selectedInterestList]
-      oldSelectedInterest.push(newInterest)
-      setselectedInterestList(oldSelectedInterest)
-      ToastUtils({type: 'success', message: 'Interest Was Added'})
-      setUserUpdateFlag(userUpdateFlag + 1)
-    }
-  }
+  // const handleInterestChange = (interestID: any, interestName: any, id: any) => {
+  //   let olderId = id === undefined ? null : id
+  //   let index = selectedInterestList.findIndex((item: any) => item.interestId === interestID)
+  //   let preIndex =
+  //     preSelectedInterestList.length !== 0 &&
+  //     preSelectedInterestList.findIndex((item: any) => item.interestId === interestID)
 
-  const removeUserInterestInList = async (interestID: any) => {
-    let result = await removeUserInterest(userID, interestID)
-    if (result.status === 200) {
-      let index = selectedInterestList.findIndex((item: any) => item.interestId === interestID)
-      let oldSelectedInterest = [...selectedInterestList]
-      oldSelectedInterest.splice(index, 1)
+  //   // here we have check in selectedInterestList array if id and interestId match then that data add into preSelectedInterestList with id
+  //   let found = selectedInterestList.findIndex(
+  //     (item: any) => item.interestId === interestID && item.id === olderId // here maybe both are undefined   item.id === id
+  //   )
+
+  //   if (found !== -1) {
+  //     // if interest already selected and we have to delete
+  //     let new_Interest = {
+  //       interestId: interestID,
+  //       id: id,
+  //     }
+  //     let preSelectedInterest = [...preSelectedInterestList]
+  //     preSelectedInterest.push(new_Interest)
+  //     setPreselectedInterestList(preSelectedInterest)
+
+  //     let oldSelectedInterest = [...selectedInterestList]
+  //     oldSelectedInterest.splice(index, 1)
+  //     setselectedInterestList(oldSelectedInterest)
+
+  //     console.log('109 preSelectedInterest', preSelectedInterest)
+  //     console.log('114', oldSelectedInterest)
+  //   } else if (index === -1) {
+  //     // here also we have to check in preSelectedInterest if interestId are present then remove from it
+
+  //     let preSelectedInterestIndex = preSelectedInterestList.findIndex(
+  //       (item: any) => item.interestId === interestID
+  //     )
+
+  //     // add interest
+  //     let newInterest = {
+  //       interestId: interestID,
+  //       interests: {
+  //         name: interestName,
+  //       },
+  //     }
+  //     let oldSelectedInterest = [...selectedInterestList]
+  //     oldSelectedInterest.push(newInterest)
+  //     setselectedInterestList(oldSelectedInterest)
+
+  //     if (preSelectedInterestIndex === -1) {
+  //       let new_Interest = {
+  //         interestId: interestID,
+  //       }
+  //       let preSelectedInterest = [...preSelectedInterestList]
+  //       preSelectedInterest.push(new_Interest)
+  //       setPreselectedInterestList(preSelectedInterest)
+  //     } else {
+  //       let preSelectedInterest = [...selectedInterestList]
+  //       oldSelectedInterest.splice(preSelectedInterestIndex, 1)
+  //       setPreselectedInterestList(preSelectedInterest)
+  //     }
+  //   } else {
+  //     // remove interest
+  //     let index = selectedInterestList.findIndex((item: any) => item.interestId === interestID)
+  //     let oldSelectedInterest = [...selectedInterestList]
+  //     oldSelectedInterest.splice(index, 1)
+  //     setselectedInterestList(oldSelectedInterest)
+
+  //     // this is for predefined array
+  //     let preSelectedInterest = [...preSelectedInterestList]
+  //     preSelectedInterest.splice(preIndex, 1)
+  //     setPreselectedInterestList(preSelectedInterest)
+  //   }
+  // }
+
+  const handleInterestChange = (interestId: any, interestName: any, id: any) => {
+    setisAnyProfileChanges(true)
+    const olderId = id === undefined ? null : id
+    const index = selectedInterestList.findIndex((item) => item.interestId === interestId)
+    const preIndex = preSelectedInterestList.findIndex((item) => item.interestId === interestId)
+    const found = selectedInterestList.findIndex(
+      (item) => item.interestId === interestId && item.id === olderId
+    )
+
+    const newInterest = {
+      interestId: interestId,
+      interests: {
+        name: interestName,
+      },
+    }
+
+    if (found !== -1) {
+      // Remove interest
+      const preSelectedInterest = [...preSelectedInterestList, {interestId, id}]
+      //console.log('176 preSelectedInterest', preSelectedInterest)
+      setPreselectedInterestList(preSelectedInterest)
+      const oldSelectedInterest = selectedInterestList.filter(
+        (item) => item.interestId !== interestId
+      )
+      //console.log('181 oldSelectedInterest', oldSelectedInterest)
       setselectedInterestList(oldSelectedInterest)
-      ToastUtils({type: 'success', message: 'Interest Was Deleted'})
-      setUserUpdateFlag(userUpdateFlag + 1)
+    } else if (index === -1) {
+      // Add interest
+      const oldSelectedInterest = [...selectedInterestList, newInterest]
+      setselectedInterestList(oldSelectedInterest)
+
+      if (preIndex === -1) {
+        //here we have to check first in preSelectedInterest if exists then remove from this
+
+        const oldpreSelectedInterestIndex = preSelectedInterestList.findIndex(
+          (item: any) => item.interestId === interestId
+        )
+
+        //console.log('oldpreSelectedInterestIndex', oldpreSelectedInterestIndex)
+
+        if (oldpreSelectedInterestIndex !== -1) {
+          const preSelectedInterest = [...preSelectedInterestList]
+          preSelectedInterest.splice(oldpreSelectedInterestIndex, 1)
+          setPreselectedInterestList(preSelectedInterest)
+          //console.log('199 preSelectedInterest', preSelectedInterest)
+        } else {
+          const preSelectedInterest = [...preSelectedInterestList, {interestId}]
+          //console.log('202 preSelectedInterest', preSelectedInterest)
+          setPreselectedInterestList(preSelectedInterest)
+        }
+      } else {
+        const preSelectedInterest = preSelectedInterestList.filter(
+          (item) => item.interestId !== interestId
+        )
+        //console.log('209 preSelectedInterest', preSelectedInterest)
+        setPreselectedInterestList(preSelectedInterest)
+      }
+    } else {
+      // Remove interest
+      const oldSelectedInterest = selectedInterestList.filter(
+        (item) => item.interestId !== interestId
+      )
+      //console.log('217 oldSelectedInterest', oldSelectedInterest)
+      setselectedInterestList(oldSelectedInterest)
+
+      // Remove from predefined array
+      const preSelectedInterest = preSelectedInterestList.filter(
+        (item) => item.interestId !== interestId // = !== interestID
+      )
+      //console.log('224 preSelectedInterest', preSelectedInterest)
+      setPreselectedInterestList(preSelectedInterest)
     }
   }
 
@@ -153,42 +273,131 @@ const EditProfile = (props) => {
   }
 
   const handleChangeQuestions = async (e: any, questionID: any) => {
+    setisAnyProfileChanges(true)
     const matchedAnswerIds = selectedListQuestionList.filter(
       (item) => item.questionId === questionID
     )
 
     let answerId = parseInt(e.target.value)
     if (e.target.value.length === 0) {
+      // delete the questions
       let userQuestionID = matchedAnswerIds[0].userQuestionId
-      let result = await deleteUserQuestionAnswerForProfile(
-        userID,
-        questionID,
-        answerId,
-        userQuestionID
+
+      // first check in preSelectedListQuestionList if exists then remove that object else add
+      let preSelectedListQuestionIndex = preSelectedListQuestionList.findIndex(
+        (item) => item.userQuestionId === userQuestionID
       )
-      console.log('result', result)
-      if (result.status === 200) {
-        setUserUpdateFlag(userUpdateFlag + 1)
-        ToastUtils({type: 'success', message: 'User Question Was Deleted'})
+
+      if (preSelectedListQuestionIndex !== -1) {
+        // remove object
+        let preSelectedListQuestionArray = [...preSelectedListQuestionList]
+        if (preSelectedListQuestionArray.length !== 0) {
+          preSelectedListQuestionArray.splice(preSelectedListQuestionIndex, 1)
+          console.log('295 preSelectedListQuestionArray', preSelectedListQuestionArray)
+          setPreSelectedQuestionList(preSelectedListQuestionArray)
+        }
+
+        let deletedQuestions = {
+          userQuestionId: userQuestionID, // userQuestion Id this is primary key of userquestionanswers table
+          type: 'delete', // if want to delete question then send type: "delete"
+        }
+
+        let preSelectedListQuestionArray1 = [...preSelectedListQuestionList, deletedQuestions]
+        console.log('304 preSelectedListQuestionArray', preSelectedListQuestionArray1)
+        setPreSelectedQuestionList(preSelectedListQuestionArray1)
       } else {
-        ErrorToastUtils()
+        // add object
+        let deletedQuestions = {
+          userQuestionId: userQuestionID, // userQuestion Id this is primary key of userquestionanswers table
+          type: 'delete', // if want to delete question then send type: "delete"
+        }
+
+        let preSelectedListQuestionArray = [...preSelectedListQuestionList, deletedQuestions]
+        console.log('314 preSelectedListQuestionArray', preSelectedListQuestionArray)
+        setPreSelectedQuestionList(preSelectedListQuestionArray)
       }
     } else {
+      // update and create the questions
       if (matchedAnswerIds.length !== 0) {
-        let result = await updateUserQuestionAnswerForProfile(userID, questionID, answerId)
-        if (result.status === 200) {
-          setUserUpdateFlag(userUpdateFlag + 1)
-          ToastUtils({type: 'success', message: 'Answer Is Updated'})
+        //create
+        let userQuestionID = matchedAnswerIds[0].userQuestionId
+
+        // first check in preSelectedListQuestionList if exists then remove that object else add
+        let preSelectedListQuestionIndex = preSelectedListQuestionList.findIndex(
+          (item) => item.userQuestionId === userQuestionID
+        )
+
+        console.log('preSelectedListQuestionIndex', preSelectedListQuestionIndex)
+
+        if (preSelectedListQuestionIndex !== -1) {
+          // remove object
+          let preSelectedListQuestionArray = [...preSelectedListQuestionList]
+          if (preSelectedListQuestionArray.length !== 0) {
+            preSelectedListQuestionArray.splice(preSelectedListQuestionIndex, 1)
+            console.log('333 preSelectedListQuestionArray', preSelectedListQuestionArray)
+            setPreSelectedQuestionList(preSelectedListQuestionArray)
+          }
+
+          let updatedQuestions = {
+            userQuestionId: userQuestionID,
+            answerId: answerId, // userQuestion Id this is primary key of userquestionanswers table
+            type: 'edit', // if want to delete question then send type: "delete"
+          }
+
+          let preSelectedListQuestionArray1 = [...preSelectedListQuestionList, updatedQuestions]
+          console.log('343 preSelectedListQuestionArray', preSelectedListQuestionArray1)
+          setPreSelectedQuestionList(preSelectedListQuestionArray1)
         } else {
-          ErrorToastUtils()
+          // add object
+          let updatedQuestions = {
+            userQuestionId: userQuestionID,
+            answerId: answerId, // userQuestion Id this is primary key of userquestionanswers table
+            type: 'edit', // if want to delete question then send type: "delete"
+          }
+
+          let preSelectedListQuestionArray = [...preSelectedListQuestionList, updatedQuestions]
+          console.log('354 preSelectedListQuestionArray', preSelectedListQuestionArray)
+          setPreSelectedQuestionList(preSelectedListQuestionArray)
         }
       } else {
-        let result = await createUserQuestionAnswerForProfile(userID, questionID, answerId)
-        if (result.status === 200) {
-          setUserUpdateFlag(userUpdateFlag + 1)
-          ToastUtils({type: 'success', message: 'Question Is Created With Answer'})
+        // update
+        let userQuestionID, preSelectedListQuestionIndex
+        if (matchedAnswerIds[0] !== undefined) {
+          userQuestionID = matchedAnswerIds[0].userQuestionId
+          preSelectedListQuestionIndex = preSelectedListQuestionList.findIndex(
+            (item) => item.userQuestionId === userQuestionID
+          )
+        }
+
+        // first check in preSelectedListQuestionList if exists then remove that object else add
+
+        if (preSelectedListQuestionIndex !== -1) {
+          // remove object
+          let preSelectedListQuestionArray = [...preSelectedListQuestionList]
+          if (preSelectedListQuestionArray.length !== 0) {
+            preSelectedListQuestionArray.splice(preSelectedListQuestionIndex, 1)
+            console.log('372 preSelectedListQuestionArray', preSelectedListQuestionArray)
+            setPreSelectedQuestionList(preSelectedListQuestionArray)
+          }
+
+          let updatedQuestions = {
+            questionId: questionID,
+            answerId: answerId, // userQuestion Id this is primary key of userquestionanswers table
+          }
+
+          let preSelectedListQuestionArray1 = [...preSelectedListQuestionList, updatedQuestions]
+          console.log('381 preSelectedListQuestionArray', preSelectedListQuestionArray1)
+          setPreSelectedQuestionList(preSelectedListQuestionArray1)
         } else {
-          ErrorToastUtils()
+          // add object
+          let updatedQuestions = {
+            questionId: questionID,
+            answerId: answerId, // userQuestion Id this is primary key of userquestionanswers table
+          }
+
+          let preSelectedListQuestionArray = [...preSelectedListQuestionList, updatedQuestions]
+          console.log('379 preSelectedListQuestionArray', preSelectedListQuestionArray)
+          setPreSelectedQuestionList(preSelectedListQuestionArray)
         }
       }
     }
@@ -223,6 +432,9 @@ const EditProfile = (props) => {
       } else {
         updatedData = profileDetailsFormValue
       }
+      updatedData.interests = preSelectedInterestList
+      updatedData.questions = preSelectedListQuestionList
+
       let result = await UpdateUserDetailsByUID(userID, updatedData)
       if (result.status === 200) {
         setUserUpdateFlag(userUpdateFlag + 1)
@@ -433,13 +645,12 @@ const EditProfile = (props) => {
                   data-kt-user-table-filter='gender'
                   data-hide-search='true'
                   name='gender'
-                  defaultValue={profileDetailsFormValue?.gender}
+                  defaultValue={user?.genderId}
                   //value={profileDetailsFormValue?.gender}
                   onChange={(e) => handleProfileChange(e)}
                 >
-                  <option value=''></option>
-                  <option value={1}>Male</option>
-                  <option value={2}>Female</option>
+                  <option value={'1'}>Male</option>
+                  <option value={'2'}>Female</option>
                 </select>
               </div>
             </div>
@@ -461,7 +672,7 @@ const EditProfile = (props) => {
               </div>
             </div>
 
-            <div className='row mt-9'>
+            {/* <div className='row mt-9'>
               <div className='col-3'></div>
               <div className='col-6'>
                 <button
@@ -473,7 +684,7 @@ const EditProfile = (props) => {
                   Save Changes
                 </button>
               </div>
-            </div>
+            </div> */}
           </div>
 
           <div className='col-lg-4'>
@@ -520,7 +731,8 @@ const EditProfile = (props) => {
                 <div
                   key={index}
                   className='badge bg-primary text-center text-white me-3 mb-5 fs-6 fw-bold pointer'
-                  onClick={() => removeUserInterestInList(interest.interestId)}
+                  //onClick={() => removeUserInterestInList(interest.interestId)}
+                  onClick={() => handleInterestChange(interest.interestId, '', interest.id)}
                 >
                   {interest.interests.name}
                 </div>
@@ -538,7 +750,10 @@ const EditProfile = (props) => {
                     <div
                       key={index}
                       className='text-center me-3 mb-5 fs-6 fw-bold badge badge-light pointer'
-                      onClick={() => addUserInterestInList(interest.interestId, interest.name)}
+                      //onClick={() => addUserInterestInList(interest.interestId, interest.name)}
+                      onClick={() =>
+                        handleInterestChange(interest.interestId, interest.name, interest.id)
+                      }
                     >
                       {interest.name}
                     </div>{' '}
@@ -546,6 +761,18 @@ const EditProfile = (props) => {
                 )
               })}
           </div>
+        </div>
+      </div>
+      <div className='card-header d-flex justify-content-end'>
+        <div>
+          <button
+            type='submit'
+            className={!isAnyProfileChanges ? 'btn btn-secondary ' : 'btn btn-primary '}
+            onClick={updateProfile}
+            disabled={!isAnyProfileChanges}
+          >
+            Save Changes
+          </button>
         </div>
       </div>
     </div>
