@@ -434,6 +434,7 @@ const Stories = () => {
             openLightBox={openLightBox}
             setOpenLightBox={setOpenLightBox}
             lightBoxArray={lightBoxArrayList}
+            imageIndex={0}
           />
           <div className='card-footer'>
             <CustomPagination

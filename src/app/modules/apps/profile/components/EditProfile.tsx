@@ -272,133 +272,214 @@ const EditProfile = (props) => {
     // }
   }
 
+  // const handleChangeQuestions = async (e: any, questionID: any) => {
+  //   setisAnyProfileChanges(true)
+  //   const matchedAnswerIds = selectedListQuestionList.filter(
+  //     (item) => item.questionId === questionID
+  //   )
+
+  //   let answerId = parseInt(e.target.value)
+  //   if (e.target.value.length === 0) {
+  //     // delete the questions
+  //     let userQuestionID = matchedAnswerIds[0].userQuestionId
+
+  //     // first check in preSelectedListQuestionList if exists then remove that object else add
+  //     let preSelectedListQuestionIndex = preSelectedListQuestionList.findIndex(
+  //       (item) => item.userQuestionId === userQuestionID
+  //     )
+
+  //     if (preSelectedListQuestionIndex !== -1) {
+  //       // remove object
+  //       let preSelectedListQuestionArray = [...preSelectedListQuestionList]
+  //       console.log('preSelectedListQuestionArray length', preSelectedListQuestionArray.length)
+  //       //if (preSelectedListQuestionArray.length !== 0) {
+  //       preSelectedListQuestionArray.splice(preSelectedListQuestionIndex, 1)
+  //       console.log('295 preSelectedListQuestionArray', preSelectedListQuestionArray)
+  //       setPreSelectedQuestionList(preSelectedListQuestionArray)
+  //       //}
+
+  //       let deletedQuestions = {
+  //         userQuestionId: userQuestionID, // userQuestion Id this is primary key of userquestionanswers table
+  //         type: 'delete', // if want to delete question then send type: "delete"
+  //       }
+
+  //       let updatedArray =
+  //         preSelectedListQuestionArray.length === 0
+  //           ? preSelectedListQuestionList
+  //           : preSelectedListQuestionArray
+
+  //       let preSelectedListQuestionArray1 = [...updatedArray, deletedQuestions]
+  //       console.log('304 preSelectedListQuestionArray', preSelectedListQuestionArray1)
+  //       setPreSelectedQuestionList(preSelectedListQuestionArray1)
+  //     } else {
+  //       // add object
+  //       let deletedQuestions = {
+  //         userQuestionId: userQuestionID, // userQuestion Id this is primary key of userquestionanswers table
+  //         type: 'delete', // if want to delete question then send type: "delete"
+  //       }
+
+  //       let preSelectedListQuestionArray = [...preSelectedListQuestionList, deletedQuestions]
+  //       console.log('314 preSelectedListQuestionArray', preSelectedListQuestionArray)
+  //       setPreSelectedQuestionList(preSelectedListQuestionArray)
+  //     }
+  //   } else {
+  //     // update and create the questions
+  //     if (matchedAnswerIds.length !== 0) {
+  //       //create
+  //       let userQuestionID = matchedAnswerIds[0].userQuestionId
+
+  //       // first check in preSelectedListQuestionList if exists then remove that object else add
+  //       let preSelectedListQuestionIndex = preSelectedListQuestionList.findIndex(
+  //         (item) => item.userQuestionId === userQuestionID
+  //       )
+
+  //       console.log('preSelectedListQuestionIndex', preSelectedListQuestionIndex)
+
+  //       if (preSelectedListQuestionIndex !== -1) {
+  //         // remove object
+  //         let preSelectedListQuestionArray = [...preSelectedListQuestionList]
+  //         console.log('preSelectedListQuestionArray length', preSelectedListQuestionArray.length)
+  //         //if (preSelectedListQuestionArray.length !== 0) {
+  //         preSelectedListQuestionArray.splice(preSelectedListQuestionIndex, 1)
+  //         console.log('333 preSelectedListQuestionArray', preSelectedListQuestionArray)
+  //         //setPreSelectedQuestionList(preSelectedListQuestionArray)
+  //         //}
+
+  //         let updatedQuestions = {
+  //           userQuestionId: userQuestionID,
+  //           answerId: answerId, // userQuestion Id this is primary key of userquestionanswers table
+  //           type: 'edit', // if want to delete question then send type: "delete"
+  //         }
+
+  //         // let updatedArray =
+  //         //   preSelectedListQuestionArray.length === 0
+  //         //     ? preSelectedListQuestionList
+  //         //     : preSelectedListQuestionArray
+  //         // console.log('updatedArray', updatedArray)
+
+  //         let preSelectedListQuestionArray1 = [...preSelectedListQuestionArray, updatedQuestions]
+  //         console.log('343 preSelectedListQuestionArray', preSelectedListQuestionArray1)
+  //         setPreSelectedQuestionList(preSelectedListQuestionArray1)
+  //       } else {
+  //         // add object
+  //         let updatedQuestions = {
+  //           userQuestionId: userQuestionID,
+  //           answerId: answerId, // userQuestion Id this is primary key of userquestionanswers table
+  //           type: 'edit', // if want to delete question then send type: "delete"
+  //         }
+
+  //         let preSelectedListQuestionArray = [...preSelectedListQuestionList, updatedQuestions]
+  //         console.log('354 preSelectedListQuestionArray', preSelectedListQuestionArray)
+  //         setPreSelectedQuestionList(preSelectedListQuestionArray)
+  //       }
+  //     } else {
+  //       // update
+  //       let userQuestionID, preSelectedListQuestionIndex
+  //       if (matchedAnswerIds[0] !== undefined) {
+  //         userQuestionID = matchedAnswerIds[0].userQuestionId
+  //         preSelectedListQuestionIndex = preSelectedListQuestionList.findIndex(
+  //           (item) => item.userQuestionId === userQuestionID
+  //         )
+  //       }
+
+  //       // first check in preSelectedListQuestionList if exists then remove that object else add
+
+  //       if (preSelectedListQuestionIndex !== -1) {
+  //         // remove object
+  //         let preSelectedListQuestionArray = [...preSelectedListQuestionList]
+  //         console.log('preSelectedListQuestionArray length', preSelectedListQuestionArray.length)
+  //         if (preSelectedListQuestionArray.length !== 0) {
+  //           preSelectedListQuestionArray.splice(preSelectedListQuestionIndex, 1)
+  //           console.log('372 preSelectedListQuestionArray', preSelectedListQuestionArray)
+  //           setPreSelectedQuestionList(preSelectedListQuestionArray)
+  //         }
+
+  //         let updatedQuestions = {
+  //           questionId: questionID,
+  //           answerId: answerId, // userQuestion Id this is primary key of userquestionanswers table
+  //         }
+
+  //         let preSelectedListQuestionArray1 = [...preSelectedListQuestionList, updatedQuestions]
+  //         console.log('381 preSelectedListQuestionArray', preSelectedListQuestionArray1)
+  //         setPreSelectedQuestionList(preSelectedListQuestionArray1)
+  //       } else {
+  //         // add object
+  //         let updatedQuestions = {
+  //           questionId: questionID,
+  //           answerId: answerId, // userQuestion Id this is primary key of userquestionanswers table
+  //         }
+
+  //         let preSelectedListQuestionArray = [...preSelectedListQuestionList, updatedQuestions]
+  //         console.log('379 preSelectedListQuestionArray', preSelectedListQuestionArray)
+  //         setPreSelectedQuestionList(preSelectedListQuestionArray)
+  //       }
+  //     }
+  //   }
+  // }
+
   const handleChangeQuestions = async (e: any, questionID: any) => {
     setisAnyProfileChanges(true)
-    const matchedAnswerIds = selectedListQuestionList.filter(
-      (item) => item.questionId === questionID
-    )
 
-    let answerId = parseInt(e.target.value)
-    if (e.target.value.length === 0) {
-      // delete the questions
-      let userQuestionID = matchedAnswerIds[0].userQuestionId
+    const matchedAnswer = selectedListQuestionList.find((item) => item.questionId === questionID)
+    const answerId = parseInt(e.target.value)
 
-      // first check in preSelectedListQuestionList if exists then remove that object else add
-      let preSelectedListQuestionIndex = preSelectedListQuestionList.findIndex(
-        (item) => item.userQuestionId === userQuestionID
+    const processDeletedQuestions = (userQuestionID: any) => {
+      const deletedQuestions = {
+        userQuestionId: userQuestionID,
+        type: 'delete',
+      }
+
+      setPreSelectedQuestionList((prevList) =>
+        prevList.filter((item) => item.userQuestionId !== userQuestionID)
+      )
+      setPreSelectedQuestionList((prevList) => [...prevList, deletedQuestions])
+    }
+
+    const processUpdatedQuestions = (userQuestionID: any) => {
+      const updatedQuestions = {
+        userQuestionId: userQuestionID,
+        answerId: answerId,
+        type: 'edit',
+      }
+
+      setPreSelectedQuestionList((prevList) => [
+        ...prevList.filter((item) => item.userQuestionId !== userQuestionID),
+        updatedQuestions,
+      ])
+    }
+
+    const processCreatedQuestions = () => {
+      const newQuestionID = questionID // logic to get or generate a new unique question ID;
+      const createdQuestions = {
+        questionId: newQuestionID,
+        answerId: answerId,
+      }
+
+      // Check if the questionId already exists, remove it, and then add the new question
+      const existingQuestionIndex = preSelectedListQuestionList.findIndex(
+        (item) => item.questionId === newQuestionID
       )
 
-      if (preSelectedListQuestionIndex !== -1) {
-        // remove object
-        let preSelectedListQuestionArray = [...preSelectedListQuestionList]
-        if (preSelectedListQuestionArray.length !== 0) {
-          preSelectedListQuestionArray.splice(preSelectedListQuestionIndex, 1)
-          console.log('295 preSelectedListQuestionArray', preSelectedListQuestionArray)
-          setPreSelectedQuestionList(preSelectedListQuestionArray)
-        }
+      if (existingQuestionIndex !== -1) {
+        setPreSelectedQuestionList((prevList) => {
+          const updatedList = [...prevList]
+          updatedList.splice(existingQuestionIndex, 1)
+          return updatedList
+        })
+      }
 
-        let deletedQuestions = {
-          userQuestionId: userQuestionID, // userQuestion Id this is primary key of userquestionanswers table
-          type: 'delete', // if want to delete question then send type: "delete"
-        }
+      setPreSelectedQuestionList((prevList) => [...prevList, createdQuestions])
+    }
 
-        let preSelectedListQuestionArray1 = [...preSelectedListQuestionList, deletedQuestions]
-        console.log('304 preSelectedListQuestionArray', preSelectedListQuestionArray1)
-        setPreSelectedQuestionList(preSelectedListQuestionArray1)
-      } else {
-        // add object
-        let deletedQuestions = {
-          userQuestionId: userQuestionID, // userQuestion Id this is primary key of userquestionanswers table
-          type: 'delete', // if want to delete question then send type: "delete"
-        }
-
-        let preSelectedListQuestionArray = [...preSelectedListQuestionList, deletedQuestions]
-        console.log('314 preSelectedListQuestionArray', preSelectedListQuestionArray)
-        setPreSelectedQuestionList(preSelectedListQuestionArray)
+    if (e.target.value.length === 0) {
+      if (matchedAnswer) {
+        processDeletedQuestions(matchedAnswer.userQuestionId)
       }
     } else {
-      // update and create the questions
-      if (matchedAnswerIds.length !== 0) {
-        //create
-        let userQuestionID = matchedAnswerIds[0].userQuestionId
-
-        // first check in preSelectedListQuestionList if exists then remove that object else add
-        let preSelectedListQuestionIndex = preSelectedListQuestionList.findIndex(
-          (item) => item.userQuestionId === userQuestionID
-        )
-
-        console.log('preSelectedListQuestionIndex', preSelectedListQuestionIndex)
-
-        if (preSelectedListQuestionIndex !== -1) {
-          // remove object
-          let preSelectedListQuestionArray = [...preSelectedListQuestionList]
-          if (preSelectedListQuestionArray.length !== 0) {
-            preSelectedListQuestionArray.splice(preSelectedListQuestionIndex, 1)
-            console.log('333 preSelectedListQuestionArray', preSelectedListQuestionArray)
-            setPreSelectedQuestionList(preSelectedListQuestionArray)
-          }
-
-          let updatedQuestions = {
-            userQuestionId: userQuestionID,
-            answerId: answerId, // userQuestion Id this is primary key of userquestionanswers table
-            type: 'edit', // if want to delete question then send type: "delete"
-          }
-
-          let preSelectedListQuestionArray1 = [...preSelectedListQuestionList, updatedQuestions]
-          console.log('343 preSelectedListQuestionArray', preSelectedListQuestionArray1)
-          setPreSelectedQuestionList(preSelectedListQuestionArray1)
-        } else {
-          // add object
-          let updatedQuestions = {
-            userQuestionId: userQuestionID,
-            answerId: answerId, // userQuestion Id this is primary key of userquestionanswers table
-            type: 'edit', // if want to delete question then send type: "delete"
-          }
-
-          let preSelectedListQuestionArray = [...preSelectedListQuestionList, updatedQuestions]
-          console.log('354 preSelectedListQuestionArray', preSelectedListQuestionArray)
-          setPreSelectedQuestionList(preSelectedListQuestionArray)
-        }
+      if (matchedAnswer) {
+        processUpdatedQuestions(matchedAnswer.userQuestionId)
       } else {
-        // update
-        let userQuestionID, preSelectedListQuestionIndex
-        if (matchedAnswerIds[0] !== undefined) {
-          userQuestionID = matchedAnswerIds[0].userQuestionId
-          preSelectedListQuestionIndex = preSelectedListQuestionList.findIndex(
-            (item) => item.userQuestionId === userQuestionID
-          )
-        }
-
-        // first check in preSelectedListQuestionList if exists then remove that object else add
-
-        if (preSelectedListQuestionIndex !== -1) {
-          // remove object
-          let preSelectedListQuestionArray = [...preSelectedListQuestionList]
-          if (preSelectedListQuestionArray.length !== 0) {
-            preSelectedListQuestionArray.splice(preSelectedListQuestionIndex, 1)
-            console.log('372 preSelectedListQuestionArray', preSelectedListQuestionArray)
-            setPreSelectedQuestionList(preSelectedListQuestionArray)
-          }
-
-          let updatedQuestions = {
-            questionId: questionID,
-            answerId: answerId, // userQuestion Id this is primary key of userquestionanswers table
-          }
-
-          let preSelectedListQuestionArray1 = [...preSelectedListQuestionList, updatedQuestions]
-          console.log('381 preSelectedListQuestionArray', preSelectedListQuestionArray1)
-          setPreSelectedQuestionList(preSelectedListQuestionArray1)
-        } else {
-          // add object
-          let updatedQuestions = {
-            questionId: questionID,
-            answerId: answerId, // userQuestion Id this is primary key of userquestionanswers table
-          }
-
-          let preSelectedListQuestionArray = [...preSelectedListQuestionList, updatedQuestions]
-          console.log('379 preSelectedListQuestionArray', preSelectedListQuestionArray)
-          setPreSelectedQuestionList(preSelectedListQuestionArray)
-        }
+        processCreatedQuestions()
       }
     }
   }

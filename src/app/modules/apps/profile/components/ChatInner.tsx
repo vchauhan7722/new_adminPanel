@@ -783,6 +783,7 @@ const ChatInner = (props: any) => {
         openLightBox={openLightBox}
         setOpenLightBox={setOpenLightBox}
         lightBoxArray={lightBoxArrayList}
+        imageIndex={0}
       />
 
       <div className='modal fade' tabIndex={-1} id='kt_modal_gift'>

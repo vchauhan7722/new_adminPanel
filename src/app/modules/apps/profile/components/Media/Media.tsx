@@ -32,6 +32,7 @@ const Media = (props: any) => {
   const [isMediaUploaded, setisMediaUploaded] = useState<any>(false)
   const [openLightBox, setOpenLightBox] = useState(false)
   const lightBoxArray: any = []
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   //const [lightBoxArray, setLightBoxArray] = useState<any>([])
 
   const userId = localStorage.getItem('userId')
@@ -208,6 +209,7 @@ const Media = (props: any) => {
                         onClick={() => {
                           setOpenLightBox(true)
                           setSelectedImage(userMedia.media)
+                          setSelectedImageIndex(index)
                         }}
                         loading='lazy'
                       />
@@ -273,6 +275,7 @@ const Media = (props: any) => {
         openLightBox={openLightBox}
         setOpenLightBox={setOpenLightBox}
         lightBoxArray={lightBoxArray}
+        imageIndex={selectedImageIndex}
       />
 
       <div className='modal fade' tabIndex={-1} id='full_width_image_modal'>
