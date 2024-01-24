@@ -10,17 +10,7 @@ import {
 import clsx from 'clsx'
 import ToastUtils, {ErrorToastUtils} from '../../../../../../../../../utils/ToastUtils'
 import AsyncTypeahead from 'react-bootstrap-typeahead/types/components/AsyncTypeahead'
-
-const getDate = () => {
-  const currentDate = new Date()
-  const maxDate = new Date(
-    currentDate.getFullYear() - 18,
-    currentDate.getMonth(),
-    currentDate.getDate()
-  )
-  let maxDateString = maxDate.toISOString().split('T')[0]
-  return maxDateString
-}
+import {getEighteenYearsOldDate} from '../../../../../../../../../utils/Utils'
 
 const Step1 = (props: any) => {
   const {submitStep, prevStep} = props
@@ -32,7 +22,7 @@ const Step1 = (props: any) => {
     fullName: '',
     userName: '',
     genderId: 2,
-    birthDate: getDate(),
+    birthDate: getEighteenYearsOldDate(),
     country: '',
     state: '',
     city: '',
@@ -198,7 +188,7 @@ const Step1 = (props: any) => {
             autoComplete='off'
             value={new Date(step1Details?.birthDate).toLocaleDateString('en-CA')}
             onChange={(e) => handleStep1Change(e)}
-            max={getDate()}
+            max={getEighteenYearsOldDate()}
           />
         </div>
       </div>

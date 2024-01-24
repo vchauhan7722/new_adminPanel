@@ -152,7 +152,7 @@ const ProfileHeader = (props) => {
                   <div className='d-flex flex-column'>
                     <div className='d-flex align-items-center mb-2'>
                       <a href='#' className='text-gray-800 text-hover-primary fs-2 fw-bolder me-1'>
-                        {user.fullName}
+                        {user.fullName} , {user?.age}
                       </a>
                       &nbsp;
                       {user?.isPremium && <i className='text-primary fa-solid fa-award fa-2xl'></i>}

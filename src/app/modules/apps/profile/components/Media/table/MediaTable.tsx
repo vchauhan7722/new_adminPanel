@@ -13,8 +13,13 @@ import ToastUtils from '../../../../../../../utils/ToastUtils'
 import {DropdownButton, Dropdown, Form} from 'react-bootstrap'
 import clsx from 'clsx'
 import {CustomToggle} from '../../../../../../../_metronic/partials/componants/CustomToggle'
+import {useLocation} from 'react-router-dom'
 
 const MediaTable = (props) => {
+  const location = useLocation()
+
+  let userType = location.pathname.substring(6, 15) === 'anonymous' ? 'a' : 'n'
+
   const {getUpdatedStory, setGetUpdatedStory} = props
   const hiddenStoryInput = useRef<HTMLInputElement>(document.createElement('input'))
   const userId = localStorage.getItem('userId')
@@ -40,10 +45,10 @@ const MediaTable = (props) => {
   const handleStoryChange = async (event: any) => {
     setisStoryUploaded(true)
     if (event.target.files[0]) {
-      let result = await CreateUserStory(event.target.files[0], userId)
+      let result = await CreateUserStory(event.target.files[0], userId, userType)
       if (result.status === 200) {
         let oldmedia = [...userStoryList]
-        console.log('result', result)
+        // console.log('result', result)
         oldmedia.push(result.data)
         setUserStoryList(oldmedia)
         ToastUtils({type: 'success', message: 'Your story has Uploaded'})

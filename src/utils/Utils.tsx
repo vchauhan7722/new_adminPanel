@@ -30,5 +30,20 @@ export const getAge = (DOB: any) => {
   return moment().diff(DOB, 'years')
 }
 
+export const validateEmail = (email) => {
+  return email.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/) // /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@ ((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+}
+
+export const getEighteenYearsOldDate = () => {
+  const currentDate = new Date()
+  const maxDate = new Date(
+    currentDate.getFullYear() - 18,
+    currentDate.getMonth(),
+    currentDate.getDate()
+  )
+  let maxDateString = maxDate.toISOString().split('T')[0]
+  return maxDateString
+}
+
 export const isImage = ['.gif', '.jpg', '.jpeg', '.png'] //you can add more
 export const isVideo = ['.mpg', '.mp2', '.mpeg', '.mpe', '.mpv', '.mp4'] // you can add more extention

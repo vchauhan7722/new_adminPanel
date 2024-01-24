@@ -34,9 +34,9 @@ const resizeFile = (file) =>
     )
   })
 
-export async function ImageCompressor(file: any) {
-  const image = await resizeFile(file)
-  //console.log('image', image)
+export async function ImageCompressor(file: any, userId: any) {
+  let image: any = await resizeFile(file)
+
   return image
 }
 

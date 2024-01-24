@@ -24,6 +24,7 @@ import StripePaymentPlugin from './Componants/StripePayment/StripePaymentPlugin'
 import OpenMoneyPaymentPlugin from './Componants/OpenMoneyPayment/OpenMoneyPaymentPlugin'
 import RazorpayPaymentPlugin from './Componants/RazorpayPayment/RazorpayPaymentPlugin'
 import PhonePayPlugin from './Componants/PhonePay/PhonePayPlugins'
+import FolderStructurePlugin from './Componants/FolderStructure/folderStrucuturePlugin'
 
 const usersBreadcrumbs: Array<PageLink> = [
   {
@@ -284,6 +285,15 @@ const Plugins = () => {
             <>
               <PageTitle>Phone Pay Payment Gateways</PageTitle>
               <PhonePayPlugin />
+            </>
+          }
+        />
+        <Route
+          path='/folder_structure_plugin'
+          element={
+            <>
+              <PageTitle>Folder Structure Setting</PageTitle>
+              <FolderStructurePlugin />
             </>
           }
         />

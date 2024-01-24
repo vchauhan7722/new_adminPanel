@@ -161,6 +161,15 @@ const PluginData = [
     status: 'Active',
     path: 'razor_pay_payment_plugin',
   },
+  {
+    pluginId: 18,
+    icon: '/media/plugins/jstree/folder.webp',
+    name: 'Folder Structure',
+    type: 'Software',
+    description: 'Edit Folder Size in Folder Structure',
+    status: 'Active',
+    path: 'folder_structure_plugin',
+  },
 ]
 
 export default PluginData

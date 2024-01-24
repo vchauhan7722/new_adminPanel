@@ -33,7 +33,7 @@ const UserInfoCell = ({user}) => (
         to={`/apps/users-profile/activity/${user.userId}`}
         className='fw-bolder text-gray-800 text-hover-primary mb-1'
       >
-        {user.fullName}
+        {user.fullName}, {user?.age}
       </Link>
 
       <span className='text-gray-500 fw-bold'>

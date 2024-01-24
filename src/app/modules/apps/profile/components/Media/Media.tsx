@@ -22,7 +22,7 @@ const Media = (props: any) => {
   const {user, setUserUpdateFlag, userUpdateFlag} = props
 
   const location = useLocation()
-  let currentUserType = location.pathname.substring(6, 15) === 'anonymous' ? 'Anonymous' : 'Normal'
+  let currentUserType = location.pathname.substring(6, 15) === 'anonymous' ? 'a' : 'n'
 
   const hiddenMediaInput = useRef<HTMLInputElement>(document.createElement('input'))
 
@@ -107,14 +107,18 @@ const Media = (props: any) => {
     let compressedfiles: any = []
 
     await filesArray.map(async (file: any) => {
-      let compressedImg = await ImageCompressor(file)
+      let compressedImg = await ImageCompressor(file, userId)
       compressedfiles.push(compressedImg)
       if (filesArray.length === compressedfiles.length) {
         let result
-        if (currentUserType !== 'Normal') {
-          result = await createMediaActionForUserMediaForAnonymousUser(compressedfiles, userId)
+        if (currentUserType !== 'n') {
+          result = await createMediaActionForUserMediaForAnonymousUser(
+            compressedfiles,
+            userId,
+            currentUserType
+          )
         } else {
-          result = await createMediaActionForUserMedia(compressedfiles, userId)
+          result = await createMediaActionForUserMedia(compressedfiles, userId, currentUserType)
         }
 
         if (result.status === 200) {

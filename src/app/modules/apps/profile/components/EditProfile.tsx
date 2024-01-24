@@ -17,6 +17,7 @@ import '../../../../../_metronic/assets/css/react-phone-number-input.css'
 import ToastUtils, {ErrorToastUtils} from '../../../../../utils/ToastUtils'
 import PhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/lib/style.css'
+import {getEighteenYearsOldDate, validateEmail} from '../../../../../utils/Utils'
 
 const EditProfile = (props) => {
   const {user, setUserUpdateFlag, userUpdateFlag} = props
@@ -50,9 +51,9 @@ const EditProfile = (props) => {
   })
 
   const [oldUserName, setOldUserName] = useState(user?.userName)
+  const [countryCode, setCountryCode] = useState('')
 
   useEffect(() => {
-    console.log('user.genderId', user.genderId)
     setProfileDetailsFormValue({
       fullName: user.fullName,
       userName: user.userName,
@@ -165,6 +166,8 @@ const EditProfile = (props) => {
       (item) => item.interestId === interestId && item.id === olderId
     )
 
+    console.log('found', found, 'index', index, 'preIndex', preIndex, 'id', id)
+
     const newInterest = {
       interestId: interestId,
       interests: {
@@ -194,6 +197,8 @@ const EditProfile = (props) => {
           (item: any) => item.interestId === interestId
         )
 
+        console.log('oldpreSelectedInterestIndex', oldpreSelectedInterestIndex)
+
         //console.log('oldpreSelectedInterestIndex', oldpreSelectedInterestIndex)
 
         if (oldpreSelectedInterestIndex !== -1) {
@@ -203,6 +208,7 @@ const EditProfile = (props) => {
           //console.log('199 preSelectedInterest', preSelectedInterest)
         } else {
           const preSelectedInterest = [...preSelectedInterestList, {interestId}]
+          console.log('preSelectedInterest', preSelectedInterest)
           //console.log('202 preSelectedInterest', preSelectedInterest)
           setPreselectedInterestList(preSelectedInterest)
         }
@@ -214,24 +220,38 @@ const EditProfile = (props) => {
         setPreselectedInterestList(preSelectedInterest)
       }
     } else {
-      // Remove interest
-      const oldSelectedInterest = selectedInterestList.filter(
-        (item) => item.interestId !== interestId
-      )
-      //console.log('217 oldSelectedInterest', oldSelectedInterest)
-      setselectedInterestList(oldSelectedInterest)
+      if (preIndex === -1) {
+        const oldSelectedInterest = selectedInterestList.filter(
+          (item) => item.interestId !== interestId
+        )
+        console.log('228 oldSelectedInterest', oldSelectedInterest)
+        setselectedInterestList(oldSelectedInterest)
 
-      // Remove from predefined array
-      const preSelectedInterest = preSelectedInterestList.filter(
-        (item) => item.interestId !== interestId // = !== interestID
-      )
-      //console.log('224 preSelectedInterest', preSelectedInterest)
-      setPreselectedInterestList(preSelectedInterest)
+        const preSelectedInterest = [...preSelectedInterestList, {interestId, id}]
+        console.log('232 preSelectedInterest', preSelectedInterest)
+        //console.log('202 preSelectedInterest', preSelectedInterest)
+        setPreselectedInterestList(preSelectedInterest)
+      } else {
+        // Remove interest
+        const oldSelectedInterest = selectedInterestList.filter(
+          (item) => item.interestId !== interestId
+        )
+        console.log('240 oldSelectedInterest', oldSelectedInterest)
+        setselectedInterestList(oldSelectedInterest)
+
+        // Remove from predefined array
+        const preSelectedInterest = preSelectedInterestList.filter(
+          (item) => item.interestId !== interestId // = !== interestID
+        )
+        console.log('247 preSelectedInterest', preSelectedInterest)
+        setPreselectedInterestList(preSelectedInterest)
+      }
     }
   }
 
   const handleSearchChange = async (event) => {
-    console.log(event.target.value)
+    setisAnyProfileChanges(true)
+
     const inputValue = event.target.value
 
     let spiltData = inputValue.split(',')
@@ -485,14 +505,30 @@ const EditProfile = (props) => {
   }
 
   const updateProfile = async () => {
+    setisAnyProfileChanges(false)
     var usernameInput = document.getElementById('userName') as HTMLInputElement
     if (!usernameInput.checkValidity()) {
       ToastUtils({
         type: 'error',
         message: 'Only small letters, numbers (0-9), and underscores are allowed in Username',
       })
-    } else if (profileDetailsFormValue?.mobileNo.length !== 10) {
-      ToastUtils({type: 'error', message: 'Enter 10 digits Number Only'})
+    } else if (profileDetailsFormValue.fullName.length === 0) {
+      ToastUtils({type: 'error', message: 'Please Enter Full Name'})
+    } else if (profileDetailsFormValue.userName.length === 0) {
+      ToastUtils({type: 'error', message: 'Please Enter User Name'})
+    } else if (!validateEmail(profileDetailsFormValue.email)) {
+      ToastUtils({type: 'error', message: 'Please Enter Valid Email Address'})
+    } else if (
+      profileDetailsFormValue.country.length === 0 &&
+      profileDetailsFormValue.state.length === 0 &&
+      profileDetailsFormValue.city.length === 0
+    ) {
+      ToastUtils({type: 'error', message: 'Please Select Location'})
+    } else if (
+      profileDetailsFormValue?.mobileNo.length < 10 ||
+      profileDetailsFormValue?.mobileNo.length > 10
+    ) {
+      ToastUtils({type: 'error', message: 'Enter Valid Number'})
     } else {
       let updatedData: any
       // this is used for checked username if it is updated or not
@@ -624,9 +660,12 @@ const EditProfile = (props) => {
                   onChange={(e) => handleProfileChange(e)}
                 /> */}
                 <PhoneInput
-                  country={'in'}
+                  country={'91'}
                   value={profileDetailsFormValue?.countryCode + profileDetailsFormValue?.mobileNo}
+                  inputClass='w-100'
+                  //enableSearch
                   onChange={(phone: string, country: any) => {
+                    setCountryCode(country.countryCode)
                     if (phone.length !== 0) {
                       const reducedPhone = phone.replace(country.dialCode, '')
                       setProfileDetailsFormValue({
@@ -637,8 +676,8 @@ const EditProfile = (props) => {
                       setisAnyProfileChanges(true)
                     }
                   }}
-                  inputClass='w-100'
                 />
+
                 {/* end::Input */}
               </div>
             </div>
@@ -710,6 +749,7 @@ const EditProfile = (props) => {
                   autoComplete='off'
                   value={new Date(profileDetailsFormValue?.birthDate).toLocaleDateString('en-CA')}
                   onChange={(e) => handleProfileChange(e)}
+                  max={getEighteenYearsOldDate()}
                 />
                 {/* end::Input */}
               </div>
@@ -807,7 +847,7 @@ const EditProfile = (props) => {
 
           <div className='col-lg-4'>
             <h3 className='mb-7'>Profile Interest</h3>
-            {selectedInterestList.map((interest: any, index: any) => {
+            {/* {selectedInterestList.map((interest: any, index: any) => {
               return (
                 <div
                   key={index}
@@ -818,22 +858,33 @@ const EditProfile = (props) => {
                   {interest.interests.name}
                 </div>
               )
-            })}
+            })} */}
             {allInterestList
-              .filter((item) => {
-                return !selectedInterestList.some(
-                  (profileItem: any) => profileItem.interestId === item.interestId
-                )
-              })
+              // .filter((item) => {
+              //   return !selectedInterestList.some(
+              //     (profileItem: any) => profileItem.interestId === item.interestId
+              //   )
+              // })
               .map((interest: any, index: any) => {
+                let isSelected = selectedInterestList.filter(
+                  (selectedInterest) => selectedInterest.interestId === interest.interestId
+                )
+
                 return (
                   <>
                     <div
                       key={index}
-                      className='text-center me-3 mb-5 fs-6 fw-bold badge badge-light pointer'
-                      //onClick={() => addUserInterestInList(interest.interestId, interest.name)}
+                      className={clsx(
+                        isSelected.length !== 0
+                          ? 'badge bg-primary text-center text-white me-3 mb-5 fs-6 fw-bold pointer'
+                          : 'text-center me-3 mb-5 fs-6 fw-bold badge badge-light pointer'
+                      )}
                       onClick={() =>
-                        handleInterestChange(interest.interestId, interest.name, interest.id)
+                        handleInterestChange(
+                          interest.interestId,
+                          interest.name,
+                          isSelected.length === 0 ? interest.id : isSelected[0].id
+                        )
                       }
                     >
                       {interest.name}

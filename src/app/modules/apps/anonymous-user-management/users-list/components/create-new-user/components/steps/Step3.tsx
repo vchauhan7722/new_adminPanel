@@ -104,7 +104,7 @@ const Step3 = (props: any) => {
     let compressedfiles: any = []
 
     await filesArray.map(async (file: any) => {
-      let compressedImg = await ImageCompressor(file)
+      let compressedImg = await ImageCompressor(file, userID)
       compressedfiles.push(compressedImg)
       if (filesArray.length === compressedfiles.length) {
         let result = await createMediaActionForUserMediaForAnonymousUser(compressedfiles, userID)

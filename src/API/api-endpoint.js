@@ -874,7 +874,7 @@ export const removeMediaActionForUserMedia = async (userID, mediaID) => {
   }
 }
 
-export const createMediaActionForUserMedia = async (fileData, userID) => {
+export const createMediaActionForUserMedia = async (fileData, userID,userType) => {
   try {
     let accessToken = localStorage.getItem('accessToken')
 
@@ -885,7 +885,8 @@ export const createMediaActionForUserMedia = async (fileData, userID) => {
     // }
 
     for (var i = 0; i < fileData.length; i++) {
-      formData.append('profileMedia', fileData[i], fileData[i].name)
+      let fileName =  userType + "_" + userID + ".webp"
+      formData.append('profileMedia', fileData[i], fileName)
       formData.append(`mediaTypes[${i}][mediaType]`, 'photo')
     }
     console.log('formData', formData)
@@ -906,13 +907,14 @@ export const createMediaActionForUserMedia = async (fileData, userID) => {
   }
 }
 
-export const createMediaActionForUserMediaForAnonymousUser = async (fileData, userID) => {
+export const createMediaActionForUserMediaForAnonymousUser = async (fileData, userID,userType) => {
   try {
     let accessToken = localStorage.getItem('accessToken')
     
     let formData = new FormData()
     for (var i = 0; i < fileData.length; i++) {
-      formData.append('anonymousProfileMedia', fileData[i], fileData[i].name) // .split(".")[0] + ".webp"
+      let fileName = userType + "_" + userID + ".webp"
+      formData.append('anonymousProfileMedia', fileData[i], fileName ) // fileData[i].name .split(".")[0] + ".webp"
       formData.append(`mediaTypes[${i}][mediaType]`, 'photo')
     }
 
@@ -1352,13 +1354,23 @@ export const getAllUserStory = async (userId) => {
   }
 }
 
-export const CreateUserStory = async (fileData, userId) => {
+export const CreateUserStory = async (fileData, userId,userType) => {
   try {
+
+    //console.log("fileData",fileData.type.split('/')[0])
+    let mediaType = fileData.type.split('/')[0]
     let formData = new FormData()
-    formData = {
-      media: fileData,
-      mediaType: fileData.type.split('/')[0],
-    }
+    // formData = {
+    //   media: fileData,
+    //   mediaType: fileData.type.split('/')[0],
+    // }
+
+    // userType = "n"  = normal users
+    // userType = "a"  = anonymous users
+
+    let fileName = userType + "_" + userId + "." + fileData.name.split(".").pop()
+    formData.append('media', fileData, fileName) // fileData[i].name .split(".")[0] + ".webp"
+    formData.append(`mediaType`, mediaType) 
 
     let accessToken = localStorage.getItem('accessToken')
 
@@ -2337,6 +2349,34 @@ export const getAllNormalUserChatMembers = async (page, pageSize) => {
     const apiUrl = `${APIURL}/api/v1/web/communications/all/app/chatMembers?page=${page}&pageSize=${pageSize}`
 
     let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken,
+      },
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+// Update folder structure config 
+export const UpdateFolderStructurePlugin = async (values,ConfigID) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+
+    const apiUrl = `${APIURL}/api/v1/masters/configurations/updateFolderStructureConfig/${ConfigID}`
+
+    let data = {
+      "values"  : values,
+      "type" : "folder_structure",
+      "category":"common"
+    }
+    
+    let response = await axios.post(apiUrl, data, {
       headers: {
         'Content-Type': `application/json`,
         'x-access-token': accessToken,

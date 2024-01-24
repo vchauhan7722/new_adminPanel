@@ -56,7 +56,7 @@ const Activity = (props) => {
         <div className='card-header border-0'>
           <div className='d-flex overflow-auto h-55px'>
             <ul className='nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-6 fw-bold flex-nowrap'>
-              <li className='nav-item'>
+              <li className='nav-item pointer'>
                 <p
                   className={
                     `nav-link text-active-primary me-6 ` + (tabValue === 'all' && 'active')
@@ -67,7 +67,7 @@ const Activity = (props) => {
                   {`(${activityCount['totalActivityCount'] || 0})`}
                 </p>
               </li>
-              <li className='nav-item'>
+              <li className='nav-item pointer'>
                 <div
                   className={
                     `nav-link text-active-primary me-6 ` + (tabValue === 'system' && 'active')
@@ -78,7 +78,7 @@ const Activity = (props) => {
                   {`(${activityCount['system'] || 0})`}
                 </div>
               </li>
-              <li className='nav-item'>
+              <li className='nav-item pointer'>
                 <div
                   className={
                     `nav-link text-active-primary me-6 ` + (tabValue === 'chat' && 'active')
@@ -89,7 +89,7 @@ const Activity = (props) => {
                   {`(${activityCount['chat'] || 0})`}
                 </div>
               </li>
-              <li className='nav-item'>
+              <li className='nav-item pointer'>
                 <div
                   className={
                     `nav-link text-active-primary me-6 ` + (tabValue === 'videocall' && 'active')
@@ -100,7 +100,7 @@ const Activity = (props) => {
                   {`(${activityCount['videocall'] || 0})`}
                 </div>
               </li>
-              <li className='nav-item'>
+              <li className='nav-item pointer'>
                 <div
                   className={
                     `nav-link text-active-primary me-6 ` + (tabValue === 'undo-profile' && 'active')
@@ -111,7 +111,7 @@ const Activity = (props) => {
                   {`(${activityCount['undo-profile'] || 0})`}
                 </div>
               </li>
-              <li className='nav-item'>
+              <li className='nav-item pointer'>
                 <div
                   className={
                     `nav-link text-active-primary me-6 ` + (tabValue === 'like-profile' && 'active')
@@ -122,7 +122,7 @@ const Activity = (props) => {
                   {`(${activityCount['like-profile'] || 0})`}
                 </div>
               </li>
-              <li className='nav-item'>
+              <li className='nav-item pointer'>
                 <div
                   className={
                     `nav-link text-active-primary me-6 ` +
@@ -134,7 +134,7 @@ const Activity = (props) => {
                   {`(${activityCount['visit-profile'] || 0})`}
                 </div>
               </li>
-              <li className='nav-item'>
+              <li className='nav-item pointer'>
                 <div
                   className={
                     `nav-link text-active-primary me-6 ` + (tabValue === 'match' && 'active')
