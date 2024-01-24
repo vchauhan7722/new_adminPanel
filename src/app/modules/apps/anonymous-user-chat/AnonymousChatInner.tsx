@@ -94,6 +94,8 @@ const AnonymousChatInner = (props: any) => {
       const JsonMessageData = JSON.parse(receivedMessage)
       if (JsonMessageData?.status === 500) {
         ToastUtils({type: 'error', message: JsonMessageData.message})
+      } else if (JsonMessageData?.status === 501) {
+        ToastUtils({type: 'error', message: JsonMessageData.message})
       }
 
       if (JsonMessageData.type !== 'join') {

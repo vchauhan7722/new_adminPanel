@@ -87,6 +87,8 @@ const ChatInner = (props: any) => {
       const JsonMessageData = JSON.parse(receivedMessage)
       if (JsonMessageData?.status === 500) {
         ToastUtils({type: 'error', message: JsonMessageData.message})
+      } else if (JsonMessageData?.status === 501) {
+        ToastUtils({type: 'error', message: JsonMessageData.message})
       } else if (JsonMessageData.type !== 'join') {
         // Use optional chaining (?.) to safely access sessionStorage
         const messages = JSON.parse(sessionStorage.getItem('messageList') || '[]') || []

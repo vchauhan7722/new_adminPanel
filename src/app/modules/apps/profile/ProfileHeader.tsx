@@ -275,7 +275,10 @@ const ProfileHeader = (props) => {
                         <div className='d-flex align-items-center'>
                           <KTIcon iconName='arrow-down' className='fs-3 text-danger me-2' />
                           <div className='fs-2 fw-bolder'>
-                            {user.isPremium ? user?.userPurchasePlan[0]?.days + ' days' : 'No'}
+                            {user.isPremium
+                              ? user?.userPurchasePlan !== null &&
+                                user?.userPurchasePlan?.days + ' days'
+                              : 'No'}
                           </div>
                         </div>
 
@@ -654,10 +657,15 @@ const ProfileHeader = (props) => {
                 <div>
                   <p>
                     Current User Plan Name :-
-                    {user?.userPurchasePlan[0]?.premiumPackageAmountDetail?.premiumPackageName}
+                    {user?.userPurchasePlan !== null
+                      ? user?.userPurchasePlan?.premiumPackageAmountDetail?.premiumPackageName
+                      : 'No Premium Plan Purchased'}
                   </p>
                   {/* <p>Premium package Id : {user?.userPurchasePlan[0].premiumPackageAmountId}</p> */}
-                  <p>Remaining Days : {user?.userPurchasePlan[0]?.days}</p>
+                  <p>
+                    Remaining Days :{' '}
+                    {user?.userPurchasePlan !== null ? user?.userPurchasePlan?.days : 0}
+                  </p>
                 </div>
                 <br />
                 <input
