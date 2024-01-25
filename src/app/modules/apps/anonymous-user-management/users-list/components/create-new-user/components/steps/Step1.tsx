@@ -91,30 +91,23 @@ const Step1 = (props: any) => {
     ) {
       ToastUtils({type: 'error', message: 'Please Select Location'})
     } else {
+      let updatedData = step1Details
+      updatedData.userName = updatedData.userName.toLowerCase()
       // here we can check if userName is already exists or not
       if (currentUserName !== step1Details.userName) {
         let response = await checkUserName(step1Details.userName)
         if (response.status === 200) {
           setIsLocationVisible(false)
-          localStorage.setItem('step1Details', JSON.stringify(step1Details))
+          localStorage.setItem('step1Details', JSON.stringify(updatedData))
           submitStep()
         } else {
           ToastUtils({type: 'error', message: response.message})
         }
       } else {
-        localStorage.setItem('step1Details', JSON.stringify(step1Details))
+        localStorage.setItem('step1Details', JSON.stringify(updatedData))
         submitStep()
         setIsLocationVisible(false)
       }
-
-      // store data in local and add useEffect for assign data
-      // let result = await createNewAnonymousUser(step1Details)
-      // if (result.status === 200) {
-      //   submitStep(result.data.userId)
-      //   ToastUtils({type: 'success', message: 'Saved SuccessFully'})
-      // } else {
-      //   ErrorToastUtils()
-      // }
     }
   }
 
@@ -151,7 +144,7 @@ const Step1 = (props: any) => {
             autoComplete='off'
             value={step1Details?.userName}
             onChange={(e) => handleStep1Change(e)}
-            pattern='[a-z0-9_]+'
+            pattern='[A-Za-z0-9_]+'
             title='Only small letters, numbers (0-9), and underscores are allowed'
           />
         </div>

@@ -37,6 +37,7 @@ const ProfileHeader = (props) => {
   const [premiumAmountPackages, setPremiumAmountPackages] = useState<any>([])
   const [addUpdateCredit, setAddUpdateCredit] = useState({credit: 0, type: 'add'})
   const [addUpdatePremium, setaddUpdatePremium] = useState({days: 0, type: 'add', premiumId: 1})
+  const [isAnyplanSelected, setIsAnyPlanSelected] = useState(false)
 
   useEffect(() => {
     getPremiumAmountpackages()
@@ -99,22 +100,31 @@ const ProfileHeader = (props) => {
   }
 
   const addOrUpdatePremium = async () => {
-    let result = await AddOrUpdatePremiumByUID(
-      UserID,
-      addUpdatePremium.type,
-      addUpdatePremium.days,
-      addUpdatePremium.premiumId
-    )
-    if (result.status === 200) {
-      setaddUpdatePremium({days: 0, type: 'add', premiumId: 1})
-      ToastUtils({
-        type: 'success',
-        message:
-          addUpdateCredit.type === 'add' ? 'User Premium is Added' : 'User Premium is Updated',
-      })
-      setUserUpdateFlag(userUpdateFlag + 1)
+    if (isAnyplanSelected) {
+      // here add condition for check if plan is selected or not
+      let result = await AddOrUpdatePremiumByUID(
+        UserID,
+        addUpdatePremium.type,
+        addUpdatePremium.days,
+        addUpdatePremium.premiumId
+      )
+      if (result.status === 200) {
+        setaddUpdatePremium({days: 0, type: 'add', premiumId: 1})
+        ToastUtils({
+          type: 'success',
+          message:
+            addUpdateCredit.type === 'add' ? 'User Premium is Added' : 'User Premium is Updated',
+        })
+        setUserUpdateFlag(userUpdateFlag + 1)
+        setIsAnyPlanSelected(false)
+      } else {
+        ErrorToastUtils()
+      }
     } else {
-      ErrorToastUtils()
+      ToastUtils({
+        type: 'error',
+        message: 'please  select any premium plan ',
+      })
     }
   }
 
@@ -717,19 +727,25 @@ const ProfileHeader = (props) => {
                                   <div>
                                     <h4>{premiumAmountPackage.premiumPackageName}</h4>
                                     <div className='d-flex justify-content-between'>
-                                      <h4>Rs. {premiumAmountPackage.amount}</h4>
+                                      <h4>Rs. {premiumAmountPackage.amount}</h4> {' - '}
                                       <h4>{premiumAmountPackage.days} Days</h4>
                                     </div>
                                   </div>
                                 }
-                                value={premiumAmountPackage.premiumPackageAmountId}
+                                value={
+                                  premiumAmountPackage?.premiumPackageAmountId +
+                                  '-' +
+                                  premiumAmountPackage.days
+                                }
                                 name='group1'
-                                onChange={(e) =>
+                                onChange={(e: any) => {
                                   setaddUpdatePremium({
                                     ...addUpdatePremium,
-                                    premiumId: parseInt(e.target.value),
+                                    premiumId: parseInt(e.target.value.split('-')[0]),
+                                    days: parseInt(e.target.value.split('-')[1]),
                                   })
-                                }
+                                  setIsAnyPlanSelected(true)
+                                }}
                               />
                             </div>
                           </div>

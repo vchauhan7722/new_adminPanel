@@ -155,3 +155,26 @@ input[type="number"] {
   padding: 1rem 0;
   background-color: #ffffff;
 }
+
+
+/* this css for sweet alert customization start*/
+.custom-swal-container {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 9999;
+}
+
+.custom-swal-popup {
+  background-color: #333; /* Customize the background color */
+  color: #fff; /* Customize the text color */
+  border-radius: 4px; /* Customize the border radius */
+}
+
+.custom-swal-icon {
+  width: 20px; /* Customize the icon width */
+  height: 20px; /* Customize the icon height */
+  margin-right: 10px; /* Adjust the margin if needed */
+}
+
+/* this css for sweet alert customization end*/

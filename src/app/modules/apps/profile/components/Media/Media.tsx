@@ -17,6 +17,7 @@ import {Dropdown} from 'react-bootstrap'
 import {CustomToggle} from '../../../../../../_metronic/partials/componants/CustomToggle'
 import {ImageCompressor} from '../../../../../../utils/ImageCompresser'
 import {useLocation} from 'react-router-dom'
+import Swal from 'sweetalert2'
 
 const Media = (props: any) => {
   const {user, setUserUpdateFlag, userUpdateFlag} = props
@@ -59,14 +60,25 @@ const Media = (props: any) => {
   }
 
   const removeMedia = async (mediaId: any) => {
-    console.log(mediaId)
-    let result = await removeMediaActionForUserMedia(userId, mediaId)
-    if (result.status === 200) {
-      ToastUtils({type: 'success', message: 'media has been removed'})
-      setUserProfileMedia(result.data)
-    } else {
-      ErrorToastUtils()
-    }
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        let result = await removeMediaActionForUserMedia(userId, mediaId)
+        if (result.status === 200) {
+          ToastUtils({type: 'success', message: 'media has been removed'})
+          setUserProfileMedia(result.data)
+        } else {
+          ErrorToastUtils()
+        }
+      }
+    })
   }
 
   const uploadMediaAsAStory = async (mediaId: any) => {
@@ -81,26 +93,6 @@ const Media = (props: any) => {
 
   const handleMediaChange = async (event: any) => {
     setisMediaUploaded(true)
-    // if (event.target.files[0]) {
-    //   let response = await ImageCompressor(event.target.files[0])
-    //   let result: any
-    //   if (currentUserType !== 'Normal') {
-    //     result = await createMediaActionForUserMediaForAnonymousUser(response, userId)
-    //   } else {
-    //     result = await createMediaActionForUserMedia(response, userId)
-    //   }
-    //   // result = await createMediaActionForUserMedia(event.target.files[0], userId)
-    //   if (result.status === 200) {
-    //     let oldmedia = [...userProfileMedia]
-    //     oldmedia.push(result.data[0])
-    //     setUserProfileMedia(oldmedia)
-    //     ToastUtils({type: 'success', message: 'Your Media has Uploaded'})
-    //     setisMediaUploaded(false)
-    //   } else {
-    //     ToastUtils({type: 'error', message: 'Error in Media Upload'})
-    //     setisMediaUploaded(false)
-    //   }
-    // }
 
     let filesArray = Object.values(event.target.files)
 
@@ -241,22 +233,27 @@ const Media = (props: any) => {
                                 <p className='px-3'>Set profile</p>
                               </div>
                             )}
-                            <div
-                              className=' px-3'
-                              onClick={() => ActionsOnMedia('private', userMedia.id)}
-                            >
-                              <p className=' px-3'>Set private</p>
-                            </div>
+                            {!userMedia.isProfileImage && (
+                              <div
+                                className=' px-3'
+                                onClick={() => ActionsOnMedia('private', userMedia.id)}
+                              >
+                                <p className=' px-3'>Set private</p>
+                              </div>
+                            )}
+
                             <div className=' px-3'>
                               <p className='px-3' onClick={() => uploadMediaAsAStory(userMedia.id)}>
                                 Upload to story
                               </p>
                             </div>
-                            <div className=' px-3' onClick={() => removeMedia(userMedia.id)}>
-                              <p className=' px-3' data-kt-users-table-filter='delete_row'>
-                                Delete Media
-                              </p>
-                            </div>
+                            {!userMedia.isProfileImage && (
+                              <div className=' px-3' onClick={() => removeMedia(userMedia.id)}>
+                                <p className=' px-3' data-kt-users-table-filter='delete_row'>
+                                  Delete Media
+                                </p>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </span>
