@@ -11,6 +11,8 @@ import {calculateTimeDifferenceForChatMessage} from '../../../../../utils/DateUt
 import CustomPagination from '../../../../../_metronic/partials/componants/Pagination'
 import {ErrorToastUtils} from '../../../../../utils/ToastUtils'
 import {ChatInner} from './ChatInner'
+import { useLocation } from 'react-router-dom'
+import { GetIDFromURL } from '../../../../../utils/Utils'
 
 const Chat = (props) => {
   const {CurrentUser} = props
@@ -25,7 +27,10 @@ const Chat = (props) => {
   const [userTypeTabValue, setUserTypeTabValue] = useState<any>('app')
   const [isLoading, setIsLoading] = useState(false)
 
-  let userID = localStorage.getItem('userId')
+  //let userID = localStorage.getItem('userId')
+
+  let location = useLocation()
+  let userID = GetIDFromURL(location)
 
   useEffect(() => {
     getAllGiftCategoryList()

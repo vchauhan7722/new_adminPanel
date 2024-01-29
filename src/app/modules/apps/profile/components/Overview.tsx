@@ -7,8 +7,6 @@ export function Overview(props: any) {
 
   const intl = useIntl()
 
-  console.log(user)
-
   return (
     <div className='card mb-5 mb-xl-10' id='kt_profile_details_view'>
       <div className='card-header cursor-pointer'>

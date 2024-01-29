@@ -90,36 +90,68 @@ const Step3 = (props: any) => {
     }
   }
 
+  // const handleMediaChange = async (event: any) => {
+  //   const userID = localStorage.getItem('anonymousUserId')
+  //   let filesArray = Object.values(event.target.files)
+
+  //   filesArray.map((file: any) => {
+  //     var tmppath = URL.createObjectURL(file)
+  //     tempProfileMedia.push(tmppath)
+  //   })
+
+  //   setMediaisImageUploaded(true)
+
+  //   let compressedfiles: any = []
+
+  //   await filesArray.map(async (file: any) => {
+  //     let compressedImg = await ImageCompressor(file, userID)
+  //     compressedfiles.push(compressedImg)
+  //     if (filesArray.length === compressedfiles.length) {
+  //       let result = await createMediaActionForUserMediaForAnonymousUser(compressedfiles, userID)
+  //       if (result.status === 200) {
+  //         await handleIconChange(result.data[0].id) // default select first image as a profile
+  //         setMediaisImageUploaded(false)
+  //         getMediaImageList()
+  //         ToastUtils({type: 'success', message: 'Profile Media Upload SuccessFully'})
+  //       } else {
+  //         setMediaisImageUploaded(false)
+  //         setTempProfileMedia([])
+  //         ToastUtils({type: 'error', message: 'Error in Media Upload'})
+  //       }
+  //     }
+  //   })
+  // }
+
   const handleMediaChange = async (event: any) => {
-    const userID = localStorage.getItem('anonymousUserId')
-    let filesArray = Object.values(event.target.files)
+    try {
+      const userID = localStorage.getItem('anonymousUserId')
+      const filesArray = Object.values(event.target.files)
 
-    filesArray.map((file: any) => {
-      var tmppath = URL.createObjectURL(file)
-      tempProfileMedia.push(tmppath)
-    })
+      const tempProfileMedia = filesArray.map((file: any) => URL.createObjectURL(file))
+      setMediaisImageUploaded(true)
 
-    setMediaisImageUploaded(true)
+      const compressedfiles = await Promise.all(
+        filesArray.map((file) => ImageCompressor(file, userID))
+      )
 
-    let compressedfiles: any = []
+      const result = await createMediaActionForUserMediaForAnonymousUser(compressedfiles, userID)
 
-    await filesArray.map(async (file: any) => {
-      let compressedImg = await ImageCompressor(file, userID)
-      compressedfiles.push(compressedImg)
-      if (filesArray.length === compressedfiles.length) {
-        let result = await createMediaActionForUserMediaForAnonymousUser(compressedfiles, userID)
-        if (result.status === 200) {
-          await handleIconChange(result.data[0].id) // default select first image as a profile
-          setMediaisImageUploaded(false)
-          getMediaImageList()
-          ToastUtils({type: 'success', message: 'Profile Media Upload SuccessFully'})
-        } else {
-          setMediaisImageUploaded(false)
-          setTempProfileMedia([])
-          ToastUtils({type: 'error', message: 'Error in Media Upload'})
-        }
+      if (result.status === 200) {
+        await handleIconChange(result.data[0].id) // default select the first image as a profile
+        setMediaisImageUploaded(false)
+        getMediaImageList()
+        ToastUtils({type: 'success', message: 'Profile Media Upload Successfully'})
+      } else {
+        setMediaisImageUploaded(false)
+        setTempProfileMedia([])
+        ToastUtils({type: 'error', message: 'Error in Media Upload'})
       }
-    })
+    } catch (error) {
+      console.error('Error in handleMediaChange:', error)
+      setMediaisImageUploaded(false)
+      setTempProfileMedia([])
+      ToastUtils({type: 'error', message: 'Error in Media Upload'})
+    }
   }
 
   const removeMedia = async (mediaId: any) => {

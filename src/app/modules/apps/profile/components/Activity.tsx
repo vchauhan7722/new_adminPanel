@@ -5,9 +5,14 @@ import {calculateTimeDifferenceForActivity} from '../../../../../utils/DateUtils
 import Pagination from 'react-bootstrap/Pagination'
 import clsx from 'clsx'
 import CustomPagination from '../../../../../_metronic/partials/componants/Pagination'
+import {useLocation} from 'react-router-dom'
+import {GetIDFromURL} from '../../../../../utils/Utils'
 
 const Activity = (props) => {
-  const userId = localStorage.getItem('userId')
+  let location = useLocation()
+  let userId = GetIDFromURL(location)
+
+  //const userId = localStorage.getItem('userId')
   const intl = useIntl()
   const [tabValue, setTabValue] = useState('all')
   const [pageSize, setPageSize] = useState(100)

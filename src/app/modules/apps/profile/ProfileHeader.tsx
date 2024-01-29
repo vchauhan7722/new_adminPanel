@@ -16,6 +16,7 @@ import {
 import ToastUtils, {ErrorToastUtils} from '../../../../utils/ToastUtils'
 import {Dropdown, Form} from 'react-bootstrap'
 import {CustomToggle} from '../../../../_metronic/partials/componants/CustomToggle'
+import {GetIDFromURL} from '../../../../utils/Utils'
 
 const ProfileHeader = (props) => {
   const {user, userProfilePercentage, setUserUpdateFlag, userUpdateFlag} = props
@@ -30,7 +31,9 @@ const ProfileHeader = (props) => {
       ? '/apps/anonymous-user/users-profile'
       : '/apps/users-profile'
 
-  let UserID = localStorage.getItem('userId')
+  //let UserID = localStorage.getItem('userId')
+
+  let UserID = GetIDFromURL(location)
 
   const [popularDays, setPopularDays] = useState(0)
   const [spotlightDays, setspotlightDays] = useState(0)

@@ -5,7 +5,7 @@ import clsx from 'clsx'
 // import socket, {ws} from '../../../socketconfig'
 import {toAbsoluteUrl} from '../../../../../_metronic/helpers'
 import {getMessagesByUserID, pinOrLikeChatMember} from '../../../../../API/api-endpoint'
-import {sortData} from '../../../../../utils/Utils'
+import {GetIDFromURL, sortData} from '../../../../../utils/Utils'
 import ToastUtils from '../../../../../utils/ToastUtils'
 import {fileToBase64} from '../../../../../utils/FileUtils'
 import {DateTimeFormatter, TimeFormatter} from '../../../../../utils/DateUtils'
@@ -33,7 +33,8 @@ const ChatInner = (props: any) => {
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const hiddenFileInput = useRef<HTMLInputElement>(document.createElement('input'))
 
-  const currentUserId = parseInt(localStorage.getItem('userId') || '1')
+  // const currentUserId = parseInt(localStorage.getItem('userId') || '1')
+  let currentUserId = GetIDFromURL(location)
 
   const [message, setMessage] = useState<string>('')
   const [messageList, setMessageList] = useState<any>(undefined)

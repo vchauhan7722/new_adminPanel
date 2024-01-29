@@ -14,15 +14,18 @@ import {DropdownButton, Dropdown, Form} from 'react-bootstrap'
 import clsx from 'clsx'
 import {CustomToggle} from '../../../../../../../_metronic/partials/componants/CustomToggle'
 import {useLocation} from 'react-router-dom'
+import {GetIDFromURL} from '../../../../../../../utils/Utils'
 
 const MediaTable = (props) => {
   const location = useLocation()
 
   let userType = location.pathname.substring(6, 15) === 'anonymous' ? 'a' : 'n'
+  let userId = GetIDFromURL(location)
+  //const userId = localStorage.getItem('userId')
 
   const {getUpdatedStory, setGetUpdatedStory} = props
   const hiddenStoryInput = useRef<HTMLInputElement>(document.createElement('input'))
-  const userId = localStorage.getItem('userId')
+
   const [userStoryList, setUserStoryList] = useState<any>([])
   const [isStoryUploaded, setisStoryUploaded] = useState<any>(false)
   const [userStoryCredit, setuserStoryCredit] = useState<any>(0)

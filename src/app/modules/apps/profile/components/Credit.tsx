@@ -5,6 +5,8 @@ import {KTCardBody} from '../../../../../_metronic/helpers'
 import {getUserCreditsHistoryWithPagination} from '../../../../../API/api-endpoint'
 import {DateWithTimeFormatter} from '../../../../../utils/DateUtils'
 import CustomPagination from '../../../../../_metronic/partials/componants/Pagination'
+import {useLocation} from 'react-router-dom'
+import {GetIDFromURL} from '../../../../../utils/Utils'
 
 let creditFilter = [
   {name: 'Like', value: 'like', type: 'debit', flag: 'all'},
@@ -27,7 +29,10 @@ let creditFilter = [
 ]
 
 const Credit = () => {
-  const userId = localStorage.getItem('userId')
+  let location = useLocation()
+  let userId = GetIDFromURL(location)
+  //const userId = localStorage.getItem('userId')
+
   const intl = useIntl()
 
   const [tabValue, setTabValue] = useState('all')

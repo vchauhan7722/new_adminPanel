@@ -18,6 +18,7 @@ import {CustomToggle} from '../../../../../../_metronic/partials/componants/Cust
 import {ImageCompressor} from '../../../../../../utils/ImageCompresser'
 import {useLocation} from 'react-router-dom'
 import Swal from 'sweetalert2'
+import {GetIDFromURL} from '../../../../../../utils/Utils'
 
 const Media = (props: any) => {
   const {user, setUserUpdateFlag, userUpdateFlag} = props
@@ -36,7 +37,8 @@ const Media = (props: any) => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   //const [lightBoxArray, setLightBoxArray] = useState<any>([])
 
-  const userId = localStorage.getItem('userId')
+  let userId = GetIDFromURL(location)
+  // const userId = localStorage.getItem('userId')
 
   const ActionsOnMedia = async (type: any, mediaId: any) => {
     let actionType,
@@ -91,38 +93,74 @@ const Media = (props: any) => {
     }
   }
 
+  // const handleMediaChange = async (event: any) => {
+  //   setisMediaUploaded(true)
+
+  //   let filesArray = Object.values(event.target.files)
+
+  //   let compressedfiles: any = []
+
+  //   await filesArray.map(async (file: any) => {
+  //     let compressedImg = await ImageCompressor(file, userId)
+  //     compressedfiles.push(compressedImg)
+  //     if (filesArray.length === compressedfiles.length) {
+  //       let result
+  //       if (currentUserType !== 'n') {
+  //         result = await createMediaActionForUserMediaForAnonymousUser(
+  //           compressedfiles,
+  //           userId,
+  //           currentUserType
+  //         )
+  //       } else {
+  //         result = await createMediaActionForUserMedia(compressedfiles, userId, currentUserType)
+  //       }
+
+  //       if (result.status === 200) {
+  //         getMediaImageList()
+  //         setisMediaUploaded(false)
+  //         ToastUtils({type: 'success', message: 'Profile Media Upload SuccessFully'})
+  //       } else {
+  //         ToastUtils({type: 'error', message: 'Error in Media Upload'})
+  //         setisMediaUploaded(false)
+  //       }
+  //     }
+  //   })
+  // }
+
   const handleMediaChange = async (event: any) => {
     setisMediaUploaded(true)
 
-    let filesArray = Object.values(event.target.files)
+    try {
+      const filesArray = Object.values(event.target.files)
+      const compressedfiles = await Promise.all(
+        filesArray.map((file) => ImageCompressor(file, userId))
+      )
 
-    let compressedfiles: any = []
+      let result
 
-    await filesArray.map(async (file: any) => {
-      let compressedImg = await ImageCompressor(file, userId)
-      compressedfiles.push(compressedImg)
-      if (filesArray.length === compressedfiles.length) {
-        let result
-        if (currentUserType !== 'n') {
-          result = await createMediaActionForUserMediaForAnonymousUser(
-            compressedfiles,
-            userId,
-            currentUserType
-          )
-        } else {
-          result = await createMediaActionForUserMedia(compressedfiles, userId, currentUserType)
-        }
-
-        if (result.status === 200) {
-          getMediaImageList()
-          setisMediaUploaded(false)
-          ToastUtils({type: 'success', message: 'Profile Media Upload SuccessFully'})
-        } else {
-          ToastUtils({type: 'error', message: 'Error in Media Upload'})
-          setisMediaUploaded(false)
-        }
+      if (currentUserType !== 'n') {
+        result = await createMediaActionForUserMediaForAnonymousUser(
+          compressedfiles,
+          userId,
+          currentUserType
+        )
+      } else {
+        result = await createMediaActionForUserMedia(compressedfiles, userId, currentUserType)
       }
-    })
+
+      if (result.status === 200) {
+        getMediaImageList()
+        setisMediaUploaded(false)
+        ToastUtils({type: 'success', message: 'Profile Media Upload SuccessFully'})
+      } else {
+        ToastUtils({type: 'error', message: 'Error in Media Upload'})
+        setisMediaUploaded(false)
+      }
+    } catch (error) {
+      console.error('Error in handleMediaChange:', error)
+      ToastUtils({type: 'error', message: 'Error in Media Upload'})
+      setisMediaUploaded(false)
+    }
   }
 
   const handleClick = () => {

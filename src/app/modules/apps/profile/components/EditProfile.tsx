@@ -18,13 +18,16 @@ import ToastUtils, {ErrorToastUtils} from '../../../../../utils/ToastUtils'
 import PhoneInput from 'react-phone-input-2'
 // import PhoneInput from 'react-phone-number-input/input'
 import 'react-phone-input-2/lib/style.css'
-import {getEighteenYearsOldDate, validateEmail} from '../../../../../utils/Utils'
-import {AsyncTypeahead} from 'react-bootstrap-typeahead'
-
+import {GetIDFromURL, getEighteenYearsOldDate, validateEmail} from '../../../../../utils/Utils'
+import {useLocation} from 'react-router-dom'
 const EditProfile = (props) => {
   const {user, setUserUpdateFlag, userUpdateFlag} = props
   const intl = useIntl()
-  let userID = localStorage.getItem('userId')
+
+  let location = useLocation()
+  let userID = GetIDFromURL(location)
+
+  //let userID = localStorage.getItem('userId')
 
   const [isAnyProfileChanges, setisAnyProfileChanges] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
@@ -53,7 +56,7 @@ const EditProfile = (props) => {
   })
 
   const [oldUserName, setOldUserName] = useState(user?.userName)
-  const [countryCode, setCountryCode] = useState('')
+  const [phone, setPhone] = useState('')
 
   useEffect(() => {
     setProfileDetailsFormValue({
@@ -507,7 +510,7 @@ const EditProfile = (props) => {
   }
 
   const updateProfile = async () => {
-    console.log('profileDetailsFormValue.country', profileDetailsFormValue)
+    // console.log('profileDetailsFormValue.country', profileDetailsFormValue)
     setisAnyProfileChanges(false)
     var usernameInput = document.getElementById('userName') as HTMLInputElement
     if (!usernameInput.checkValidity()) {
@@ -567,6 +570,8 @@ const EditProfile = (props) => {
         setUserUpdateFlag(userUpdateFlag + 1)
         ToastUtils({type: 'success', message: 'Profile Update SuccessFully'})
         setisAnyProfileChanges(false)
+        setPreSelectedQuestionList([])
+        setPreselectedInterestList([])
       } else {
         ToastUtils({type: 'error', message: result.message})
       }
@@ -666,7 +671,6 @@ const EditProfile = (props) => {
                   inputClass='w-100'
                   //enableSearch
                   onChange={(phone: string, country: any) => {
-                    setCountryCode(country.countryCode)
                     if (phone.length !== 0) {
                       const reducedPhone = phone.replace(country.dialCode, '')
                       setProfileDetailsFormValue({
@@ -677,6 +681,9 @@ const EditProfile = (props) => {
                       setisAnyProfileChanges(true)
                     }
                   }}
+                  // inputProps={{
+                  //   maxLength: phone.length, // Set the initial maxLength
+                  // }}
                 />
 
                 {/* end::Input */}

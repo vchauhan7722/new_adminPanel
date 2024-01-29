@@ -25,6 +25,7 @@ const ToastUtils = ({type, message}) =>
     icon: type,
     title: message,
   })
+
 // old swal
 /*Swal.fire({
     position: 'top-end',
