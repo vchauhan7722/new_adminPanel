@@ -13,30 +13,30 @@ const SidebarMenuMain = () => {
     return (
       <>
         <SidebarMenuItemWithSub
-          to='/apps/anonymous-user-management'
+          to='admin/apps/anonymous-user-management'
           title={intl.formatMessage({id: 'MENU.ANONYMOUSUSERMANAGEMENT'})}
           icon='abstract-28'
           fontIcon='bi-person'
         >
           <SidebarMenuItem
-            to='/apps/anonymous-user-management/users'
+            to='admin/apps/anonymous-user-management/users'
             icon='abstract-28'
             title='Anonymous User List'
             fontIcon='bi-layers'
           />
           <SidebarMenuItemWithSub
-            to='/apps/anonymous-user-management/user-media'
+            to='admin/apps/anonymous-user-management/user-media'
             title='Anonymous User Media'
             icon='abstract-28'
             fontIcon='bi-person'
           >
             <SidebarMenuItem
-              to='/apps/anonymous-user-management/user-media/photos'
+              to='admin/apps/anonymous-user-management/user-media/photos'
               title='Photos'
               hasBullet={true}
             />
             <SidebarMenuItem
-              to='/apps/anonymous-user-management/user-media/stories'
+              to='admin/apps/anonymous-user-management/user-media/stories'
               title='Stories'
               hasBullet={true}
             />
@@ -48,7 +48,7 @@ const SidebarMenuMain = () => {
     return (
       <>
         <SidebarMenuItem
-          to='/dashboard'
+          to='admin/dashboard'
           icon='element-11'
           title={intl.formatMessage({id: 'MENU.DASHBOARD'})}
           fontIcon='bi-app-indicator'
@@ -68,30 +68,30 @@ const SidebarMenuMain = () => {
         /> */}
 
         <SidebarMenuItemWithSub
-          to='/apps/user-management'
+          to='admin/apps/user-management'
           title={intl.formatMessage({id: 'MENU.USERMANAGEMENT'})}
           icon='abstract-28'
           fontIcon='bi-person'
         >
           <SidebarMenuItem
-            to='/apps/user-management/users'
+            to='admin/apps/user-management/users'
             icon='abstract-28'
             title='UserList'
             fontIcon='bi-person'
           />
           <SidebarMenuItemWithSub
-            to='/apps/user-management/user-media'
+            to='admin/apps/user-management/user-media'
             title='User Media'
             icon='abstract-28'
             fontIcon='bi-person'
           >
             <SidebarMenuItem
-              to='/apps/user-management/user-media/photos'
+              to='admin/apps/user-management/user-media/photos'
               title='Photos'
               hasBullet={true}
             />
             <SidebarMenuItem
-              to='/apps/user-management/user-media/stories'
+              to='admin/apps/user-management/user-media/stories'
               title='Stories'
               hasBullet={true}
             />
@@ -99,30 +99,30 @@ const SidebarMenuMain = () => {
         </SidebarMenuItemWithSub>
 
         <SidebarMenuItemWithSub
-          to='/apps/anonymous-user-management'
+          to='admin/apps/anonymous-user-management'
           title={intl.formatMessage({id: 'MENU.ANONYMOUSUSERMANAGEMENT'})}
           icon='abstract-28'
           fontIcon='bi-person'
         >
           <SidebarMenuItem
-            to='/apps/anonymous-user-management/users'
+            to='admin/apps/anonymous-user-management/users'
             icon='abstract-28'
             title='Anonymous User List'
             fontIcon='bi-layers'
           />
           <SidebarMenuItemWithSub
-            to='/apps/anonymous-user-management/user-media'
+            to='admin/apps/anonymous-user-management/user-media'
             title='Anonymous User Media'
             icon='abstract-28'
             fontIcon='bi-person'
           >
             <SidebarMenuItem
-              to='/apps/anonymous-user-management/user-media/photos'
+              to='admin/apps/anonymous-user-management/user-media/photos'
               title='Photos'
               hasBullet={true}
             />
             <SidebarMenuItem
-              to='/apps/anonymous-user-management/user-media/stories'
+              to='admin/apps/anonymous-user-management/user-media/stories'
               title='Stories'
               hasBullet={true}
             />
@@ -130,21 +130,28 @@ const SidebarMenuMain = () => {
         </SidebarMenuItemWithSub>
 
         <SidebarMenuItem
-          to='/plugins'
+          to='admin/plugins'
           icon='abstract-28'
           title={intl.formatMessage({id: 'MENU.PLUGINS'})}
           fontIcon='bi-layers'
         />
 
         <SidebarMenuItem
-          to='/user-verification'
+          to='admin/user-verification'
           icon='abstract-28'
           title={intl.formatMessage({id: 'MENU.USERVERIFICATION'})}
           fontIcon='bi-layers'
         />
 
         <SidebarMenuItem
-          to='/anonymous-user-chat'
+          to='admin/user-order'
+          icon='abstract-28'
+          title={intl.formatMessage({id: 'MENU.USERORDER'})}
+          fontIcon='bi-layers'
+        />
+
+        <SidebarMenuItem
+          to='admin/anonymous-user-chat'
           icon='abstract-28'
           title={intl.formatMessage({id: 'MENU.ANONYMOUSUSERCHAT'})}
           fontIcon='bi-layers'

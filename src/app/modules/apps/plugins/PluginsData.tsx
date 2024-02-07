@@ -170,6 +170,15 @@ const PluginData = [
     status: 'Active',
     path: 'folder_structure_plugin',
   },
+  {
+    pluginId: 19,
+    icon: '/media/plugins/jstree/folder.webp',
+    name: 'Fake User Interaction',
+    type: 'Software',
+    description: 'customize Interaction System',
+    status: 'Active',
+    path: 'user_interaction_plugin',
+  },
 ]
 
 export default PluginData

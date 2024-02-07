@@ -27,7 +27,7 @@ const UsersListFilter = () => {
     startDate: '', //new Date().toLocaleDateString('en-CA')
     endDate: '', //new Date().toLocaleDateString('en-CA')
     gender: '',
-    orderBy: '',
+    orderBy: 'userId',
     country: '',
     state: '',
     city: '',
@@ -54,6 +54,7 @@ const UsersListFilter = () => {
 
   const resetData = () => {
     updateState({filter: undefined, ...initialQueryState})
+    setIsStateInputVisible(false)
     setFormValue({
       search: '',
       startAge: 18,
@@ -288,7 +289,7 @@ const UsersListFilter = () => {
                       data-kt-user-table-filter='orderby'
                       data-hide-search='true'
                       name='orderBy'
-                      defaultValue={'last_connection'}
+                      defaultValue={'userId'}
                       value={formValue.orderBy}
                       onChange={(e) => handleChange(e)}
                     >
@@ -296,7 +297,6 @@ const UsersListFilter = () => {
                       <option value='userId'>ID</option>
                       <option value='totalCredit'>Credits</option>
                       <option value='isPopular'>Popular</option>
-                      <option value='isSpotlightUser'>Spotlight</option>
                     </select>
                   </div>
                 </div>

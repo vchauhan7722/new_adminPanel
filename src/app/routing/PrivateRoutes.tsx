@@ -10,6 +10,7 @@ import Plugins from '../modules/apps/plugins/Plugins'
 import UserVerification from '../modules/apps/user-verification/UserVerification'
 import {AnonymousChat} from '../modules/apps/anonymous-user-chat/AnonymousChat'
 import {PageLink, PageTitle, useLayout} from '../../_metronic/layout/core'
+import UserOrders from '../modules/apps/user-orders/UserOrders'
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import('../modules/apps/profile/ProfilePage'))
@@ -48,13 +49,13 @@ const PrivateRoutes = () => {
     <Routes>
       <Route element={<MasterLayout />}>
         {/* Redirect to Dashboard after success login/registartion */}
-        <Route path='auth/*' element={<Navigate to='/dashboard' />} />
+        <Route path='admin/auth/*' element={<Navigate to='/admin/dashboard' />} />
         {/* Pages */}
-        <Route path='dashboard' element={<DashboardWrapper />} />
-        <Route path='builder' element={<BuilderPageWrapper />} />
+        <Route path='admin/dashboard' element={<DashboardWrapper />} />
+        <Route path='admin/builder' element={<BuilderPageWrapper />} />
         {/* Lazy Modules */}
         <Route
-          path='crafted/widgets/*'
+          path='admin/crafted/widgets/*'
           element={
             <SuspensedView>
               <WidgetsPage />
@@ -62,7 +63,7 @@ const PrivateRoutes = () => {
           }
         />
         <Route
-          path='apps/chat/*'
+          path='admin/apps/chat/*'
           element={
             <SuspensedView>
               <ChatPage />
@@ -70,7 +71,7 @@ const PrivateRoutes = () => {
           }
         />
         <Route
-          path='apps/user-management/*'
+          path='admin/apps/user-management/*'
           element={
             <SuspensedView>
               <UsersPage />
@@ -78,7 +79,7 @@ const PrivateRoutes = () => {
           }
         />
         <Route
-          path='apps/anonymous-user-management/*'
+          path='admin/apps/anonymous-user-management/*'
           element={
             <SuspensedView>
               <AnonymousUsersPage />
@@ -86,7 +87,7 @@ const PrivateRoutes = () => {
           }
         />
         <Route
-          path='app/register-anonymous-user/*'
+          path='admin/app/register-anonymous-user/*'
           element={
             <SuspensedView>
               <CreateNewAnonymousUser />
@@ -95,7 +96,7 @@ const PrivateRoutes = () => {
         />
         {/* we have created 2 routes for profile page bcs we need a differentiate between normal user and anonymous user */}
         <Route
-          path='apps/users-profile/*'
+          path='admin/apps/users-profile/*'
           element={
             <SuspensedView>
               <ProfilePage />
@@ -103,7 +104,7 @@ const PrivateRoutes = () => {
           }
         />
         <Route
-          path='apps/anonymous-user/users-profile/*'
+          path='admin/apps/anonymous-user/users-profile/*'
           element={
             <SuspensedView>
               <ProfilePage />
@@ -111,16 +112,16 @@ const PrivateRoutes = () => {
           }
         />
         <Route
-          path='plugins/*'
+          path='admin/plugins/*'
           element={
             <SuspensedView>
               <Plugins />
             </SuspensedView>
           }
         />
-        <Route path='user-media/*' element={<SuspensedView></SuspensedView>} />
+        <Route path='admin/user-media/*' element={<SuspensedView></SuspensedView>} />
         <Route
-          path='user-verification/*'
+          path='admin/user-verification/*'
           element={
             <SuspensedView>
               <UserVerification />
@@ -128,7 +129,7 @@ const PrivateRoutes = () => {
           }
         />
         <Route
-          path='anonymous-user-chat/*'
+          path='admin/anonymous-user-chat/*'
           element={
             <SuspensedView>
               {/* {setSideBarType()} */}
@@ -137,9 +138,18 @@ const PrivateRoutes = () => {
             </SuspensedView>
           }
         />
-
+        <Route
+          path='admin/user-order'
+          element={
+            <SuspensedView>
+              {/* {setSideBarType()} */}
+              <PageTitle>User Orders</PageTitle>
+              <UserOrders />
+            </SuspensedView>
+          }
+        />
         {/* Page Not Found */}
-        <Route path='*' element={<Navigate to='/error/404' />} />
+        <Route path='*' element={<Navigate to='/admin/error/404' />} />
       </Route>
     </Routes>
   )

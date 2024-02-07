@@ -8,7 +8,11 @@ import moment from 'moment'
 import {UserSelectionCell} from './UserSelectionCell'
 import {UserSelectionHeader} from './UserSelectionHeader'
 import {KTIcon} from '../../../../../../../_metronic/helpers'
-import {calculateTimeDifference} from '../../../../../../../utils/DateUtils'
+import {
+  calculateTimeDifference,
+  convertUserTableTime,
+  convertUserTableDate,
+} from '../../../../../../../utils/DateUtils'
 
 const usersColumns: ReadonlyArray<Column<User>> = [
   {
@@ -83,19 +87,39 @@ const usersColumns: ReadonlyArray<Column<User>> = [
         <KTIcon iconName='setting-2' className='fs-1 text-primary' />
         <KTIcon iconName='basket' className='fs-1 text-primary' /> */}
         {props.data[props.row.index]?.isVerify && (
-          <i className='text-primary bi bi-patch-check fa-2xl'></i>
+          <i
+            className='text-primary bi bi-patch-check fa-2xl'
+            data-toggle='tooltip'
+            data-placement='top'
+            title={'verify'}
+          ></i>
         )}
         &nbsp;
         {props.data[props.row.index]?.isPremium && (
-          <i className='text-primary fa-solid fa-award fa-2xl'></i>
+          <i
+            className='text-primary fa-solid fa-award fa-2xl'
+            data-toggle='tooltip'
+            data-placement='top'
+            title={'premium'}
+          ></i>
         )}
         &nbsp;
         {props.data[props.row.index]?.isPopular && (
-          <i className='text-primary fa-regular fa-star fa-2xl'></i>
+          <i
+            className='text-primary fa-regular fa-star fa-2xl'
+            data-toggle='tooltip'
+            data-placement='top'
+            title={'popular'}
+          ></i>
         )}
         &nbsp;
         {props.data[props.row.index]?.isSpotlightUser && (
-          <i class='text-primary fa-solid fa-fire-flame-curved fa-2xl'></i>
+          <i
+            class='text-primary fa-solid fa-fire-flame-curved fa-2xl'
+            data-toggle='tooltip'
+            data-placement='top'
+            title={'spotlight'}
+          ></i>
         )}
       </div>
     ),
@@ -144,9 +168,9 @@ const usersColumns: ReadonlyArray<Column<User>> = [
     id: 'createdAt',
     Cell: ({...props}) => (
       <div className='text-center'>
-        {moment(props.data[props.row.index]?.updatedAt).format('DD MMM YY ')}
+        {convertUserTableDate(moment(props.data[props.row.index]?.createdAt).toLocaleString())}
         <br></br>
-        {moment(props.data[props.row.index]?.updatedAt).format('hh:mm a')}
+        {convertUserTableTime(moment(props.data[props.row.index]?.createdAt).toLocaleString())}
       </div>
     ),
   },

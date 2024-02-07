@@ -26,17 +26,17 @@ const AppRoutes: FC = () => {
     <BrowserRouter basename={PUBLIC_URL}>
       <Routes>
         <Route element={<App />}>
-          <Route path='error/*' element={<ErrorsPage />} />
-          <Route path='logout' element={<Logout />} />
+          <Route path='admin/error/*' element={<ErrorsPage />} />
+          <Route path='admin/logout' element={<Logout />} />
           {currentUser ? (
             <>
               <Route path='/*' element={<PrivateRoutes />} />
-              <Route index element={<Navigate to='/dashboard' />} />
+              <Route index element={<Navigate to='/admin/dashboard' />} />
             </>
           ) : (
             <>
-              <Route path='auth/*' element={<AuthPage />} />
-              <Route path='*' element={<Navigate to='/auth' />} />
+              <Route path='admin/auth/*' element={<AuthPage />} />
+              <Route path='*' element={<Navigate to='/admin/auth' />} />
             </>
           )}
         </Route>

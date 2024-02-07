@@ -8,7 +8,7 @@ import Stories from './users-list/components/user-media/Stories'
 const usersBreadcrumbs: Array<PageLink> = [
   {
     title: 'Anonymous User Management',
-    path: '/apps/anonymous-user-management/users',
+    path: 'admin/apps/anonymous-user-management/users',
     isSeparator: false,
     isActive: false,
   },
@@ -23,7 +23,7 @@ const usersBreadcrumbs: Array<PageLink> = [
 const UserMediaBreadCrumbs: Array<PageLink> = [
   {
     title: 'Anonymous User Management - UserMedia',
-    path: '/apps/anonymous-user-management/user-media/photos',
+    path: 'admin/apps/anonymous-user-management/user-media/photos',
     isSeparator: false,
     isActive: false,
   },

@@ -1,17 +1,24 @@
 import moment from 'moment'
 
+//  31-01-2024 added a toLocaleString in this all functions
+
 export const DateTimeFormatter = (date) => {
-  return moment(date).format('DD/MM/YYYY')
+  let localDate = moment(date).toLocaleString()
+  return moment(localDate).format('DD/MM/YYYY')
 }
 
 export const DateWithTimeFormatter = (date) => {
-  return moment(date).format('DD/MM/YYYY hh:mm a')
+  let localDate = moment(date).toLocaleString()
+  return moment(localDate).format('DD/MM/YYYY hh:mm a')
 }
 
 export const TimeFormatter = (date) => {
-  return moment(date).format('hh:mm a')
+  let localDate = moment(date).toLocaleString()
+  return moment(localDate).format('hh:mm a')
 }
-// moment("1999-03-22").isBefore(moment().subtract(18, "years"))
+
+export const convertUserTableDate = (dateString) => moment(dateString).format('DD MMM YY')
+export const convertUserTableTime = (dateString) => moment(dateString).format('hh:mm a')
 
 export const calculateTimeDifference = (givenTime: any) => {
   const currentTime = new Date()
@@ -46,12 +53,13 @@ export const calculateTimeDifferenceForChatMessage = (givenTime: any) => {
   const timeDifferenceInMinutes = timeDifferenceInSeconds / 60
   const timeDifferenceInHours = timeDifferenceInMinutes / 60
 
+  let localDate = moment(pastTime).toLocaleString()
   if (timeDifferenceInHours >= 48) {
-    return moment(pastTime).format('DD/MM/YYYY')
+    return moment(localDate).format('DD/MM/YYYY')
   } else if (timeDifferenceInHours <= 48 && timeDifferenceInHours >= 24) {
     return `Yesterday`
   } else {
-    return moment(pastTime).format('hh:mm a')
+    return moment(localDate).format('hh:mm a')
   }
 }
 
@@ -63,10 +71,11 @@ export const calculateTimeDifferenceForActivity = (givenTime: any) => {
   const timeDifferenceInMinutes = timeDifferenceInSeconds / 60
   const timeDifferenceInHours = timeDifferenceInMinutes / 60
 
+  let localDate = moment(pastTime).toLocaleString()
   if (timeDifferenceInHours >= 24) {
-    return moment(pastTime).format('hh:mm a DD-MMM-YYYY')
+    return moment(localDate).format('hh:mm a DD-MMM-YYYY')
   } else {
-    return moment(pastTime).format('hh:mm a')
+    return moment(localDate).format('hh:mm a')
   }
 }
 

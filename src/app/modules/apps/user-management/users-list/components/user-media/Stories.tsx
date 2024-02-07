@@ -24,7 +24,7 @@ const Stories = () => {
   const [pageSize, setPageSize] = useState(10)
   const [totalPage, setTotalPage] = useState(15)
   const [storyList, setStoryList] = useState([])
-  const [filter, setFilter] = useState({userId: '', isPrivate: ''})
+  const [filter, setFilter] = useState({userId: '', isPrivate: '', userName: ''})
   const [selectedUser, setSelectedUser] = useState<any>([])
   const [userStoryCredit, setuserStoryCredit] = useState<any>(0)
   const [storyUserId, setstoryUserId] = useState<any>(0)
@@ -34,11 +34,17 @@ const Stories = () => {
   const [lightBoxArrayList, setLightBoxArrayList] = useState<any>([])
 
   useEffect(() => {
-    getAllStoryList(page, pageSize, filter.isPrivate, filter.userId)
+    getAllStoryList(page, pageSize, filter.isPrivate, filter.userId, filter.userName)
   }, [])
 
-  const getAllStoryList = async (page: any, pageSize: any, isPrivate: any, userId: any) => {
-    let result = await getAllStories(page, pageSize, isPrivate, userId)
+  const getAllStoryList = async (
+    page: any,
+    pageSize: any,
+    isPrivate: any,
+    userId: any,
+    userName: any
+  ) => {
+    let result = await getAllStories(page, pageSize, isPrivate, userId, userName)
     if (result.status === 200) {
       setStoryList(result.data)
       setTotalPage(result.totalPage)
@@ -50,12 +56,12 @@ const Stories = () => {
     if (page === 0 || page === 1) {
       page = 1
     }
-    getAllStoryList(page, pageSize, filter.isPrivate, filter.userId)
+    getAllStoryList(page, pageSize, filter.isPrivate, filter.userId, filter.userName)
     //getActivitiesList(page, pageSize, type)
   }
 
   const filterMedia = () => {
-    getAllStoryList(page, pageSize, filter.isPrivate, filter.userId)
+    getAllStoryList(page, pageSize, filter.isPrivate, filter.userId, filter.userName)
   }
 
   const handleSelectChange = (type: any, mediaId: any) => {
@@ -91,7 +97,7 @@ const Stories = () => {
     if (result.status === 200) {
       setSelectedUser([])
       ToastUtils({type: 'success', message: 'Story Is Deleted'})
-      getAllStoryList(page, pageSize, filter.isPrivate, filter.userId)
+      getAllStoryList(page, pageSize, filter.isPrivate, filter.userId, filter.userName)
     } else {
       ErrorToastUtils()
     }
@@ -100,7 +106,7 @@ const Stories = () => {
   const DeleteSingleStory = async (userID: any, storyID: any) => {
     let result = await deleteUserStory(userID, storyID)
     if (result.status === 200) {
-      getAllStoryList(page, pageSize, filter.isPrivate, filter.userId)
+      getAllStoryList(page, pageSize, filter.isPrivate, filter.userId, filter.userName)
       ToastUtils({type: 'success', message: 'Your story has Removed'})
     } else {
       ToastUtils({type: 'error', message: 'Error in Deleting story'})
@@ -110,7 +116,7 @@ const Stories = () => {
   const updateCreditofStory = async () => {
     let result = await UpdateUserStory(userStoryCredit, storyUserId, storyId)
     if (result.status === 200) {
-      getAllStoryList(page, pageSize, filter.isPrivate, filter.userId)
+      getAllStoryList(page, pageSize, filter.isPrivate, filter.userId, filter.userName)
       ToastUtils({type: 'success', message: 'Your Story is Updated'})
       setuserStoryCredit(0)
       setStoryId(0)
@@ -122,7 +128,7 @@ const Stories = () => {
   const reuploadStory = async (userId: any, mediaId: any) => {
     let result = await ReUploadUserStory(userId, mediaId)
     if (result.status === 200) {
-      getAllStoryList(page, pageSize, filter.isPrivate, filter.userId)
+      getAllStoryList(page, pageSize, filter.isPrivate, filter.userId, filter.userName)
       ToastUtils({type: 'success', message: 'Your Story is Uploaded'})
     } else {
       ToastUtils({type: 'error', message: 'Error in Uploading Story'})
@@ -134,23 +140,23 @@ const Stories = () => {
     if (result.status === 200) {
       setSelectedUser([])
       ToastUtils({type: 'success', message: 'Story Is Reuploaded'})
-      getAllStoryList(page, pageSize, filter.isPrivate, filter.userId)
+      getAllStoryList(page, pageSize, filter.isPrivate, filter.userId, filter.userName)
     } else {
       ErrorToastUtils()
     }
   }
 
   const filterUsingUid = (userID: any, mediaId: any) => {
-    getAllStoryList(page, pageSize, filter.isPrivate, userID)
-    setFilter({userId: userID, isPrivate: ''})
+    getAllStoryList(page, pageSize, filter.isPrivate, userID, filter.userName)
+    setFilter({userId: userID, isPrivate: '', userName: ''})
     // let oldStoryArray = [...selectedUser]
     // oldStoryArray.push(mediaId)
     // setSelectedUser(oldStoryArray)
   }
 
   const clearFilter = () => {
-    setFilter({userId: '', isPrivate: ''})
-    getAllStoryList(page, pageSize, '', '')
+    setFilter({userId: '', isPrivate: '', userName: ''})
+    getAllStoryList(page, pageSize, '', '', '')
   }
 
   const handleaddMediaforLightbox = (url: string) => {
@@ -165,7 +171,7 @@ const Stories = () => {
       <div className='card py-4 px-4 mb-5'>
         <div className='d-flex justify-content-between'>
           <div className='row'>
-            <div className='col-6'>
+            <div className='col-4'>
               <input
                 placeholder='Search By User ID'
                 type='text'
@@ -176,7 +182,18 @@ const Stories = () => {
                 onChange={(e) => setFilter({...filter, userId: e.target.value})}
               />
             </div>
-            <div className='col-6'>
+            <div className='col-4'>
+              <input
+                placeholder='Search By User Name'
+                type='text'
+                name='search'
+                className={clsx('form-control form-control-solid mb-3 mb-lg-0')}
+                autoComplete='off'
+                value={filter.userName}
+                onChange={(e) => setFilter({...filter, userName: e.target.value})}
+              />
+            </div>
+            <div className='col-4'>
               <select
                 className='form-select form-select-solid fw-bolder'
                 data-kt-select2='true'
@@ -214,16 +231,13 @@ const Stories = () => {
               <h4>SEARCH RESULT {storyCount} STORIES </h4>
             </div>
 
-            <div>
-              <button
-                type='submit'
-                className={'btn btn-primary'}
-                onClick={clearFilter}
-                // disabled={!isAnyProfileChanges}
-              >
-                <i className='fa-solid fa-close'></i>
-              </button>
-            </div>
+            {(filter.userId.length !== 0 || filter.userName.length !== 0) && (
+              <div>
+                <button type='submit' className={'btn btn-primary'} onClick={clearFilter}>
+                  <i className='fa-solid fa-close'></i>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -388,7 +402,7 @@ const Stories = () => {
                         <Dropdown.Menu>
                           <Dropdown.Item>
                             <Link
-                              to={`/apps/users-profile/media/${story?.userDetail?.userId}`}
+                              to={`/admin/apps/users-profile/media/${story?.userDetail?.userId}`}
                               style={{color: 'black'}}
                             >
                               Edit Profile

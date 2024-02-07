@@ -8,7 +8,7 @@ import Stories from './users-list/components/user-media/Stories'
 const usersBreadcrumbs: Array<PageLink> = [
   {
     title: 'User Management',
-    path: '/apps/user-management/users',
+    path: 'admin/apps/user-management/users',
     isSeparator: false,
     isActive: false,
   },
@@ -23,7 +23,7 @@ const usersBreadcrumbs: Array<PageLink> = [
 const UserMediaBreadCrumbs: Array<PageLink> = [
   {
     title: 'User Management - UserMedia',
-    path: '/apps/user-management/user-media/photos',
+    path: 'admin/apps/user-management/user-media/photos',
     isSeparator: false,
     isActive: false,
   },

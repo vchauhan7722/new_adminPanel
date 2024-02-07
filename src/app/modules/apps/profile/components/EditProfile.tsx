@@ -13,10 +13,8 @@ import {
   removeUserInterest,
   updateUserQuestionAnswerForProfile,
 } from '../../../../../API/api-endpoint'
-import '../../../../../_metronic/assets/css/react-phone-number-input.css'
 import ToastUtils, {ErrorToastUtils} from '../../../../../utils/ToastUtils'
 import PhoneInput from 'react-phone-input-2'
-// import PhoneInput from 'react-phone-number-input/input'
 import 'react-phone-input-2/lib/style.css'
 import {GetIDFromURL, getEighteenYearsOldDate, validateEmail} from '../../../../../utils/Utils'
 import {useLocation} from 'react-router-dom'
@@ -56,7 +54,7 @@ const EditProfile = (props) => {
   })
 
   const [oldUserName, setOldUserName] = useState(user?.userName)
-  const [phone, setPhone] = useState('')
+  const [phoneMaxLength, setPhoneMaxLength] = useState(15)
 
   useEffect(() => {
     setProfileDetailsFormValue({
@@ -533,8 +531,7 @@ const EditProfile = (props) => {
     ) {
       ToastUtils({type: 'error', message: 'Please Select Location'})
     } else if (
-      profileDetailsFormValue?.mobileNo.length < 10 ||
-      profileDetailsFormValue?.mobileNo.length > 10
+      profileDetailsFormValue?.mobileNo.length > phoneMaxLength // || profileDetailsFormValue?.mobileNo.length > 10
     ) {
       ToastUtils({type: 'error', message: 'Enter Valid Number'})
     } else {
@@ -671,19 +668,33 @@ const EditProfile = (props) => {
                   inputClass='w-100'
                   //enableSearch
                   onChange={(phone: string, country: any) => {
-                    if (phone.length !== 0) {
-                      const reducedPhone = phone.replace(country.dialCode, '')
-                      setProfileDetailsFormValue({
-                        ...profileDetailsFormValue,
-                        ['countryCode']: country.dialCode,
-                        ['mobileNo']: reducedPhone,
-                      })
-                      setisAnyProfileChanges(true)
+                    //console.log('country.format', country.format)
+                    const maxLength = country ? country.format.split(' ').join('').length : 15
+                    setisAnyProfileChanges(true)
+                    setPhoneMaxLength(maxLength)
+                    let reducedPhone = phone.replace(country.dialCode, '')
+
+                    //console.log('reducedPhone.length < maxLength', reducedPhone.length, maxLength)
+
+                    // Truncate the phone number if it exceeds the maximum length
+                    if (reducedPhone.length < maxLength) {
+                      reducedPhone = reducedPhone.slice(0, maxLength)
+
+                      // console.log('reducedPhone.length', reducedPhone.length)
+
+                      if (reducedPhone.length !== 0) {
+                        setProfileDetailsFormValue({
+                          ...profileDetailsFormValue,
+                          ['countryCode']: country.dialCode,
+                          ['mobileNo']: reducedPhone,
+                        })
+                        setisAnyProfileChanges(true)
+                      }
                     }
                   }}
-                  // inputProps={{
-                  //   maxLength: phone.length, // Set the initial maxLength
-                  // }}
+                  inputProps={{
+                    maxLength: 15, // Set a default maxLength
+                  }}
                 />
 
                 {/* end::Input */}

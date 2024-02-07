@@ -76,8 +76,8 @@ const DiscoverGame = () => {
 
     let result1 = await getConfigurationByName('like-profile')
     if (result1.status === 200) {
-      let parsedData = JSON.parse(result.data.values)
-      setLikeProfileConfigId(result.data.id)
+      let parsedData = JSON.parse(result1.data.values)
+      setLikeProfileConfigId(result1.data.id)
       setLikedProfileConfig({
         isEnabled: parsedData?.isEnabled,
         allowFreeUser: parsedData?.allowFreeUser,

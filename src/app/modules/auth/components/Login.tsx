@@ -43,10 +43,9 @@ export function Login() {
         saveAuth(Response.data)
         setCurrentUser(Response.data)
       } catch (error: any) {
-        //console.error(error.message)
         saveAuth(undefined)
-        ToastUtils({type: 'error', message: 'User Not Found'})
-        setStatus('The login details are incorrect')
+        ToastUtils({type: 'error', message: error.response?.data?.message || error.message})
+        setStatus(error.response?.data?.message)
         setSubmitting(false)
         setLoading(false)
       }

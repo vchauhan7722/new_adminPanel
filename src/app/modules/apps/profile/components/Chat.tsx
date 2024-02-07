@@ -11,8 +11,8 @@ import {calculateTimeDifferenceForChatMessage} from '../../../../../utils/DateUt
 import CustomPagination from '../../../../../_metronic/partials/componants/Pagination'
 import {ErrorToastUtils} from '../../../../../utils/ToastUtils'
 import {ChatInner} from './ChatInner'
-import { useLocation } from 'react-router-dom'
-import { GetIDFromURL } from '../../../../../utils/Utils'
+import {useLocation} from 'react-router-dom'
+import {GetIDFromURL} from '../../../../../utils/Utils'
 
 const Chat = (props) => {
   const {CurrentUser} = props
@@ -61,7 +61,7 @@ const Chat = (props) => {
       setTimeout(() => {
         setIsLoading(false)
       }, 500)
-      ErrorToastUtils()
+      //ErrorToastUtils()
     }
   }
 

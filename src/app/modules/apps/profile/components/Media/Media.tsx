@@ -1,5 +1,4 @@
 import React, {useRef, useState} from 'react'
-import {toAbsoluteUrl} from '../../../../../../_metronic/helpers'
 import MediaTable from './table/MediaTable'
 import {
   createMediaActionForUserMedia,
@@ -12,9 +11,6 @@ import {
 import ToastUtils, {ErrorToastUtils} from '../../../../../../utils/ToastUtils'
 import clsx from 'clsx'
 import LightBoxComponent from '../../../../../../_metronic/partials/componants/LightBoxComponent'
-import {DateWithTimeFormatter} from '../../../../../../utils/DateUtils'
-import {Dropdown} from 'react-bootstrap'
-import {CustomToggle} from '../../../../../../_metronic/partials/componants/CustomToggle'
 import {ImageCompressor} from '../../../../../../utils/ImageCompresser'
 import {useLocation} from 'react-router-dom'
 import Swal from 'sweetalert2'
@@ -24,7 +20,7 @@ const Media = (props: any) => {
   const {user, setUserUpdateFlag, userUpdateFlag} = props
 
   const location = useLocation()
-  let currentUserType = location.pathname.substring(6, 15) === 'anonymous' ? 'a' : 'n'
+  let currentUserType = location.pathname.substring(12, 21) === 'anonymous' ? 'a' : 'n'
 
   const hiddenMediaInput = useRef<HTMLInputElement>(document.createElement('input'))
 
@@ -215,7 +211,7 @@ const Media = (props: any) => {
 
       <div>
         <div className='p-5'>
-          <div className='card-header border-0 row'>
+          <div className='border-0 row d-flex g-3'>
             {userProfileMedia
               .sort((a: any, b: any) =>
                 a.isProfileImage === b.isProfileImage ? 0 : a.isProfileImage ? -1 : 1
@@ -225,20 +221,15 @@ const Media = (props: any) => {
                 handleaddMediaforLightbox(`${process.env.REACT_APP_SERVER_URL}/${userMedia.media}`)
 
                 return (
-                  <div className={userProfileMedia.length >= 6 ? 'col-1' : 'col-2'} key={index}>
-                    <div
-                      className='position-relative'
-
-                      // data-bs-toggle='modal'
-                      // data-bs-target='#full_width_image_modal'
-                    >
+                  <div className='col-md-auto' key={index}>
+                    <div className='position-relative'>
                       <img
                         alt='Pic'
                         src={`${process.env.REACT_APP_SERVER_URL}/${userMedia.media}`}
-                        width={userProfileMedia.length >= 6 ? '100' : '192'}
-                        height={userProfileMedia.length >= 6 ? '99' : '189'}
-                        // width='192'
-                        // height='189'
+                        // width={userProfileMedia.length >= 6 ? '100' : '192'}
+                        // height={userProfileMedia.length >= 6 ? '99' : '189'}
+                        width='150'
+                        height='149'
                         className='rounded'
                         onClick={() => {
                           setOpenLightBox(true)
@@ -247,8 +238,7 @@ const Media = (props: any) => {
                         }}
                         loading='lazy'
                       />
-                      <span className='position-absolute top-0 start-100'>
-                        {' '}
+                      <span className='position-absolute top-0 start-0'>
                         {/* start-100 */}
                         <div>
                           <button

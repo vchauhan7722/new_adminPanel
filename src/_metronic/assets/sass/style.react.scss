@@ -178,3 +178,67 @@ input[type="number"] {
 }
 
 /* this css for sweet alert customization end*/
+
+
+.photo-grid {
+  // display: grid;
+  // grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  // grid-gap: 10px;
+
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+} 
+
+.photo-container {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #ccc;
+}
+
+.photo {
+  width: 100%;
+  height: auto;
+}
+
+.menu-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: #ff0000; /* Red background color (adjust as needed) */
+  color: #fff; /* White text color */
+  border: none;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.input-group-addon {
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1;
+  color: #555;
+  text-align: center;
+  background-color: #eee;
+  border: 1px solid #ccc;
+  width: 1%;
+  white-space: nowrap;
+  vertical-align: middle;
+  display: table-cell;
+}
+
+// .input-group {
+//   position: relative;
+//   display: table;
+//   border-collapse: separate;
+// }
+
+.suffix {
+  border-radius: 4px 0px 0px 4px;
+}
+
+.suffix .input-group-addon {
+  border-left: 0;
+  border-radius: 0px 4px 4px 0px;
+}
+

@@ -7,7 +7,7 @@ import {Drawer} from './components/Drawer'
 const chatBreadCrumbs: Array<PageLink> = [
   {
     title: 'Chat',
-    path: '/apps/chat/private-chat',
+    path: 'admin/apps/chat/private-chat',
     isSeparator: false,
     isActive: false,
   },
@@ -50,7 +50,7 @@ const ChatPage = () => {
             </>
           }
         />
-        <Route index element={<Navigate to='/apps/chat/private-chat' />} />
+        <Route index element={<Navigate to='admin/apps/chat/private-chat' />} />
       </Route>
     </Routes>
   )

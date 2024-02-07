@@ -151,7 +151,7 @@ const UserVerification = () => {
 
                           <div className='d-flex flex-column'>
                             <Link
-                              to={`/apps/users-profile/activity/${userVerification?.userDetail?.userId}`}
+                              to={`admin/apps/users-profile/activity/${userVerification?.userDetail?.userId}`}
                               className='fw-bolder text-gray-800 text-hover-primary mb-1'
                             >
                               {userVerification?.userDetail?.fullName}

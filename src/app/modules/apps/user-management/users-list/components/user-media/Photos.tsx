@@ -27,21 +27,28 @@ const Photos = () => {
   const [pageSize, setPageSize] = useState(10)
   const [totalPage, setTotalPage] = useState(15)
   const [mediaList, setMediaList] = useState([])
-  const [filter, setFilter] = useState({userId: '', isPrivate: ''})
+  const [filter, setFilter] = useState({userId: '', isPrivate: '', userName: ''})
   const [selectedUser, setSelectedUser] = useState<any>([])
   const [openLightBox, setOpenLightBox] = useState(false)
   const [lightBoxArrayList, setLightBoxArrayList] = useState<any>([])
   const [photosCount, setPhotosCount] = useState<any>(0)
 
   useEffect(() => {
-    getAllMediaList(page, pageSize, filter.isPrivate, filter.userId)
+    getAllMediaList(page, pageSize, filter.isPrivate, filter.userId, filter.userName)
   }, [])
 
-  const getAllMediaList = async (page: any, pageSize: any, isPrivate: any, userId: any) => {
-    let result = await getAllMedia(page, pageSize, isPrivate, userId)
+  const getAllMediaList = async (
+    page: any,
+    pageSize: any,
+    isPrivate: any,
+    userId: any,
+    userName: any
+  ) => {
+    let result = await getAllMedia(page, pageSize, isPrivate, userId, userName)
     if (result.status === 200) {
       setMediaList(result.data)
       setTotalPage(result.totalPage)
+      setPhotosCount(result.count)
     }
   }
 
@@ -49,12 +56,12 @@ const Photos = () => {
     if (page === 0 || page === 1) {
       page = 1
     }
-    getAllMediaList(page, pageSize, filter.isPrivate, filter.userId)
+    getAllMediaList(page, pageSize, filter.isPrivate, filter.userId, filter.userName)
     //getActivitiesList(page, pageSize, type)
   }
 
   const filterMedia = () => {
-    getAllMediaList(page, pageSize, filter.isPrivate, filter.userId)
+    getAllMediaList(page, pageSize, filter.isPrivate, filter.userId, filter.userName)
   }
 
   const handleSelectChange = (type: any, mediaId: any) => {
@@ -90,7 +97,7 @@ const Photos = () => {
     if (result.status === 200) {
       setSelectedUser([])
       ToastUtils({type: 'success', message: 'Media Is Deleted'})
-      getAllMediaList(page, pageSize, filter.isPrivate, filter.userId)
+      getAllMediaList(page, pageSize, filter.isPrivate, filter.userId, filter.userName)
     } else {
       ErrorToastUtils()
     }
@@ -108,7 +115,7 @@ const Photos = () => {
   const DeleteSingleMedia = async (userID: any, mediaId: any) => {
     let result = await removeMediaActionForUserMedia(userID, mediaId)
     if (result.status === 200) {
-      getAllMediaList(page, pageSize, filter.isPrivate, filter.userId)
+      getAllMediaList(page, pageSize, filter.isPrivate, filter.userId, filter.userName)
       ToastUtils({type: 'success', message: 'Media Is Deleted'})
     } else {
       ErrorToastUtils()
@@ -118,7 +125,7 @@ const Photos = () => {
   const setMediaAsPrivate = async (userID: any, mediaId: any, typeValue: any) => {
     let result = await updateMediaActionForUserMedia(userID, mediaId, 'isPrivate', typeValue)
     if (result.status === 200) {
-      getAllMediaList(page, pageSize, filter.isPrivate, filter.userId)
+      getAllMediaList(page, pageSize, filter.isPrivate, filter.userId, filter.userName)
       ToastUtils({type: 'success', message: !typeValue ? 'Media Is Public' : 'Media Is Private'})
     } else {
       ErrorToastUtils()
@@ -133,13 +140,13 @@ const Photos = () => {
   }
 
   const filterUsingUid = (userID: any, mediaId: any) => {
-    getAllMediaList(page, pageSize, filter.isPrivate, userID)
-    setFilter({userId: userID, isPrivate: ''})
+    getAllMediaList(page, pageSize, filter.isPrivate, userID, filter.userName)
+    setFilter({userId: userID, isPrivate: '', userName: ''})
   }
 
   const clearFilter = () => {
-    setFilter({userId: '', isPrivate: ''})
-    getAllMediaList(page, pageSize, '', '')
+    setFilter({userId: '', isPrivate: '', userName: ''})
+    getAllMediaList(page, pageSize, '', '', '')
   }
 
   return (
@@ -147,7 +154,7 @@ const Photos = () => {
       <div className='card py-4 px-4 mb-5'>
         <div className='d-flex justify-content-between'>
           <div className='row'>
-            <div className='col-6'>
+            <div className='col-4'>
               <input
                 placeholder='Search By User ID'
                 type='text'
@@ -158,7 +165,18 @@ const Photos = () => {
                 onChange={(e) => setFilter({...filter, userId: e.target.value})}
               />
             </div>
-            <div className='col-6'>
+            <div className='col-4'>
+              <input
+                placeholder='Search By User Name'
+                type='text'
+                name='search'
+                className={clsx('form-control form-control-solid mb-3 mb-lg-0')}
+                autoComplete='off'
+                value={filter.userName}
+                onChange={(e) => setFilter({...filter, userName: e.target.value})}
+              />
+            </div>
+            <div className='col-4'>
               <select
                 className='form-select form-select-solid fw-bolder'
                 data-kt-select2='true'
@@ -196,7 +214,7 @@ const Photos = () => {
               <h4>SEARCH RESULT {photosCount} PHOTOS </h4>
             </div>
 
-            {filter.userId.length !== 0 && (
+            {(filter.userId.length !== 0 || filter.userName.length !== 0) && (
               <div>
                 <button type='submit' className={'btn btn-primary'} onClick={clearFilter}>
                   <i className='fa-solid fa-close'></i>
@@ -357,7 +375,7 @@ const Photos = () => {
                         <Dropdown.Menu>
                           <Dropdown.Item>
                             <Link
-                              to={`/apps/users-profile/media/${media?.userDetail?.userId}`}
+                              to={`/admin/apps/users-profile/media/${media?.userDetail?.userId}`}
                               style={{color: 'black'}}
                             >
                               Edit Profile

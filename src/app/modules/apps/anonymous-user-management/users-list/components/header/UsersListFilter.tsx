@@ -28,7 +28,7 @@ const UsersListFilter = () => {
     startDate: '', //new Date().toLocaleDateString('en-CA')
     endDate: '', //new Date().toLocaleDateString('en-CA')
     gender: '',
-    orderBy: '',
+    orderBy: 'userId',
     country: '',
     state: '',
     city: '',
@@ -37,6 +37,7 @@ const UsersListFilter = () => {
     isVerify: '',
     isWithStory: '',
     completeProfile: '',
+    activatedUser: 'activate',
   })
   const [allCountryList, setallCountryList] = useState<any>([])
   const [allStateList, setallStateList] = useState<Array<any> | undefined>([])
@@ -52,7 +53,7 @@ const UsersListFilter = () => {
   }, [])
 
   const resetData = () => {
-    updateState({filter: undefined, ...initialQueryState})
+    setIsStateInputVisible(false)
     setFormValue({
       search: '',
       startAge: 18,
@@ -69,7 +70,9 @@ const UsersListFilter = () => {
       isVerify: '',
       isWithStory: '',
       completeProfile: '',
+      activatedUser: 'activate',
     })
+    updateState({filter: undefined, ...initialQueryState})
   }
 
   //this 3 useEffect are for Get Location
@@ -143,7 +146,7 @@ const UsersListFilter = () => {
 
     if (inputValue.length > 3) {
       const filteredSuggestions = await getStateBYSearch(inputValue)
-      console.log('filteredSuggestions', filteredSuggestions)
+      //console.log('filteredSuggestions', filteredSuggestions)
       //setIsLoading(false)
       setStateSuggestion(filteredSuggestions.data)
     } else if (inputValue.length === 0) {
@@ -250,7 +253,7 @@ const UsersListFilter = () => {
                   </div>
                 </div>
                 <div className='row p-4'>
-                  <div className='col-lg-4'>
+                  <div className='col-lg-3'>
                     <label className='form-label fs-6 fw-bold'>
                       {intl.formatMessage({id: 'USERMANAGEMENT.FILTER.ENDAGE'})} {formValue.endAge}
                     </label>
@@ -265,7 +268,7 @@ const UsersListFilter = () => {
                       max='100'
                     />
                   </div>
-                  <div className='col-lg-4'>
+                  <div className='col-lg-3'>
                     <label className='form-label fs-6 fw-bold'>
                       {intl.formatMessage({id: 'USERMANAGEMENT.FILTER.GENDER'})}
                     </label>
@@ -286,7 +289,7 @@ const UsersListFilter = () => {
                       <option value='2'>Female</option>
                     </select>
                   </div>
-                  <div className='col-lg-4'>
+                  <div className='col-lg-3'>
                     <label className='form-label fs-6 fw-bold'>
                       {intl.formatMessage({id: 'USERMANAGEMENT.FILTER.ORDERBY'})}
                     </label>
@@ -298,7 +301,7 @@ const UsersListFilter = () => {
                       data-kt-user-table-filter='orderby'
                       data-hide-search='true'
                       name='orderBy'
-                      defaultValue={'last_connection'}
+                      defaultValue={'userId'}
                       value={formValue.orderBy}
                       onChange={(e) => handleChange(e)}
                     >
@@ -306,7 +309,26 @@ const UsersListFilter = () => {
                       <option value='userId'>ID</option>
                       <option value='totalCredit'>Credits</option>
                       <option value='isPopular'>Popular</option>
-                      <option value='isSpotlightUser'>Spotlight</option>
+                    </select>
+                  </div>
+
+                  <div className='col-lg-3'>
+                    <label className='form-label fs-6 fw-bold'>User Status</label>
+                    <select
+                      className='form-select form-select-solid fw-bolder'
+                      data-kt-select2='true'
+                      data-placeholder='Select option'
+                      data-allow-clear='true'
+                      data-kt-user-table-filter='gender'
+                      data-hide-search='true'
+                      //defaultValue=''
+                      name='activatedUser'
+                      value={formValue.activatedUser}
+                      onChange={(e) => handleChange(e)}
+                    >
+                      <option value='all'>All</option>
+                      <option value='activate'>Activated Only</option>
+                      <option value='deactivate'>Deactivated Only</option>
                     </select>
                   </div>
                 </div>
@@ -368,7 +390,6 @@ const UsersListFilter = () => {
                         <input
                           type='text'
                           className='form-control form-control-lg form-control-solid'
-                          placeholder='Register Date'
                           name='state'
                           value={formValue.state}
                           onChange={(e) => setIsStateInputVisible(false)}
@@ -420,7 +441,7 @@ const UsersListFilter = () => {
                       defaultInputValue={formValue?.city}
                       labelKey='name'
                       onChange={(e: any) => {
-                        console.log('e', e)
+                        //console.log('e', e)
                         if (e.length !== 0) {
                           let locationName = e[0]
                           setFormValue({

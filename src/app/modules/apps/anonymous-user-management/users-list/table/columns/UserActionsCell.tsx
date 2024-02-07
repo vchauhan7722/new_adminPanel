@@ -1,18 +1,28 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import {FC, useEffect} from 'react'
 import {MenuComponent} from '../../../../../../../_metronic/assets/ts/components'
-import {ID} from '../../../../../../../_metronic/helpers'
+import {ID, QUERIES} from '../../../../../../../_metronic/helpers'
 import {useListView} from '../../core/ListViewProvider'
 import {Link} from 'react-router-dom'
+import {activeInactiveUser, deleteUserAccount} from '../../../../../../../API/api-endpoint'
+import ToastUtils from '../../../../../../../utils/ToastUtils'
+import Swal from 'sweetalert2'
+import {initialQueryState, KTIcon} from '../../../../../../../_metronic/helpers'
+import {useQueryRequest} from '../../core/QueryRequestProvider'
+import {QueryResponseProvider, useQueryResponse} from '../../core/QueryResponseProvider'
+import {useQueryClient, useMutation} from 'react-query'
 
 type Props = {
   userId: ID
+  status: boolean
 }
 
-const UserActionsCell: FC<Props> = ({userId}) => {
-  const {setItemIdForUpdate} = useListView()
-  // const {query} = useQueryResponse()
-  // const queryClient = useQueryClient()
+const UserActionsCell: FC<Props> = ({userId, status}) => {
+  const {setItemIdForUpdate, clearSelected} = useListView()
+  const {updateState} = useQueryRequest()
+
+  const {query} = useQueryResponse()
+  const queryClient = useQueryClient()
 
   useEffect(() => {
     MenuComponent.reinitialization()
@@ -22,7 +32,7 @@ const UserActionsCell: FC<Props> = ({userId}) => {
     setItemIdForUpdate(userId)
   }
 
-  // const deleteItem = useMutation(() => deleteUser(id), {
+  // const deleteUser = useMutation(() => deleteUser(id), {
   //   // 💡 response of the mutation is passed to onSuccess
   //   onSuccess: () => {
   //     // ✅ update detail view directly
@@ -30,8 +40,51 @@ const UserActionsCell: FC<Props> = ({userId}) => {
   //   },
   // })
 
-  const deleteItem = () => {
-    console.log('delete')
+  const deleteUser = async () => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        let result = await deleteUserAccount(userId)
+        if (result.status === 200) {
+          ToastUtils({type: 'success', message: result.message})
+          queryClient.invalidateQueries([`${QUERIES.USERS_LIST}-${query}`])
+          clearSelected()
+        } else {
+          ToastUtils({type: 'error', message: result.message})
+        }
+      }
+    })
+  }
+
+  const UpdateUserStatus = async (status: any) => {
+    Swal.fire({
+      title: `Are you sure about to ${status === true ? 'Deactivate User' : 'Activate User'} ?`,
+      //text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, update it!',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        let result = await activeInactiveUser([userId], !status)
+
+        if (result.status === 200) {
+          ToastUtils({type: 'success', message: result.message})
+          queryClient.invalidateQueries([`${QUERIES.USERS_LIST}-${query}`])
+          clearSelected()
+        } else {
+          ToastUtils({type: 'error', message: result.message})
+        }
+      }
+    })
   }
 
   return (
@@ -72,8 +125,8 @@ const UserActionsCell: FC<Props> = ({userId}) => {
           <Link
             className='menu-link px-3'
             data-kt-users-table-filter='delete_row'
-            onClick={() => deleteItem()}
-            to={`/apps/anonymous-user/users-profile/edit-profile/${userId}`}
+            // onClick={() => deleteUser()}
+            to={`/admin/apps/anonymous-user/users-profile/edit-profile/${userId}`}
           >
             Edit Account
           </Link>
@@ -85,8 +138,8 @@ const UserActionsCell: FC<Props> = ({userId}) => {
           <Link
             className='menu-link px-3'
             data-kt-users-table-filter='delete_row'
-            onClick={() => deleteItem()}
-            to={`/apps/anonymous-user/users-profile/media/${userId}`}
+            // onClick={() => deleteUser()}
+            to={`/admin/apps/anonymous-user/users-profile/media/${userId}`}
           >
             Edit Media Files
           </Link>
@@ -95,10 +148,18 @@ const UserActionsCell: FC<Props> = ({userId}) => {
 
         {/* begin::Menu item */}
         <div className='menu-item px-3'>
+          <Link
+            className='menu-link px-3'
+            data-kt-users-table-filter='delete_row'
+            // onClick={() => deleteUser()}
+            to={`/admin/apps/anonymous-user/users-profile/reels/${userId}`}
+          >
+            Upload Reel
+          </Link>
           <a
             className='menu-link px-3'
             data-kt-users-table-filter='delete_row'
-            onClick={() => deleteItem()}
+            // onClick={() => deleteUser()}
           >
             Upload Reel
           </a>
@@ -110,7 +171,7 @@ const UserActionsCell: FC<Props> = ({userId}) => {
           <a
             className='menu-link px-3'
             data-kt-users-table-filter='delete_row'
-            onClick={() => deleteItem()}
+            onClick={() => deleteUser()}
           >
             Delete Account
           </a>
@@ -122,7 +183,19 @@ const UserActionsCell: FC<Props> = ({userId}) => {
           <a
             className='menu-link px-3'
             data-kt-users-table-filter='delete_row'
-            onClick={() => deleteItem()}
+            onClick={() => UpdateUserStatus(status)}
+          >
+            {status === true ? 'Deactivate User' : 'Activate User'}
+          </a>
+        </div>
+        {/* end::Menu item */}
+
+        {/* begin::Menu item */}
+        <div className='menu-item px-3'>
+          <a
+            className='menu-link px-3'
+            data-kt-users-table-filter='delete_row'
+            // onClick={() => deleteUser()}
           >
             Delete User And Ban Email
           </a>
@@ -134,7 +207,7 @@ const UserActionsCell: FC<Props> = ({userId}) => {
           <a
             className='menu-link px-3'
             data-kt-users-table-filter='delete_row'
-            onClick={() => deleteItem()}
+            // onClick={() => deleteUser()}
           >
             Delete User And Ban Ip
           </a>

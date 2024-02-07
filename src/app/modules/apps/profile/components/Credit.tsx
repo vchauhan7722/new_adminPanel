@@ -125,7 +125,7 @@ const Credit = () => {
               <li className='nav-item'>
                 <div
                   className={
-                    `nav-link text-active-primary me-6 ` + (tabValue === 'all' && 'active')
+                    `pointer nav-link text-active-primary me-6 ` + (tabValue === 'all' && 'active')
                   }
                   onClick={() => handleChange('all')}
                 >
@@ -135,7 +135,8 @@ const Credit = () => {
               <li className='nav-item'>
                 <div
                   className={
-                    `nav-link text-active-primary me-6 ` + (tabValue === 'credit' && 'active')
+                    `pointer nav-link text-active-primary me-6 ` +
+                    (tabValue === 'credit' && 'active')
                   }
                   onClick={() => handleChange('credit')}
                 >
@@ -145,7 +146,8 @@ const Credit = () => {
               <li className='nav-item'>
                 <div
                   className={
-                    `nav-link text-active-primary me-6 ` + (tabValue === 'debit' && 'active')
+                    `pointer nav-link text-active-primary me-6 ` +
+                    (tabValue === 'debit' && 'active')
                   }
                   onClick={() => handleChange('debit')}
                 >

@@ -13,11 +13,13 @@ import {useState, useEffect} from 'react'
 import {Chat} from './components/Chat'
 import Media from './components/Media/Media'
 import Credit from './components/Credit'
+import History from './components/History'
+import Interaction from './components/Interaction/InteractionIndex'
 
 const profileBreadCrumbs: Array<PageLink> = [
   {
     title: 'Profile',
-    path: '/apps/users-profile/activity',
+    path: 'admin/apps/users-profile/activity',
     isSeparator: false,
     isActive: false,
   },
@@ -184,7 +186,7 @@ const ProfilePage = () => {
               <PageTitle breadcrumbs={profileBreadCrumbs}>
                 {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.HISTORY'})}
               </PageTitle>
-              <div>History</div>
+              <History />
             </>
           }
         />
@@ -210,7 +212,18 @@ const ProfilePage = () => {
             </>
           }
         />
-        <Route index element={<Navigate to='/apps/users-profile/activity' />} />
+        <Route
+          path='/interaction/:id'
+          element={
+            <>
+              <PageTitle breadcrumbs={profileBreadCrumbs}>
+                {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.INTERACTION'})}
+              </PageTitle>
+              <Interaction />
+            </>
+          }
+        />
+        <Route index element={<Navigate to='admin/apps/users-profile/activity' />} />
       </Route>
     </Routes>
   )

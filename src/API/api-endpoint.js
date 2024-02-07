@@ -47,6 +47,53 @@ export const getUser = async (userID) => {
   }
 }
 
+export const deleteUserAccount = async (userID) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+
+    const apiUrl = `${APIURL}/api/v1/users/${userID}`
+
+    let response = await axios.delete(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken,
+      },
+    })
+
+    return response.data
+  } catch (error) {
+    return error.message
+  }
+}
+
+export const activeInactiveUser = async (userIDs, status) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+    // /api/v1/anonymous/users/21/updatestatus?status=true
+
+    let formdata = new FormData()
+    formdata = {
+      userIds: userIDs,
+      status:status
+    }
+
+    const apiUrl = `${APIURL}/api/v1/anonymous/users/updatestatus`
+
+    let response = await axios.put(apiUrl, formdata, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken,
+      },
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
 export const registerNewUser = async (profilePic, newUserData) => {
   let accessToken = localStorage.getItem('accessToken')
   let formdata = new FormData()
@@ -555,7 +602,6 @@ export const removeUserInterest = async (userID, interestId) => {
 export const addQuestions = async (question, order, inputType, genderId, questionIcon) => {
   try {
     let accessToken = localStorage.getItem('accessToken')
-    console.log(typeof genderId)
     let formdata = new FormData()
     if (genderId === 0) {
       formdata = {
@@ -563,7 +609,7 @@ export const addQuestions = async (question, order, inputType, genderId, questio
         order: order,
         inputType: inputType,
         questionIcon: questionIcon,
-      }
+      } 
     } else {
       formdata = {
         question: question,
@@ -571,7 +617,7 @@ export const addQuestions = async (question, order, inputType, genderId, questio
         inputType: inputType,
         genderId: parseInt(genderId),
         questionIcon: questionIcon,
-      }
+      } 
     }
 
     const apiUrl = `${APIURL}/api/v1/masters/questions`
@@ -985,6 +1031,31 @@ export const getUserCreditsHistoryWithPagination = async (
   }
 }
 
+export const getUserPurchaseHistoryWithPagination = async (
+  userID,
+  page,
+  pageSize,
+) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+
+    const apiUrl = `${APIURL}/api/v1/web/users/${userID}/purchase/history?page=${page}&pageSize=${pageSize}`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken,
+      },
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
 export const UpdateUserDetailsByUID = async (UID, newUserData) => {
   try {
     let accessToken = localStorage.getItem('accessToken')
@@ -1120,7 +1191,7 @@ export const AddOrUpdateCreditByUID = async (UID, type, credit) => {
   }
 }
 
-export const AddOrUpdatePremiumByUID = async (UID, type, days, premiumPackageAmountId) => {
+export const AddOrUpdatePremiumByUID = async (UID, type, days, premiumPackageAmountId,paymentVia) => {
   try {
     let accessToken = localStorage.getItem('accessToken')
     let formData = new FormData()
@@ -1128,6 +1199,7 @@ export const AddOrUpdatePremiumByUID = async (UID, type, days, premiumPackageAmo
       type: type,
       days: days,
       premiumPackageAmountId: premiumPackageAmountId,
+      paymentVia:paymentVia,
     }
 
     const apiUrl = `${APIURL}/api/v1/web/users/${UID}/send/premium`
@@ -1501,11 +1573,11 @@ export const sendMessageUsingApi = async (message, userId, receiverId, chatRoomI
   }
 }
 
-export const getAllMedia = async (page, pageSize, isPrivate, userID) => {
+export const getAllMedia = async (page, pageSize, isPrivate, userID,userName) => {
   try {
     let accessToken = localStorage.getItem('accessToken')
     //  /api/v1/users/profile/media?page=1&pageSize=10&isPrivate=false&userId=35
-    const apiUrl = `${APIURL}/api/v1/users/profile/media?page=${page}&pageSize=${pageSize}&isPrivate=${isPrivate}&userId=${userID}`
+    const apiUrl = `${APIURL}/api/v1/users/profile/media?page=${page}&pageSize=${pageSize}&isPrivate=${isPrivate}&userId=${userID}&userName=${userName}`
 
     let response = await axios.get(apiUrl, {
       headers: {
@@ -1548,10 +1620,10 @@ export const deleteSelectedMedia = async (MediaId) => {
   }
 }
 
-export const getAllStories = async (page, pageSize, isPrivate, userID) => {
+export const getAllStories = async (page, pageSize, isPrivate, userID,userName) => {
   try {
     let accessToken = localStorage.getItem('accessToken')
-    const apiUrl = `${APIURL}/api/v1/users/all/stories?page=${page}&pageSize=${pageSize}&isPrivate=${isPrivate}&userId=${userID}`
+    const apiUrl = `${APIURL}/api/v1/users/all/stories?page=${page}&pageSize=${pageSize}&isPrivate=${isPrivate}&userId=${userID}&userName=${userName}`
 
     let response = await axios.get(apiUrl, {
       headers: {
@@ -1735,15 +1807,22 @@ export const getAllGift = async () => {
   }
 }
 
-export const CreateGift = async (name, categoryId, credit, giftFile) => {
+export const CreateGift = async (name, categoryId, categoryName,credit, giftFile) => {
   try {
     let formData = new FormData()
-    formData = {
-      name: name,
-      giftCategoryId: categoryId,
-      credit: credit,
-      gift: giftFile,
-    }
+    // formData = {
+    //   name: name,
+    //   giftCategoryId: categoryId,
+    //   credit: credit,
+    //   gift: giftFile,
+    // }
+
+    
+   let fileName = categoryName + "." + giftFile.name.split(".").pop()
+   formData.append('gift', giftFile, fileName) // fileData[i].name .split(".")[0] + ".webp"
+   formData.append(`credit`, credit) 
+   formData.append(`giftCategoryId`, categoryId) 
+   formData.append(`name`, name) 
 
     let accessToken = localStorage.getItem('accessToken')
 
@@ -1764,15 +1843,25 @@ export const CreateGift = async (name, categoryId, credit, giftFile) => {
   }
 }
 
-export const updateGifts = async (name, categoryId, credit, giftFile, giftId) => {
+export const updateGifts = async (name, categoryId,categoryName, credit, giftFile, giftId) => {
   try {
     let formData = new FormData()
-    formData = {
-      name: name,
-      giftCategoryId: categoryId,
-      credit: credit,
-      gift: giftFile,
+    // formData = {
+    //   name: name,
+    //   giftCategoryId: categoryId,
+    //   credit: credit,
+    //   gift: giftFile,
+    // }
+    
+    
+    if(giftFile !== undefined && giftFile !== null && giftFile.length !== 0){
+      let fileName = categoryName + "." + giftFile.name.split(".").pop()
+      formData.append('gift', giftFile, fileName) 
     }
+    // fileData[i].name .split(".")[0] + ".webp"
+    formData.append(`credit`, credit) 
+    formData.append(`giftCategoryId`, categoryId) 
+    formData.append(`name`, name) 
 
     console.log('formData', formData)
 
@@ -1872,6 +1961,26 @@ export const updateConfigurationByConfigID = async (ConfigID, values, gestureFil
 }
 
 // site-pricing plugin
+
+export const getCreditAndPremiumPackageAmountPlans = async () => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+    const apiUrl = `${APIURL}/api/v1/masters/packages/premium/credit`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken,
+      },
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
 
 export const getCreditPackageAmountPlans = async () => {
   try {
@@ -2050,6 +2159,56 @@ export const updatePremiumPackageAmountConfig = async (
   }
 }
 
+export const updateMultiplePremiumPackageAmountConfig = async (
+  premiumPackage
+) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+    const apiUrl = `${APIURL}/api/v1/masters/packages/premium/amounts`
+
+    let formData = {
+      premiumPackages: premiumPackage, 
+    }
+
+    let response = await axios.put(apiUrl, formData, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken,
+      },
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+//get users orders
+export const getUserOrdersList = async (page, pageSize,filter) => {
+
+  const {search,startDate,endDate,onlyPremium,onlyCredit,premiumPlanId,creditPlanId,OrderId} = filter
+
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+    const apiUrl = `${APIURL}/api/v1/users/purchase/order?page=${page}&pageSize=${pageSize}&search=${search}&startDate=${startDate}&endDate=${endDate}&onlyPremium=${onlyPremium}&onlyCredit=${onlyCredit}&premiumPlanId=${premiumPlanId}&creditPlanId=${creditPlanId}&OrderId=${OrderId}`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken,
+      },
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
 //verification system
 
 export const getUserVerificationList = async (page, pageSize) => {
@@ -2131,10 +2290,10 @@ export const getAllAnonymousUser = async (query) => {
   }
 }
 
-export const getAllUserAnonymousStories = async (page, pageSize, isPrivate, userID) => {
+export const getAllUserAnonymousStories = async (page, pageSize, isPrivate, userID,userName) => {
   try {
     let accessToken = localStorage.getItem('accessToken')
-    const apiUrl = `${APIURL}/api/v1/anonymous/users/stories?page=${page}&pageSize=${pageSize}&isPrivate=${isPrivate}&userId=${userID}`
+    const apiUrl = `${APIURL}/api/v1/anonymous/users/stories?page=${page}&pageSize=${pageSize}&isPrivate=${isPrivate}&userId=${userID}&userName=${userName}`
 
     let response = await axios.get(apiUrl, {
       headers: {
@@ -2151,10 +2310,10 @@ export const getAllUserAnonymousStories = async (page, pageSize, isPrivate, user
   }
 }
 
-export const getAllUserAnonymousMedia = async (page, pageSize, isPrivate, userID) => {
+export const getAllUserAnonymousMedia = async (page, pageSize, isPrivate, userID,userName) => {
   try {
     let accessToken = localStorage.getItem('accessToken')
-    const apiUrl = `${APIURL}/api/v1/anonymous/users/media?page=${page}&pageSize=${pageSize}&isPrivate=${isPrivate}&userId=${userID}` //&userName=${userName}
+    const apiUrl = `${APIURL}/api/v1/anonymous/users/media?page=${page}&pageSize=${pageSize}&isPrivate=${isPrivate}&userId=${userID}&userName=${userName}` //
 
     let response = await axios.get(apiUrl, {
       headers: {
@@ -2390,3 +2549,216 @@ export const UpdateFolderStructurePlugin = async (values,ConfigID) => {
     return error.message
   }
 }
+
+// interaction api start
+
+export const getAllInteractionCount = async (userID) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+
+    const apiUrl = `${APIURL}/api/v1/web/users/${userID}/interaction/allcount`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken,
+      },
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const getLikesMeList = async (userID,page,pageSize) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+    const apiUrl = `${APIURL}/api/v1/users/${userID}/likes/me?page=${page}&pageSize=${pageSize}`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken,
+      },
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const getVisitMeList = async (userID,page,pageSize) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+
+    const apiUrl = `${APIURL}/api/v1/users/${userID}/visited/profiles?page=${page}&pageSize=${pageSize}`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken,
+      },
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const getDisLikeMeList = async (userID,page,pageSize) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+
+    const apiUrl = `${APIURL}/api/v1/web/users/${userID}/dislike/me?page=${page}&pageSize=${pageSize}`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken,
+      },
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const getUndoProfileMeList = async (userID,page,pageSize) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+
+    const apiUrl = `${APIURL}/api/v1/web/users/${userID}/dislike/me?page=${page}&pageSize=${pageSize}`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken,
+      },
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const getMatchUserList = async (userID,page,pageSize) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+
+    const apiUrl = `${APIURL}/api/v1/users/${userID}/matched/profiles?page=${page}&pageSize=${pageSize}`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken,
+      },
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const getMyLikesList = async (userID,page,pageSize) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+
+    const apiUrl = `${APIURL}/api/v1/users/${userID}/like?page=${page}&pageSize=${pageSize}`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken,
+      },
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const getMyDisLikesList = async (userID,page,pageSize) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+
+    const apiUrl = `${APIURL}/api/v1/web/users/${userID}/dislike/my?page=${page}&pageSize=${pageSize}`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken,
+      },
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const getMyVisitList = async (userID,page,pageSize) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+
+    const apiUrl = `${APIURL}/api/v1/web/users/${userID}/visit/my?page=${page}&pageSize=${pageSize}`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken,
+      },
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const getMyUndoProfileList = async (userID,page,pageSize) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+
+    const apiUrl = `${APIURL}/api/v1/web/users/${userID}/undo-profile/my?page=${page}&pageSize=${pageSize}`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken,
+      },
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+// interaction api end

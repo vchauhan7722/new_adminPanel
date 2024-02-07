@@ -172,7 +172,7 @@ const Step3 = (props: any) => {
       localStorage.removeItem('step2Details')
       localStorage.removeItem('isUserCreated')
       submitStep()
-      navigate('/apps/anonymous-user-management/users')
+      navigate('admin/apps/anonymous-user-management/users')
     } else {
       ToastUtils({type: 'error', message: 'Must Upload One Photo'})
     }

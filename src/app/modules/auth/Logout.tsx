@@ -11,7 +11,7 @@ export function Logout() {
 
   return (
     <Routes>
-      <Navigate to='/auth/login' />
+      <Navigate to='/admin/auth/login' />
     </Routes>
   )
 }

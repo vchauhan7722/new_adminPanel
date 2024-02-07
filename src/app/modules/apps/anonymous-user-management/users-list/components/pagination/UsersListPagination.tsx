@@ -13,6 +13,7 @@ const UsersListPagination = () => {
   const [pageSize, setPageSize] = useState<any>(100)
 
   const updatePage = ({selected: selectedPage}) => {
+    selectedPage = selectedPage + 1
     if (!selectedPage || isLoading || pagination.page === selectedPage) {
       return
     }

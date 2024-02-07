@@ -22,7 +22,7 @@ const UsersListHeader = () => {
           <UsersListSearchComponent />
         </div>
         <div>
-          <Link to='/app/register-anonymous-user'>
+          <Link to='/admin/app/register-anonymous-user'>
             <button className='btn btn-primary'>Create New User</button>
           </Link>
         </div>

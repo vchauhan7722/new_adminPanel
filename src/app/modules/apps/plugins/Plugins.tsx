@@ -25,6 +25,7 @@ import OpenMoneyPaymentPlugin from './Componants/OpenMoneyPayment/OpenMoneyPayme
 import RazorpayPaymentPlugin from './Componants/RazorpayPayment/RazorpayPaymentPlugin'
 import PhonePayPlugin from './Componants/PhonePay/PhonePayPlugins'
 import FolderStructurePlugin from './Componants/FolderStructure/folderStrucuturePlugin'
+import FakeUserInteraction from './Componants/FakeUserInteraction/FakeUserInteraction'
 
 const usersBreadcrumbs: Array<PageLink> = [
   {
@@ -51,7 +52,7 @@ const Plugins = () => {
       <PageTitle breadcrumbs={usersBreadcrumbs}>
         {intl.formatMessage({id: 'MENU.PLUGINS'})}
       </PageTitle>
-      {location.pathname === '/plugins' && (
+      {location.pathname === '/admin/plugins' && (
         <KTCardBody className='py-4 card'>
           <div className='table-responsive'>
             <table
@@ -109,7 +110,7 @@ const Plugins = () => {
                         </span>
                       </td>
                       <td colSpan={2}>
-                        <Link to={`/plugins/${plugin.path}`}>
+                        <Link to={`/admin/plugins/${plugin.path}`}>
                           <button className='btn btn-sm btn-light' data-kt-menu-dismiss='true'>
                             <i className='fa-solid fa-gear'></i>
                             Setting
@@ -294,6 +295,15 @@ const Plugins = () => {
             <>
               <PageTitle>Folder Structure Setting</PageTitle>
               <FolderStructurePlugin />
+            </>
+          }
+        />
+        <Route
+          path='/user_interaction_plugin'
+          element={
+            <>
+              <PageTitle>Fake User Interaction</PageTitle>
+              <FakeUserInteraction />
             </>
           }
         />

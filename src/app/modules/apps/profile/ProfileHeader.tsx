@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import {KTIcon, toAbsoluteUrl} from '../../../../_metronic/helpers'
-import {Link, useLocation} from 'react-router-dom'
+import {Link, useLocation, useNavigate} from 'react-router-dom'
 import {useIntl} from 'react-intl'
 import Accordion from 'react-bootstrap/Accordion'
 import {useEffect, useState} from 'react'
@@ -11,25 +11,33 @@ import {
   UpdatePopularStatusByUID,
   UpdateSpotlightStatusByUID,
   UpdateVerifyStatusByUID,
+  deleteUserAccount,
   getPremiumPackageAmountPlans,
 } from '../../../../API/api-endpoint'
 import ToastUtils, {ErrorToastUtils} from '../../../../utils/ToastUtils'
 import {Dropdown, Form} from 'react-bootstrap'
 import {CustomToggle} from '../../../../_metronic/partials/componants/CustomToggle'
 import {GetIDFromURL} from '../../../../utils/Utils'
+import Swal from 'sweetalert2'
 
 const ProfileHeader = (props) => {
   const {user, userProfilePercentage, setUserUpdateFlag, userUpdateFlag} = props
 
   const location = useLocation()
   const intl = useIntl()
+  const navigate = useNavigate()
 
-  // for normal user -> /apps/users-profile
-  // for anonymous user -> /apps/anonymous-user/users-profile
+  // for normal user -> /admin/apps/users-profile
+  // for anonymous user -> /admin/apps/anonymous-user/users-profile
   let routeForProfileDetails =
-    location.pathname.substring(6, 15) === 'anonymous'
-      ? '/apps/anonymous-user/users-profile'
-      : '/apps/users-profile'
+    location.pathname.substring(12, 21) === 'anonymous'
+      ? '/admin/apps/anonymous-user/users-profile'
+      : '/admin/apps/users-profile'
+
+  let routeForUserList =
+    location.pathname.substring(12, 21) === 'anonymous'
+      ? '/admin/apps/anonymous-user-management/users'
+      : '/admin/apps/user-management/users'
 
   //let UserID = localStorage.getItem('userId')
 
@@ -109,7 +117,8 @@ const ProfileHeader = (props) => {
         UserID,
         addUpdatePremium.type,
         addUpdatePremium.days,
-        addUpdatePremium.premiumId
+        addUpdatePremium.premiumId,
+        'from admin'
       )
       if (result.status === 200) {
         setaddUpdatePremium({days: 0, type: 'add', premiumId: 1})
@@ -136,6 +145,28 @@ const ProfileHeader = (props) => {
     if (result.status === 200) {
       setPremiumAmountPackages(result.data)
     }
+  }
+
+  const deleteUser = async () => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        let result = await deleteUserAccount(UserID)
+        if (result.status === 200) {
+          ToastUtils({type: 'success', message: result.message})
+          navigate(routeForUserList)
+        } else {
+          ToastUtils({type: 'error', message: result.message})
+        }
+      }
+    })
   }
 
   return (
@@ -250,7 +281,7 @@ const ProfileHeader = (props) => {
                             </a>
                           </Dropdown.Item>
                         )}
-                        <Dropdown.Item>
+                        <Dropdown.Item onClick={() => deleteUser()}>
                           <a className='text-black' data-kt-users-table-filter='delete_row'>
                             Delete Account
                           </a>
@@ -492,6 +523,18 @@ const ProfileHeader = (props) => {
                     to={`${routeForProfileDetails}/security/${UserID}`}
                   >
                     {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.SECURITY'})}
+                  </Link>
+                </li>
+                <li className='nav-item'>
+                  <Link
+                    className={
+                      `nav-link text-active-primary me-6 ` +
+                      (location.pathname === `${routeForProfileDetails}/interaction/${UserID}` &&
+                        'active')
+                    }
+                    to={`${routeForProfileDetails}/interaction/${UserID}`}
+                  >
+                    {intl.formatMessage({id: 'USERMANAGEMENT.USERDETAILS.TAB.INTERACTION'})}
                   </Link>
                 </li>
               </ul>

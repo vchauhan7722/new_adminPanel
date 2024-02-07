@@ -22,6 +22,7 @@ const Gifts = () => {
   const [giftCredit, setGiftCredit] = useState(1)
   const [giftId, setGiftId] = useState('')
   const [selectedGiftCategoryID, setSelectedGiftCategoryID] = useState(0)
+  const [selectedGiftCategoryName, setSelectedGiftCategoryName] = useState('')
   const [getGiftsOnCategoryChange, setGetGiftsOnCategoryChange] = useState(1)
   const [IsEditGift, setIsEditGift] = useState(false)
 
@@ -55,7 +56,13 @@ const Gifts = () => {
     if (giftName.trim().length === 0 || giftCredit === 0) {
       ToastUtils({type: 'error', message: 'Please Fill All Data'})
     } else {
-      let result = await CreateGift(giftName, selectedGiftCategoryID, giftCredit, file)
+      let result = await CreateGift(
+        giftName,
+        selectedGiftCategoryID,
+        selectedGiftCategoryName,
+        giftCredit,
+        file
+      )
       console.log('result', result)
       if (result.status === 200) {
         getAllGiftsList()
@@ -63,6 +70,7 @@ const Gifts = () => {
         setGiftCredit(1)
         setGiftName('')
         setFile('')
+        setisImageUploaded(false)
       } else {
         ErrorToastUtils()
       }
@@ -83,7 +91,14 @@ const Gifts = () => {
     if (giftName.trim().length === 0 || giftCredit === 0) {
       ToastUtils({type: 'error', message: 'Please Fill All Data'})
     } else {
-      let result = await updateGifts(giftName, selectedGiftCategoryID, giftCredit, file, giftId)
+      let result = await updateGifts(
+        giftName,
+        selectedGiftCategoryID,
+        selectedGiftCategoryName,
+        giftCredit,
+        file,
+        giftId
+      )
       if (result.status === 200) {
         getAllGiftsList()
         ToastUtils({type: 'success', message: 'Gift Is Updated'})
@@ -119,6 +134,7 @@ const Gifts = () => {
                 data-bs-target='#gift_model'
                 onClick={() => {
                   setSelectedGiftCategoryID(giftcategory?.giftCategoryId)
+                  setSelectedGiftCategoryName(giftcategory?.name)
                 }}
               >
                 <img
@@ -140,6 +156,7 @@ const Gifts = () => {
                       onClick={() => {
                         setIsEditGift(true)
                         setSelectedGiftCategoryID(giftcategory?.giftCategoryId)
+                        setSelectedGiftCategoryName(giftcategory?.name)
                         setGiftId(gift?.giftId)
                         setGiftName(gift?.name)
                         setGiftCredit(gift?.credit)

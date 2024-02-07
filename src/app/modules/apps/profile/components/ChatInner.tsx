@@ -27,7 +27,7 @@ const ChatInner = (props: any) => {
   } = props
 
   const location = useLocation()
-  let currentUserType = location.pathname.substring(6, 15) === 'anonymous' ? 'Anonymous' : 'Normal'
+  let currentUserType = location.pathname.substring(12, 21) === 'anonymous' ? 'Anonymous' : 'Normal'
 
   const messagesEndRef = useRef<any>(null)
   const chatContainerRef = useRef<HTMLDivElement>(null)

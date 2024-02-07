@@ -13,6 +13,7 @@ const UsersListPagination = () => {
   const [pageSize, setPageSize] = useState<any>(100)
 
   const updatePage = ({selected: selectedPage}) => {
+    selectedPage = selectedPage + 1
     if (!selectedPage || isLoading || pagination.page === selectedPage) {
       return
     }
@@ -69,7 +70,6 @@ const UsersListPagination = () => {
           <div className='d-flex mt-2 justify-content-between'>
             <div className='w-25 me-5'>
               <input
-                //placeholder='Birthdate'
                 type='number'
                 name='pageJump'
                 className={clsx('form-control h-30px ms-2 ')}

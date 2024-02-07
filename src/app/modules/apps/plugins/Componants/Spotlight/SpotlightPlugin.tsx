@@ -223,9 +223,11 @@ const SpotlightPlugin = () => {
       <KTCardBody className='py-4'>
         <div className='d-flex mb-4'>
           <ul className='nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bolder flex-nowrap'>
-            <li className='nav-item'>
+            <li className='nav-item '>
               <div
-                className={`nav-link text-active-primary me-6 ` + (tabValue === 'app' && 'active')}
+                className={
+                  `pointer nav-link text-active-primary me-6 ` + (tabValue === 'app' && 'active')
+                }
                 onClick={() => setTabValue('app')}
               >
                 Normal Users
@@ -234,7 +236,8 @@ const SpotlightPlugin = () => {
             <li className='nav-item'>
               <div
                 className={
-                  `nav-link text-active-primary me-6 ` + (tabValue === 'anonyms' && 'active')
+                  `pointer nav-link text-active-primary me-6 ` +
+                  (tabValue === 'anonyms' && 'active')
                 }
                 onClick={() => setTabValue('anonyms')}
               >
@@ -281,7 +284,7 @@ const SpotlightPlugin = () => {
 
                           <div className='d-flex flex-column'>
                             <Link
-                              to={`/apps/users-profile/activity/${spotlight.userId}`}
+                              to={`admin/apps/users-profile/activity/${spotlight.userId}`}
                               className='fw-bolder text-gray-800 text-hover-primary mb-1'
                             >
                               {spotlight.fullName}

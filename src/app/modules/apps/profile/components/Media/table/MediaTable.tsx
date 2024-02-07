@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect, useRef, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {KTCardBody} from '../../../../../../../_metronic/helpers'
 import {
   CreateUserStory,
@@ -10,8 +10,7 @@ import {
 } from '../../../../../../../API/api-endpoint'
 import {DateWithTimeFormatter} from '../../../../../../../utils/DateUtils'
 import ToastUtils from '../../../../../../../utils/ToastUtils'
-import {DropdownButton, Dropdown, Form} from 'react-bootstrap'
-import clsx from 'clsx'
+import {Dropdown} from 'react-bootstrap'
 import {CustomToggle} from '../../../../../../../_metronic/partials/componants/CustomToggle'
 import {useLocation} from 'react-router-dom'
 import {GetIDFromURL} from '../../../../../../../utils/Utils'
@@ -19,7 +18,7 @@ import {GetIDFromURL} from '../../../../../../../utils/Utils'
 const MediaTable = (props) => {
   const location = useLocation()
 
-  let userType = location.pathname.substring(6, 15) === 'anonymous' ? 'a' : 'n'
+  let userType = location.pathname.substring(12, 21) === 'anonymous' ? 'a' : 'n'
   let userId = GetIDFromURL(location)
   //const userId = localStorage.getItem('userId')
 

@@ -7,6 +7,7 @@ import {
   getCreditPackageAmountPlans,
   getPremiumPackageAmountPlans,
   updateCreditPackageAmountPlan,
+  updateMultiplePremiumPackageAmountConfig,
   updatePremiumPackageAmountConfig,
   updatePremiumPackageAmountPlan,
 } from '../../../../../../API/api-endpoint'
@@ -207,14 +208,6 @@ const SitePricingPlugin = () => {
   }
 
   //  update a premium config
-  const updatePremiumAmountConfig = async (pkgId: any, days: any, amount: any, pkgConfig: any) => {
-    let result = await updatePremiumPackageAmountConfig(pkgId, days, amount, pkgConfig)
-    if (result.status === 200) {
-      ToastUtils({type: 'success', message: 'Premium Amount Package Config is Updated'})
-    } else {
-      ErrorToastUtils()
-    }
-  }
 
   const handleChangePremiumAmountPackagesConfig = (event: any, premiumPkgId: any, index: any) => {
     let name = event.target.name
@@ -236,46 +229,21 @@ const SitePricingPlugin = () => {
       oldPremiumPackage[premiumPkgIndex]['premiumPackageConfig'][index]['value'] = value
       setPremiumAmountPackages(oldPremiumPackage)
     } else {
-      console.log('239')
       let oldPremiumPackage = [...premiumAmountPackages]
       oldPremiumPackage[premiumPkgIndex]['premiumPackageConfig'][index]['value'] =
         event.target.checked
       setPremiumAmountPackages(oldPremiumPackage)
-      onBlurUpdatePremiumAmountConfig(premiumPkgId)
+      //onBlurUpdatePremiumAmountConfig(premiumPkgId)
     }
   }
 
-  const onBlurUpdatePremiumAmountConfig = (premiumPkgId: any) => {
-    // setSaveTimeout(
-    //   setTimeout(() => {
-    //     let premiumPkgObject = premiumAmountPackages.filter(
-    //       (pkg: any) => pkg.premiumPackageAmountId === premiumPkgId
-    //     )
-
-    //     updatePremiumAmountConfig(
-    //       premiumPkgId,
-    //       premiumPkgObject[0].days,
-    //       premiumPkgObject[0].amount,
-    //       premiumPkgObject[0].premiumPackageConfig
-    //     )
-    //   }, 200)
-    // )
-
-    let premiumPkgObject = premiumAmountPackages.filter(
-      (pkg: any) => pkg.premiumPackageAmountId === premiumPkgId
-    )
-
-    updatePremiumAmountConfig(
-      premiumPkgId,
-      premiumPkgObject[0].days,
-      premiumPkgObject[0].amount,
-      premiumPkgObject[0].premiumPackageConfig
-    )
-  }
-
-  const handleFocus = () => {
-    // Cancel the save timeout when moving to another input
-    clearTimeout(saveTimeout)
+  const UpdatePremiumAmountConfig = async () => {
+    let result = await updateMultiplePremiumPackageAmountConfig(premiumAmountPackages)
+    if (result.status === 200) {
+      ToastUtils({type: 'success', message: 'Premium Amount Package Config is Updated'})
+    } else {
+      ErrorToastUtils()
+    }
   }
 
   return (
@@ -421,7 +389,14 @@ const SitePricingPlugin = () => {
       </div>
 
       <div className='card p-3 mt-5'>
-        <div className='card-title fs-2 fw-bold'>Premium Packages Config</div>
+        <div className='card-title '>
+          <div className='d-flex justify-content-between'>
+            <h4 className='mt-4 fs-2 fw-bold'>Premium Packages Config</h4>
+            <button className='btn btn-primary' onClick={UpdatePremiumAmountConfig}>
+              Update Config
+            </button>
+          </div>
+        </div>
         <div className='row mt-4'>
           <div className='col-3 mt-13'>
             {configName.map((config: any, index: any) => {
@@ -478,11 +453,11 @@ const SitePricingPlugin = () => {
                                       configIndex
                                     )
                                   }
-                                  onBlur={() =>
-                                    onBlurUpdatePremiumAmountConfig(
-                                      packageItem.premiumPackageAmountId
-                                    )
-                                  }
+                                  // onBlur={() =>
+                                  //   onBlurUpdatePremiumAmountConfig(
+                                  //     packageItem.premiumPackageAmountId
+                                  //   )
+                                  // }
                                   //onFocus={handleFocus}
                                 />
                               )}

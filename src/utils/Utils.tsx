@@ -47,3 +47,7 @@ export const getEighteenYearsOldDate = () => {
 
 export const isImage = ['.gif', '.jpg', '.jpeg', '.png'] //you can add more
 export const isVideo = ['.mpg', '.mp2', '.mpeg', '.mpe', '.mpv', '.mp4'] // you can add more extention
+
+export const isNumber = (string: any) => {
+  return /\d/.test(string)
+}

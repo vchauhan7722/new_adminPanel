@@ -5,7 +5,7 @@ import {Vertical} from './components/Vertical'
 const wizardsBreadCrumbs: Array<PageLink> = [
   {
     title: 'Anonymous User',
-    path: '/app/register-anonymous-user',
+    path: '/admin/app/register-anonymous-user',
     isSeparator: false,
     isActive: false,
   },
