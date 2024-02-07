@@ -124,6 +124,7 @@ const Media = (props: any) => {
   // }
 
   const handleMediaChange = async (event: any) => {
+    console.log('images', Object.values(event.target.files))
     setisMediaUploaded(true)
 
     try {
@@ -132,7 +133,9 @@ const Media = (props: any) => {
         filesArray.map((file) => ImageCompressor(file, userId))
       )
 
-      let result
+      console.log('compressedfiles', compressedfiles)
+
+      let result: any
 
       if (currentUserType !== 'n') {
         result = await createMediaActionForUserMediaForAnonymousUser(
@@ -226,8 +229,6 @@ const Media = (props: any) => {
                       <img
                         alt='Pic'
                         src={`${process.env.REACT_APP_SERVER_URL}/${userMedia.media}`}
-                        // width={userProfileMedia.length >= 6 ? '100' : '192'}
-                        // height={userProfileMedia.length >= 6 ? '99' : '189'}
                         width='150'
                         height='149'
                         className='rounded'
@@ -236,7 +237,7 @@ const Media = (props: any) => {
                           setSelectedImage(userMedia.media)
                           setSelectedImageIndex(index)
                         }}
-                        loading='lazy'
+                        //loading='lazy'
                       />
                       <span className='position-absolute top-0 start-0'>
                         {/* start-100 */}

@@ -18,10 +18,20 @@ const FakeUserInteraction = () => {
     MessageCount: '',
     isautoBackInteractionEnabled: '',
     visitBackPercentage: '',
+    visitBackPercentageInterval1: '',
+    visitBackPercentageInterval2: '',
     visitorsLikeBackPercentage: '',
+    visitorsLikeBackPercentageInterval1: '',
+    visitorsLikeBackPercentageInterval2: '',
     usersLikeVisitBackPercentage: '',
+    usersLikeVisitBackPercentageInterval1: '',
+    usersLikeVisitBackPercentageInterval2: '',
     adminMessageCount: '',
+    adminMessageCountInterval1: '',
+    adminMessageCountInterval2: '',
     MessageBackPercentage: '',
+    MessageBackPercentageInterval1: '',
+    MessageBackPercentageInterval2: '',
     MessageBackList: '',
   })
 
@@ -60,10 +70,20 @@ const FakeUserInteraction = () => {
         MessageCount: parsedData?.MessageCount,
         isautoBackInteractionEnabled: parsedData?.isautoBackInteractionEnabled,
         visitBackPercentage: parsedData?.visitBackPercentage,
+        visitBackPercentageInterval1: parsedData?.visitBackPercentageInterval1,
+        visitBackPercentageInterval2: parsedData?.visitBackPercentageInterval2,
         visitorsLikeBackPercentage: parsedData?.visitorsLikeBackPercentage,
+        visitorsLikeBackPercentageInterval1: parsedData?.visitorsLikeBackPercentageInterval1,
+        visitorsLikeBackPercentageInterval2: parsedData?.visitorsLikeBackPercentageInterval2,
         usersLikeVisitBackPercentage: parsedData?.usersLikeVisitBackPercentage,
+        usersLikeVisitBackPercentageInterval1: parsedData?.usersLikeVisitBackPercentageInterval1,
+        usersLikeVisitBackPercentageInterval2: parsedData?.usersLikeVisitBackPercentageInterval2,
         adminMessageCount: parsedData?.adminMessageCount,
+        adminMessageCountInterval1: parsedData?.adminMessageCountInterval1,
+        adminMessageCountInterval2: parsedData?.adminMessageCountInterval2,
         MessageBackPercentage: parsedData?.MessageBackPercentage,
+        MessageBackPercentageInterval1: parsedData?.MessageBackPercentageInterval1,
+        MessageBackPercentageInterval2: parsedData?.MessageBackPercentageInterval2,
         MessageBackList: parsedData?.MessageBackList,
       })
       setMessageBackList(parsedData?.MessageBackList)
@@ -133,6 +153,69 @@ const FakeUserInteraction = () => {
         updateConfiguration(newConfig)
       }
     })
+  }
+
+  const handleIntervalChange = (event: any) => {
+    let name = event.target.name
+    let value = event.target.value
+
+    if (!value.includes('-')) {
+      ToastUtils({type: 'error', message: 'Please Enter Interval Correctly'})
+    } else if (value.trim().length === 0) {
+      ToastUtils({type: 'error', message: 'Please Enter Interval'})
+    } else {
+      let interval1 = value.split('-')[0]
+      let interval2 = value.split('-')[1]
+
+      // if (interval1.length === 0) {
+      //   interval1 = 1
+      // } else if (interval2.length === 0) {
+      //   interval2 = 1
+      // }
+
+      // console.log('intervalChange', {
+      //   ...fakeInteractionConfig,
+      //   [name + '1']: interval1,
+      //   [name + '2']: interval2,
+      // })
+
+      setFakeInteractionConfig({
+        ...fakeInteractionConfig,
+        [name + '1']: interval1,
+        [name + '2']: interval2,
+      })
+    }
+
+    // updateConfiguration({
+    //   ...fakeInteractionConfig,
+    //   [name + '1']: interval1,
+    //   [name + '2']: interval2,
+    // })
+
+    // switch (name) {
+    //   case 'usersLikeVisitBackPercentageInterval':
+    //     setFakeInteractionConfig({
+    //       ...fakeInteractionConfig,
+    //       [name + '1']: interval1,
+    //       [name + '2']: interval2,
+    //     })
+    //     break
+
+    //   case 'visitorsLikeBackPercentageInterval':
+    //     break
+
+    //   case 'usersLikeVisitBackPercentageInterval':
+    //     break
+
+    //   case 'adminMessageCountInterval':
+    //     break
+
+    //   case 'MessageBackPercentageInterval':
+    //     break
+
+    //   default:
+    //     break
+    // }
   }
 
   return (
@@ -294,9 +377,10 @@ const FakeUserInteraction = () => {
             <p className='text-muted'>
               It will count in percentage and it should be greater then 20
             </p>
+            <p className='text-danger'>* interval count in minutes</p>
           </div>
           <div className='col-lg-8 card-form__body card-body d-flex align-items-center bg-white'>
-            <div className='flex'>
+            <div className='flex col-lg-3'>
               <input
                 type='number'
                 className='form-control'
@@ -305,6 +389,23 @@ const FakeUserInteraction = () => {
                 onChange={(event) => handleChange(event)}
                 onBlur={onBlurUpdate}
               />
+              <p className='headings-color text-muted mt-10'></p>
+            </div>
+            &nbsp;
+            <div className='flex col-lg-3'>
+              <input
+                type='text'
+                className='form-control'
+                name='visitBackPercentageInterval'
+                value={
+                  fakeInteractionConfig.visitBackPercentageInterval1 +
+                  '-' +
+                  fakeInteractionConfig.visitBackPercentageInterval2
+                }
+                onChange={(event) => handleIntervalChange(event)}
+                onBlur={onBlurUpdate}
+              />
+              <p className='headings-color text-muted'>Visit Back Interval</p>
             </div>
           </div>
 
@@ -313,9 +414,10 @@ const FakeUserInteraction = () => {
               <strong className='headings-color'>Visitors like</strong>
             </p>
             <p className='text-muted'>It will count in percentage</p>
+            <p className='text-danger'>* interval count in minutes</p>
           </div>
           <div className='col-lg-8 card-form__body card-body d-flex align-items-center bg-white'>
-            <div className='flex'>
+            <div className='flex col-lg-3'>
               <input
                 type='number'
                 className='form-control'
@@ -324,6 +426,23 @@ const FakeUserInteraction = () => {
                 onChange={(event) => handleChange(event)}
                 onBlur={onBlurUpdate}
               />
+              <p className='headings-color text-muted mt-10'></p>
+            </div>
+            &nbsp;
+            <div className='flex col-lg-3'>
+              <input
+                type='text'
+                className='form-control'
+                name='visitorsLikeBackPercentageInterval'
+                value={
+                  fakeInteractionConfig.visitorsLikeBackPercentageInterval1 +
+                  '-' +
+                  fakeInteractionConfig.visitorsLikeBackPercentageInterval2
+                }
+                onChange={(event) => handleIntervalChange(event)}
+                onBlur={onBlurUpdate}
+              />
+              <p className='headings-color text-muted'>Visitors Like Interval</p>
             </div>
           </div>
 
@@ -332,9 +451,10 @@ const FakeUserInteraction = () => {
               <strong className='headings-color'>Users like visit back</strong>
             </p>
             <p className='text-muted'>It will count in percentage</p>
+            <p className='text-danger'>* interval count in minutes</p>
           </div>
           <div className='col-lg-8 card-form__body card-body d-flex align-items-center bg-white'>
-            <div className='flex'>
+            <div className='flex col-lg-3'>
               <input
                 type='number'
                 className='form-control'
@@ -343,6 +463,23 @@ const FakeUserInteraction = () => {
                 onChange={(event) => handleChange(event)}
                 onBlur={onBlurUpdate}
               />
+              <p className='headings-color text-muted mt-10'></p>
+            </div>
+            &nbsp;
+            <div className='flex col-lg-3'>
+              <input
+                type='text'
+                className='form-control'
+                name='usersLikeVisitBackPercentageInterval'
+                value={
+                  fakeInteractionConfig.usersLikeVisitBackPercentageInterval1 +
+                  '-' +
+                  fakeInteractionConfig.usersLikeVisitBackPercentageInterval2
+                }
+                onChange={(event) => handleIntervalChange(event)}
+                onBlur={onBlurUpdate}
+              />
+              <p className='headings-color text-muted'>Users Like Visit Back Interval</p>
             </div>
           </div>
 
@@ -351,9 +488,10 @@ const FakeUserInteraction = () => {
               <strong className='headings-color'>Admin message</strong>
             </p>
             <p className='text-muted'>-</p>
+            <p className='text-danger'>* interval count in minutes</p>
           </div>
           <div className='col-lg-8 card-form__body card-body d-flex align-items-center bg-white'>
-            <div className='flex'>
+            <div className='flex col-lg-3'>
               <input
                 type='number'
                 className='form-control'
@@ -362,6 +500,23 @@ const FakeUserInteraction = () => {
                 onChange={(event) => handleChange(event)}
                 onBlur={onBlurUpdate}
               />
+              <p className='headings-color text-muted mt-10'></p>
+            </div>
+            &nbsp;
+            <div className='flex col-lg-3'>
+              <input
+                type='text'
+                className='form-control'
+                name='adminMessageCountInterval'
+                value={
+                  fakeInteractionConfig.adminMessageCountInterval1 +
+                  '-' +
+                  fakeInteractionConfig.adminMessageCountInterval2
+                }
+                onChange={(event) => handleIntervalChange(event)}
+                onBlur={onBlurUpdate}
+              />
+              <p className='headings-color text-muted'>Admin Message Interval</p>
             </div>
           </div>
 
@@ -370,9 +525,10 @@ const FakeUserInteraction = () => {
               <strong className='headings-color'>Message back</strong>
             </p>
             <p className='text-muted'>It will count in percentage</p>
+            <p className='text-danger'>* interval count in minutes</p>
           </div>
           <div className='col-lg-8 card-form__body card-body d-flex align-items-center bg-white'>
-            <div className='flex'>
+            <div className='flex col-lg-3'>
               <input
                 type='number'
                 className='form-control'
@@ -381,6 +537,23 @@ const FakeUserInteraction = () => {
                 onChange={(event) => handleChange(event)}
                 onBlur={onBlurUpdate}
               />
+              <p className='headings-color text-muted mt-10'></p>
+            </div>
+            &nbsp;
+            <div className='flex col-lg-3'>
+              <input
+                type='text'
+                className='form-control'
+                name='MessageBackPercentageInterval'
+                value={
+                  fakeInteractionConfig.MessageBackPercentageInterval1 +
+                  '-' +
+                  fakeInteractionConfig.MessageBackPercentageInterval2
+                }
+                onChange={(event) => handleIntervalChange(event)}
+                onBlur={onBlurUpdate}
+              />
+              <p className='headings-color text-muted'>Message Back Interval</p>
             </div>
           </div>
 

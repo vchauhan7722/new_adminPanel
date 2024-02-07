@@ -6,7 +6,7 @@ import CustomPagination from '../../../../../../_metronic/partials/componants/Pa
 import {GetIDFromURL} from '../../../../../../utils/Utils'
 import {useLocation} from 'react-router-dom'
 
-const MyUndoProfileList = () => {
+const MyUndoProfileList = ({handleChange}) => {
   let location = useLocation()
   let userId = GetIDFromURL(location)
 
@@ -38,6 +38,11 @@ const MyUndoProfileList = () => {
       <div className='card-title pt-8 px-9 d-flex justify-content-between'>
         <div>
           <h2>My Undo Profile</h2>
+        </div>
+        <div>
+          <button className='btn btn-primary' onClick={() => handleChange(undefined)}>
+            Back
+          </button>
         </div>
       </div>
 

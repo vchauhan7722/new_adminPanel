@@ -184,15 +184,33 @@ const Interaction = () => {
           </div>
         )}
 
-        {selectedInteractionType === 'peopleLikes' && <LikesMeList />}
-        {selectedInteractionType === 'peopleVisit' && <VisitsMeList />}
-        {selectedInteractionType === 'peopleDisLikes' && <DisLikesMeList />}
-        {selectedInteractionType === 'peopleUndoProfile' && <UndoProfileMeList />}
-        {selectedInteractionType === 'match' && <MatchList />}
-        {selectedInteractionType === 'myLikes' && <MyLikesList />}
-        {selectedInteractionType === 'myVisit' && <MyVisitsList />}
-        {selectedInteractionType === 'myDislike' && <MyDisLikesList />}
-        {selectedInteractionType === 'myUndoProfile' && <MyUndoProfileList />}
+        {selectedInteractionType === 'peopleLikes' && (
+          <LikesMeList handleChange={handleChangeSelectInteractionType} />
+        )}
+        {selectedInteractionType === 'peopleVisit' && (
+          <VisitsMeList handleChange={handleChangeSelectInteractionType} />
+        )}
+        {selectedInteractionType === 'peopleDisLikes' && (
+          <DisLikesMeList handleChange={handleChangeSelectInteractionType} />
+        )}
+        {selectedInteractionType === 'peopleUndoProfile' && (
+          <UndoProfileMeList handleChange={handleChangeSelectInteractionType} />
+        )}
+        {selectedInteractionType === 'match' && (
+          <MatchList handleChange={handleChangeSelectInteractionType} />
+        )}
+        {selectedInteractionType === 'myLikes' && (
+          <MyLikesList handleChange={handleChangeSelectInteractionType} />
+        )}
+        {selectedInteractionType === 'myVisit' && (
+          <MyVisitsList handleChange={handleChangeSelectInteractionType} />
+        )}
+        {selectedInteractionType === 'myDislike' && (
+          <MyDisLikesList handleChange={handleChangeSelectInteractionType} />
+        )}
+        {selectedInteractionType === 'myUndoProfile' && (
+          <MyUndoProfileList handleChange={handleChangeSelectInteractionType} />
+        )}
       </KTCardBody>
     </KTCard>
   )

@@ -930,11 +930,18 @@ export const createMediaActionForUserMedia = async (fileData, userID,userType) =
     //   mediaTypes : [{mediaType:"photo"}],
     // }
 
-    for (var i = 0; i < fileData.length; i++) {
-      let fileName =  userType + "_" + userID + ".webp"
-      formData.append('profileMedia', fileData[i], fileName)
-      formData.append(`mediaTypes[${i}][mediaType]`, 'photo')
-    }
+    // for (var i = 0; i < fileData.length; i++) {
+    //   let fileName =  userType + "_" + userID + ".webp"
+    //   formData.append('profileMedia', fileData[i], fileName)
+    //   formData.append(`mediaTypes[${i}][mediaType]`, 'photo')
+    // }
+
+    fileData.forEach((file, i) => {
+      const fileName = `${userType}_${userID}_${i}.webp`;
+      formData.append('profileMedia', file, fileName);
+      formData.append(`mediaTypes[${i}][mediaType]`, 'photo');
+    });
+
     console.log('formData', formData)
     const apiUrl = `${APIURL}/api/v1/users/${userID}/upload/profiles`
 
@@ -958,11 +965,19 @@ export const createMediaActionForUserMediaForAnonymousUser = async (fileData, us
     let accessToken = localStorage.getItem('accessToken')
     
     let formData = new FormData()
-    for (var i = 0; i < fileData.length; i++) {
-      let fileName = userType + "_" + userID + ".webp"
-      formData.append('anonymousProfileMedia', fileData[i], fileName ) // fileData[i].name .split(".")[0] + ".webp"
-      formData.append(`mediaTypes[${i}][mediaType]`, 'photo')
-    }
+    // for (var i = 0; i < fileData.length; i++) {
+    //   let fileName = userType + "_" + userID + ".webp"
+    //   formData.append('anonymousProfileMedia', fileData[i], fileName ) // fileData[i].name .split(".")[0] + ".webp"
+    //   formData.append(`mediaTypes[${i}][mediaType]`, 'photo')
+    // }
+
+    fileData.forEach((file, i) => {
+      const fileName = `${userType}_${userID}_${i}.webp`;
+      formData.append('anonymousProfileMedia', file, fileName);
+      formData.append(`mediaTypes[${i}][mediaType]`, 'photo');
+    });
+
+    console.log("formData",formData)
 
     const apiUrl = `${APIURL}/api/v1/users/${userID}/upload/profiles/web`
 
@@ -979,6 +994,36 @@ export const createMediaActionForUserMediaForAnonymousUser = async (fileData, us
     return error.message
   }
 }
+
+export const createMediaActionForUserMediaForAnonymousUser1 = async (fileData, userID, userType) => {
+  try {
+    const accessToken = localStorage.getItem('accessToken');
+
+    const formData = new FormData();
+
+    fileData.forEach((file, i) => {
+      const fileName = `${userType}_${userID}.webp`;
+      formData.append('anonymousProfileMedia', file, fileName);
+      formData.append(`mediaTypes[${i}][mediaType]`, 'photo');
+    });
+
+    console.log("formData", formData);
+
+    const apiUrl = `${APIURL}/api/v1/users/${userID}/upload/profiles/web`;
+
+    const response = await axios.post(apiUrl, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data;',
+        'x-access-token': accessToken,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error(error.message);
+    return error.message;
+  }
+};
 
 export const setMediaAsAStoryForUserMedia = async (userID, mediaId) => {
   try {
