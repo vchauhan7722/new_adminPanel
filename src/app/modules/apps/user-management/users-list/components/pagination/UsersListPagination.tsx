@@ -2,7 +2,7 @@
 import clsx from 'clsx'
 import {useQueryResponseLoading, useQueryResponsePagination} from '../../core/QueryResponseProvider'
 import {useQueryRequest} from '../../core/QueryRequestProvider'
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import ReactPaginate from 'react-paginate'
 
 const UsersListPagination = () => {
@@ -11,6 +11,22 @@ const UsersListPagination = () => {
   const {updateState} = useQueryRequest()
   const [activePage, setActivePage] = useState(1)
   const [pageSize, setPageSize] = useState<any>(100)
+
+  useEffect(() => {
+    handleActivePage()
+  }, [pagination.page])
+
+  const handleActivePage = () => {
+    let pageNumber: any = pagination.page
+    if (pageNumber !== undefined) {
+      // console.log('pageNumber', pageNumber)
+      // console.log('pagination page', parseInt(pageNumber))
+      if (pageNumber !== activePage) {
+        console.log('23')
+        setActivePage(pageNumber)
+      }
+    }
+  }
 
   const updatePage = ({selected: selectedPage}) => {
     selectedPage = selectedPage + 1
@@ -132,6 +148,7 @@ const UsersListPagination = () => {
                 pageRangeDisplayed={3}
                 disableInitialCallback={true}
                 marginPagesDisplayed={1}
+                forcePage={activePage - 1}
                 pageClassName='page-item'
                 pageLinkClassName='page-link'
                 previousClassName='page-item'

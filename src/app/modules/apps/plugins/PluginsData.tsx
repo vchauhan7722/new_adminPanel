@@ -46,6 +46,15 @@ const PluginData = [
   },
   {
     pluginId: 6,
+    icon: '/media/plugins/jstree/credits.jpg',
+    name: 'Credit Description',
+    type: 'Software',
+    description: 'change credit package details like description, name and icon',
+    status: 'Active',
+    path: 'credit_description_plugin',
+  },
+  {
+    pluginId: 7,
     icon: '/media/plugins/jstree/populars.jpg',
     name: 'Populars',
     type: 'Pages',
@@ -54,7 +63,7 @@ const PluginData = [
     path: 'populars_plugin',
   },
   {
-    pluginId: 7,
+    pluginId: 8,
     icon: '/media/plugins/jstree/spotlight.jpg',
     name: 'Spotlight',
     type: 'Software',
@@ -63,7 +72,7 @@ const PluginData = [
     path: 'spotlight_plugin',
   },
   {
-    pluginId: 8,
+    pluginId: 9,
     icon: '/media/plugins/jstree/videocall.jpg',
     name: 'Videochat',
     type: 'Software',
@@ -72,7 +81,7 @@ const PluginData = [
     path: 'videocall_plugin',
   },
   {
-    pluginId: 9,
+    pluginId: 10,
     icon: '/media/plugins/jstree/discover.jpg',
     name: 'Discover game',
     type: 'Pages',
@@ -81,7 +90,7 @@ const PluginData = [
     path: 'discover_game_plugin',
   },
   {
-    pluginId: 10,
+    pluginId: 11,
     icon: '/media/plugins/jstree/settings.jpg',
     name: 'General Settings',
     type: 'Software',
@@ -90,7 +99,7 @@ const PluginData = [
     path: 'general_plugin',
   },
   {
-    pluginId: 11,
+    pluginId: 12,
     icon: '/media/plugins/jstree/verification.jpg',
     name: 'Verification system',
     type: 'Software',
@@ -108,7 +117,7 @@ const PluginData = [
   //   path: 'account_privileges_plugin',
   // },
   {
-    pluginId: 12,
+    pluginId: 13,
     icon: '/media/plugins/jstree/terms.jpg',
     name: 'Legal information',
     type: 'Pages',
@@ -117,7 +126,7 @@ const PluginData = [
     path: 'legal_information_plugin',
   },
   {
-    pluginId: 13,
+    pluginId: 14,
     icon: '/media/plugins/jstree/manualGateways.png',
     name: 'Manual Payment Gateways',
     type: 'Payment',
@@ -126,7 +135,7 @@ const PluginData = [
     path: 'manual_payment_gateways_plugin',
   },
   {
-    pluginId: 14,
+    pluginId: 15,
     icon: '/media/plugins/jstree/phonepe.png',
     name: 'Phone Pay',
     type: 'Payment',
@@ -135,7 +144,7 @@ const PluginData = [
     path: 'phone_pay_payment_plugin',
   },
   {
-    pluginId: 15,
+    pluginId: 16,
     icon: '/media/plugins/jstree/stripe.jpg',
     name: 'Stripe',
     type: 'Payment',
@@ -144,7 +153,7 @@ const PluginData = [
     path: 'stripe_payment_plugin',
   },
   {
-    pluginId: 16,
+    pluginId: 17,
     icon: '/media/plugins/jstree/openmoney.jpg',
     name: 'Open Money',
     type: 'Payment',
@@ -153,7 +162,7 @@ const PluginData = [
     path: 'open_money_payment_plugin',
   },
   {
-    pluginId: 17,
+    pluginId: 18,
     icon: '/media/plugins/jstree/razorpay.png',
     name: 'Razor Pay',
     type: 'Payment',
@@ -162,7 +171,7 @@ const PluginData = [
     path: 'razor_pay_payment_plugin',
   },
   {
-    pluginId: 18,
+    pluginId: 19,
     icon: '/media/plugins/jstree/folder.webp',
     name: 'Folder Structure',
     type: 'Software',
@@ -171,7 +180,7 @@ const PluginData = [
     path: 'folder_structure_plugin',
   },
   {
-    pluginId: 19,
+    pluginId: 20,
     icon: '/media/plugins/jstree/folder.webp',
     name: 'Fake User Interaction',
     type: 'Software',

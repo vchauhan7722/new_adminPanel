@@ -2230,6 +2230,114 @@ export const updateMultiplePremiumPackageAmountConfig = async (
   }
 }
 
+export const getCreditPackages = async () => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+    const apiUrl = `${APIURL}/api/v1/masters/packages/credits`
+
+    let response = await axios.get(apiUrl, {
+      headers: {
+        'Content-Type': `application/json`,
+        'x-access-token': accessToken,
+      },
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+//credit package details 
+export const CreateCreditPackages = async (heading, description,icon) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+    const apiUrl = `${APIURL}/api/v1/masters/packages/credits`
+
+    console.log("icon",icon)
+
+    let formData = new FormData()
+    formData = {
+      heading: heading,
+      description: description,
+      icon:icon
+    }
+
+    let response = await axios.post(apiUrl, formData, {
+      headers: {
+        'Content-Type': `multipart/form-data`,
+        'x-access-token': accessToken,
+      },
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const deleteCreditPackages = async (creditPackageId) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+    const apiUrl = `${APIURL}/api/v1/masters/packages/credits/${creditPackageId}`
+
+    let response = await axios.delete(apiUrl, {
+      headers: {
+        'Content-Type': `application/x-www-form-urlencoded`,
+        'x-access-token': accessToken,
+      },
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
+export const updateCreditPackages = async (
+  data,
+  icon
+) => {
+  try {
+    let accessToken = localStorage.getItem('accessToken')
+    const apiUrl = `${APIURL}/api/v1/masters/packages/credits/${data.creditPackageId}`
+
+    let formData ;
+    if(icon.length === 0){
+      formData = {
+        heading: data.heading,
+        description: data.description,
+      }
+    }else{
+      formData = {
+        heading: data.heading,
+        description: data.description,
+        icon:icon
+      }
+    }
+     
+
+    let response = await axios.put(apiUrl, formData, {
+      headers: {
+        'Content-Type': `multipart/form-data;`,
+        'x-access-token': accessToken,
+      },
+    })
+
+    return response.data
+  } catch (error) {
+    console.log(error.message)
+
+    return error.message
+  }
+}
+
 //get users orders
 export const getUserOrdersList = async (page, pageSize,filter) => {
 

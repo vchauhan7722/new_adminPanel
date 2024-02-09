@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {useEffect, useState} from 'react'
+import {useEffect, useState, useRef} from 'react'
 import {MenuComponent} from '../../../../../../../_metronic/assets/ts/components'
 import {initialQueryState, KTIcon} from '../../../../../../../_metronic/helpers'
 import {useQueryRequest} from '../../core/QueryRequestProvider'
-import {useQueryResponse} from '../../core/QueryResponseProvider'
+import {useQueryResponse, useQueryResponsePagination} from '../../core/QueryResponseProvider'
 import {
   getCitiesBYSearch,
   getCityList,
@@ -12,14 +12,13 @@ import {
   getStateList,
 } from '../../../../../../../API/api-endpoint'
 import {useIntl} from 'react-intl'
-import {UsersListSearchComponent} from './UsersListSearchComponent'
-import {OverlayTrigger, Tooltip} from 'react-bootstrap'
 import {AsyncTypeahead} from 'react-bootstrap-typeahead'
 
 const UsersListFilter = () => {
   const intl = useIntl()
 
   const {updateState} = useQueryRequest()
+  const pagination: any = useQueryResponsePagination()
   const {isLoading} = useQueryResponse()
   const [formValue, setFormValue] = useState<any>({
     search: '',
@@ -90,10 +89,12 @@ const UsersListFilter = () => {
   // }, [selectedStateID])
 
   const filterData = () => {
+    //console.log('newObject', newObject)
     updateState({
       filter: formValue,
       ...initialQueryState,
       page: 1,
+      items_per_page: pagination.items_per_page,
     })
   }
 
@@ -212,18 +213,6 @@ const UsersListFilter = () => {
                     />
                   </div>
 
-                  {/* <div className='col-lg-4'>
-                    <label className='form-label fs-6 fw-bold'>
-                      {intl.formatMessage({id: 'USERMANAGEMENT.FILTER.ENDAGE'})}
-                    </label>
-                    <input
-                      type='number'
-                      className='form-control form-control-lg form-control-solid'
-                      placeholder='End Age'
-                      value={formValue.endAge}
-                      onChange={(e) => handleChange(e)}
-                    />
-                  </div> */}
                   <div className='col-lg-4'>
                     <label className='form-label fs-6 fw-bold'>
                       {intl.formatMessage({id: 'USERMANAGEMENT.FILTER.STARTREGISTERDATE'})}
@@ -368,31 +357,16 @@ const UsersListFilter = () => {
                       <label className='form-label fs-6 fw-bold'>
                         {intl.formatMessage({id: 'USERMANAGEMENT.FILTER.STATE'})}
                       </label>
-                      {/*for state */}
-                      {/* <select
-                        className='form-select form-select-solid fw-bolder'
-                        data-kt-select2='true'
-                        data-placeholder='Select option'
-                        data-allow-clear='true'
-                        data-kt-user-table-filter='state'
-                        data-hide-search='true'
-                        name='state'
-                        value={formValue.state}
-                        onChange={(e) => handleChange(e)}
-                      >
-                        <option value=''></option>
-                        {allStateList !== undefined &&
-                          allStateList.map((state) => {
-                            return <option value={state.name}>{state.name}</option>
-                          })}
-                      </select> */}
                       {isStateInputisVisible ? (
                         <input
                           type='text'
                           className='form-control form-control-lg form-control-solid'
                           name='state'
                           value={formValue.state}
-                          onChange={(e) => setIsStateInputVisible(false)}
+                          onChange={(e) => {
+                            setIsStateInputVisible(false)
+                          }}
+                          //onFocus={(e) => setIsStateInputVisible(false)}
                         />
                       ) : (
                         <AsyncTypeahead
@@ -404,7 +378,6 @@ const UsersListFilter = () => {
                           options={stateSuggestion}
                           labelKey='name'
                           defaultInputValue={formValue?.state}
-                          //selected={formValue?.state}
                           onChange={(e: any) => {
                             if (e.length !== 0) {
                               let locationName = e[0]

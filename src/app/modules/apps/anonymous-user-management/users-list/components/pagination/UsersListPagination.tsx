@@ -2,15 +2,31 @@
 import clsx from 'clsx'
 import {useQueryResponseLoading, useQueryResponsePagination} from '../../core/QueryResponseProvider'
 import {useQueryRequest} from '../../core/QueryRequestProvider'
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import ReactPaginate from 'react-paginate'
 
 const UsersListPagination = () => {
   const pagination = useQueryResponsePagination()
   const isLoading = useQueryResponseLoading()
   const {updateState} = useQueryRequest()
-  const [activePage, setActivePage] = useState(1)
+  const [activePage, setActivePage] = useState<any>(1)
   const [pageSize, setPageSize] = useState<any>(100)
+
+  useEffect(() => {
+    handleActivePage()
+  }, [pagination.page])
+
+  const handleActivePage = () => {
+    let pageNumber: any = pagination.page
+    if (pageNumber !== undefined) {
+      // console.log('pageNumber', pageNumber)
+      // console.log('pagination page', parseInt(pageNumber))
+      if (pageNumber !== activePage) {
+        console.log('23')
+        setActivePage(pageNumber)
+      }
+    }
+  }
 
   const updatePage = ({selected: selectedPage}) => {
     selectedPage = selectedPage + 1
@@ -56,7 +72,7 @@ const UsersListPagination = () => {
               className='form-select h-30px mt-2'
               data-kt-select2='true'
               data-allow-clear='true'
-              defaultValue='100'
+              value={pagination.items_per_page}
               style={{padding: '0.5rem 2rem 0.5rem 1rem'}}
               onChange={(e) => updatePageSize(e)}
             >
@@ -133,6 +149,7 @@ const UsersListPagination = () => {
                 pageRangeDisplayed={3}
                 disableInitialCallback={true}
                 marginPagesDisplayed={1}
+                forcePage={activePage - 1}
                 pageClassName='page-item'
                 pageLinkClassName='page-link'
                 previousClassName='page-item'

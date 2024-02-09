@@ -24,8 +24,8 @@ export type SearchState = {
 
 export type Response<T> = {
   data?: T
-  page?: string,
-  pageSize?: string,
+  page?: number | string ,
+  pageSize?: number | string,
   totalPage?:number,
   count?:number,
   message?:string,
@@ -43,7 +43,7 @@ export type QueryState = PaginationState & SortState & FilterState & SearchState
 
 export type QueryRequestContextProps = {
   state: QueryState
-  updateState: (updates: Partial<QueryState>) => void
+  updateState: (updates: Partial<QueryState>) => any
 }
 
 export const initialQueryState: QueryState = {

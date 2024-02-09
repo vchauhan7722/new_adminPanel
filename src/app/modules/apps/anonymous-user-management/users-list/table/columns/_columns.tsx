@@ -29,7 +29,7 @@ const usersColumns: ReadonlyArray<Column<User>> = [
         tooltipTitle='fullName'
       />
     ),
-    id: 'fullName',
+    id: 'userId',
     Cell: ({...props}) => <UserInfoCell user={props.data[props.row.index]} />,
   },
 

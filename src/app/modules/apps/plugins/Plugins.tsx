@@ -26,6 +26,7 @@ import RazorpayPaymentPlugin from './Componants/RazorpayPayment/RazorpayPaymentP
 import PhonePayPlugin from './Componants/PhonePay/PhonePayPlugins'
 import FolderStructurePlugin from './Componants/FolderStructure/folderStrucuturePlugin'
 import FakeUserInteraction from './Componants/FakeUserInteraction/FakeUserInteraction'
+import CreditDescriptionPlugins from './Componants/CreditDescription/CreditDescriptionPlugins'
 
 const usersBreadcrumbs: Array<PageLink> = [
   {
@@ -160,6 +161,15 @@ const Plugins = () => {
             <>
               <PageTitle>Site Pricing</PageTitle>
               <SitePricingPlugin />
+            </>
+          }
+        />
+        <Route
+          path='/credit_description_plugin'
+          element={
+            <>
+              <PageTitle>Credit Package Plugin</PageTitle>
+              <CreditDescriptionPlugins />
             </>
           }
         />

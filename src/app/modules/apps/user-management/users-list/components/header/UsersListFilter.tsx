@@ -1,8 +1,8 @@
 import {useEffect, useState} from 'react'
 import {MenuComponent} from '../../../../../../../_metronic/assets/ts/components'
-import {initialQueryState, KTIcon} from '../../../../../../../_metronic/helpers'
+import {initialQueryState} from '../../../../../../../_metronic/helpers'
 import {useQueryRequest} from '../../core/QueryRequestProvider'
-import {useQueryResponse} from '../../core/QueryResponseProvider'
+import {useQueryResponse, useQueryResponsePagination} from '../../core/QueryResponseProvider'
 import {
   getCitiesBYSearch,
   getCityList,
@@ -11,13 +11,12 @@ import {
   getStateList,
 } from '../../../../../../../API/api-endpoint'
 import {useIntl} from 'react-intl'
-import {UsersListSearchComponent} from './UsersListSearchComponent'
-import {OverlayTrigger, Tooltip} from 'react-bootstrap'
 import {AsyncTypeahead} from 'react-bootstrap-typeahead'
 
 const UsersListFilter = () => {
   const intl = useIntl()
 
+  const pagination: any = useQueryResponsePagination()
   const {updateState} = useQueryRequest()
   const {isLoading} = useQueryResponse()
   const [formValue, setFormValue] = useState<any>({
@@ -43,7 +42,6 @@ const UsersListFilter = () => {
   const [allCityList, setallCityList] = useState<Array<any> | undefined>([])
   const [selectedCountryID, setSelectedCountryID] = useState<any>(101)
   const [selectedStateID, setSelectedStateID] = useState<any>(4030)
-  const [countrySuggestion, setCountrySuggestion] = useState<any>()
   const [stateSuggestion, setStateSuggestion] = useState<any>()
   const [citySuggestion, setCitySuggestion] = useState<any>()
   const [isStateInputisVisible, setIsStateInputVisible] = useState(false)
@@ -92,6 +90,7 @@ const UsersListFilter = () => {
       filter: formValue,
       ...initialQueryState,
       page: 1,
+      items_per_page: pagination.items_per_page,
     })
   }
 
@@ -336,23 +335,6 @@ const UsersListFilter = () => {
                         {intl.formatMessage({id: 'USERMANAGEMENT.FILTER.STATE'})}
                       </label>
 
-                      {/* <select
-                        className='form-select form-select-solid fw-bolder'
-                        data-kt-select2='true'
-                        data-placeholder='Select option'
-                        data-allow-clear='true'
-                        data-kt-user-table-filter='state'
-                        data-hide-search='true'
-                        name='state'
-                        value={formValue.state}
-                        onChange={(e) => handleChange(e)}
-                      >
-                        <option value=''></option>
-                        {allStateList !== undefined &&
-                          allStateList.map((state) => {
-                            return <option value={state.name}>{state.name}</option>
-                          })}
-                      </select> */}
                       {isStateInputisVisible ? (
                         <input
                           type='text'
