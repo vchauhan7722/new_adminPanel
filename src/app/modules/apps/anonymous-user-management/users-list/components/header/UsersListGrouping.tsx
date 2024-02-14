@@ -3,9 +3,10 @@ import {QUERIES} from '../../../../../../../_metronic/helpers'
 import {useListView} from '../../core/ListViewProvider'
 import {useQueryResponse} from '../../core/QueryResponseProvider'
 import {deleteSelectedUsers} from '../../core/_requests'
-import {activeInactiveUser} from '../../../../../../../API/api-endpoint'
+import {activeInactiveUser, deleteUserAccount} from '../../../../../../../API/api-endpoint'
 import ToastUtils from '../../../../../../../utils/ToastUtils'
 import {useEffect, useState} from 'react'
+import Swal from 'sweetalert2'
 
 const UsersListGrouping = () => {
   const {selected, clearSelected} = useListView()
@@ -49,6 +50,29 @@ const UsersListGrouping = () => {
     }
   }
 
+  const deleteUser = async () => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        let result = await deleteUserAccount(selected)
+        if (result.status === 200) {
+          ToastUtils({type: 'success', message: result.message})
+          queryClient.invalidateQueries([`${QUERIES.USERS_LIST}-${query}`])
+          clearSelected()
+        } else {
+          ToastUtils({type: 'error', message: result.message})
+        }
+      }
+    })
+  }
+
   return (
     <div className='d-flex justify-content-end align-items-center mt-3'>
       <div className='fw-bolder me-5'>
@@ -58,11 +82,7 @@ const UsersListGrouping = () => {
       <button type='button' className='btn btn-danger me-3' onClick={deactivateUser}>
         {status === true ? `Deactivated Selected` : `Activated Selected`}
       </button>
-      <button
-        type='button'
-        className='btn btn-danger'
-        onClick={async () => console.log('delete', selected)}
-      >
+      <button type='button' className='btn btn-danger' onClick={deleteUser}>
         Delete Selected
       </button>
     </div>

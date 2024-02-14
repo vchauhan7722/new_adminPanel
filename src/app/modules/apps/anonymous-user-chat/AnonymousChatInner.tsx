@@ -73,7 +73,7 @@ const AnonymousChatInner = (props: any) => {
 
   useEffect(() => {
     const ws1 = new WebSocket(
-      process.env.REACT_APP_WEBSOCKET_SERVER_URL || 'wss://backend.profun.live'
+      process.env.REACT_APP_WEBSOCKET_SERVER_URL || 'wss://development.lucky1.in:4123'
     )
 
     getchatList()

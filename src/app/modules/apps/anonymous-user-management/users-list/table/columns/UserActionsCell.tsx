@@ -51,7 +51,7 @@ const UserActionsCell: FC<Props> = ({userId, status}) => {
       confirmButtonText: 'Yes, delete it!',
     }).then(async (result) => {
       if (result.isConfirmed) {
-        let result = await deleteUserAccount(userId)
+        let result = await deleteUserAccount([userId])
         if (result.status === 200) {
           ToastUtils({type: 'success', message: result.message})
           queryClient.invalidateQueries([`${QUERIES.USERS_LIST}-${query}`])

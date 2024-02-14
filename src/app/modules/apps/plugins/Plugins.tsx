@@ -25,7 +25,7 @@ import OpenMoneyPaymentPlugin from './Componants/OpenMoneyPayment/OpenMoneyPayme
 import RazorpayPaymentPlugin from './Componants/RazorpayPayment/RazorpayPaymentPlugin'
 import PhonePayPlugin from './Componants/PhonePay/PhonePayPlugins'
 import FolderStructurePlugin from './Componants/FolderStructure/folderStrucuturePlugin'
-import FakeUserInteraction from './Componants/FakeUserInteraction/FakeUserInteraction'
+import AnonymousUserInteraction from './Componants/AnonymousUserInteraction/AnonymousUserInteraction'
 import CreditDescriptionPlugins from './Componants/CreditDescription/CreditDescriptionPlugins'
 
 const usersBreadcrumbs: Array<PageLink> = [
@@ -312,8 +312,8 @@ const Plugins = () => {
           path='/user_interaction_plugin'
           element={
             <>
-              <PageTitle>Fake User Interaction</PageTitle>
-              <FakeUserInteraction />
+              <PageTitle>Anonymous User Interaction</PageTitle>
+              <AnonymousUserInteraction />
             </>
           }
         />

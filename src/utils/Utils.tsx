@@ -30,7 +30,7 @@ export const getAge = (DOB: any) => {
   return moment().diff(DOB, 'years')
 }
 
-export const validateEmail = (email) => {
+export const validateEmail = (email: any) => {
   return email.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/) // /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@ ((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 }
 
@@ -45,6 +45,7 @@ export const getEighteenYearsOldDate = () => {
   return maxDateString
 }
 
+//this both for check type of media in chat
 export const isImage = ['.gif', '.jpg', '.jpeg', '.png'] //you can add more
 export const isVideo = ['.mpg', '.mp2', '.mpeg', '.mpe', '.mpv', '.mp4'] // you can add more extention
 

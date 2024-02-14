@@ -51,7 +51,7 @@ const ProfileHeader = (props) => {
   const [isAnyplanSelected, setIsAnyPlanSelected] = useState(false)
 
   useEffect(() => {
-    getPremiumAmountpackages()
+    getPremiumAmountPackages()
   }, [])
 
   const verifyUser = async () => {
@@ -140,7 +140,7 @@ const ProfileHeader = (props) => {
     }
   }
 
-  const getPremiumAmountpackages = async () => {
+  const getPremiumAmountPackages = async () => {
     let result = await getPremiumPackageAmountPlans()
     if (result.status === 200) {
       setPremiumAmountPackages(result.data)
@@ -158,7 +158,7 @@ const ProfileHeader = (props) => {
       confirmButtonText: 'Yes, delete it!',
     }).then(async (result) => {
       if (result.isConfirmed) {
-        let result = await deleteUserAccount(UserID)
+        let result = await deleteUserAccount([UserID])
         if (result.status === 200) {
           ToastUtils({type: 'success', message: result.message})
           navigate(routeForUserList)

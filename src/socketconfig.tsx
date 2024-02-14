@@ -10,5 +10,5 @@ const socket = io(`${URL}`, {
 export default socket
 
 export const ws = new WebSocket(
-  process.env.REACT_APP_WEBSOCKET_SERVER_URL || 'wss://backend.profun.live'
+  process.env.REACT_APP_WEBSOCKET_SERVER_URL || 'wss://development.lucky1.in:4123'
 )

@@ -46,7 +46,7 @@ const UserActionsCell: FC<Props> = ({userId}) => {
       confirmButtonText: 'Yes, delete it!',
     }).then(async (result) => {
       if (result.isConfirmed) {
-        let result = await deleteUserAccount(userId)
+        let result = await deleteUserAccount([userId])
         if (result.status === 200) {
           ToastUtils({type: 'success', message: result.message})
           queryClient.invalidateQueries([`${QUERIES.USERS_LIST}-${query}`])
@@ -130,7 +130,7 @@ const UserActionsCell: FC<Props> = ({userId}) => {
         {/* end::Menu item */}
 
         {/* begin::Menu item */}
-        {/* <div className='menu-item px-3'>
+        <div className='menu-item px-3'>
           <a
             className='menu-link px-3'
             data-kt-users-table-filter='delete_row'
@@ -138,7 +138,7 @@ const UserActionsCell: FC<Props> = ({userId}) => {
           >
             Delete Account
           </a>
-        </div> */}
+        </div>
         {/* end::Menu item */}
 
         {/* begin::Menu item */}

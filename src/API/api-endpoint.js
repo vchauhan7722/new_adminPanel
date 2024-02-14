@@ -47,13 +47,18 @@ export const getUser = async (userID) => {
   }
 }
 
-export const deleteUserAccount = async (userID) => {
+export const deleteUserAccount = async (userIDs) => {
   try {
     let accessToken = localStorage.getItem('accessToken')
 
-    const apiUrl = `${APIURL}/api/v1/users/${userID}`
+    let formdata = new FormData()
+    formdata = {
+      userIds: userIDs,
+    }
 
-    let response = await axios.delete(apiUrl, {
+    const apiUrl = `${APIURL}/api/v1/users/delete`
+
+    let response = await axios.put(apiUrl, formdata, {
       headers: {
         'Content-Type': `application/json`,
         'x-access-token': accessToken,

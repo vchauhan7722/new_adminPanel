@@ -48,7 +48,7 @@ const Interaction = () => {
                       className='border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3'
                       onClick={() => handleChangeSelectInteractionType('peopleLikes')}
                     >
-                      <div className='d-flex align-items-center'>
+                      <div className='d-flex align-items-center pointer'>
                         <div className='fw-bold fs-3 text-black me-2'>Likes</div>
                       </div>
 
@@ -62,7 +62,7 @@ const Interaction = () => {
                       onClick={() => handleChangeSelectInteractionType('peopleVisit')}
                     >
                       <div className='d-flex align-items-center'>
-                        <div className='fw-bold fs-3 text-black me-2'>Visit</div>
+                        <div className='fw-bold fs-3 text-black me-2 pointer'>Visit</div>
                       </div>
 
                       <div className='fw-bold fs-6 text-gray-400'>
@@ -75,7 +75,7 @@ const Interaction = () => {
                       onClick={() => handleChangeSelectInteractionType('peopleDisLikes')}
                     >
                       <div className='d-flex align-items-center'>
-                        <div className='fw-bold fs-3 text-black me-2'>DisLike</div>
+                        <div className='fw-bold fs-3 text-black me-2 pointer'>DisLike</div>
                       </div>
 
                       <div className='fw-bold fs-6 text-gray-400'>
@@ -88,7 +88,7 @@ const Interaction = () => {
                       onClick={() => handleChangeSelectInteractionType('peopleUndoProfile')}
                     >
                       <div className='d-flex align-items-center'>
-                        <div className=' fw-bold fs-3 text-black me-2'>Undo Profile</div>
+                        <div className=' fw-bold fs-3 text-black me-2 pointer'>Undo Profile</div>
                       </div>
 
                       <div className='fw-bold fs-6 text-gray-400'>
@@ -109,7 +109,7 @@ const Interaction = () => {
                       onClick={() => handleChangeSelectInteractionType('match')}
                     >
                       <div className='d-flex align-items-center'>
-                        <div className='fw-bold fs-3 text-black me-2'>Match</div>
+                        <div className='fw-bold fs-3 text-black me-2 pointer'>Match</div>
                       </div>
 
                       <div className='fw-bold fs-6 text-gray-400'>
@@ -131,7 +131,7 @@ const Interaction = () => {
                       onClick={() => handleChangeSelectInteractionType('myLikes')}
                     >
                       <div className='d-flex align-items-center'>
-                        <div className='fw-bold fs-3 text-black me-2'>Likes</div>
+                        <div className='fw-bold fs-3 text-black me-2 pointer'>Likes</div>
                       </div>
 
                       <div className='fw-bold fs-6 text-gray-400'>
@@ -144,7 +144,7 @@ const Interaction = () => {
                       onClick={() => handleChangeSelectInteractionType('myVisit')}
                     >
                       <div className='d-flex align-items-center'>
-                        <div className='fw-bold fs-3 text-black me-2'>Visit</div>
+                        <div className='fw-bold fs-3 text-black me-2 pointer'>Visit</div>
                       </div>
 
                       <div className='fw-bold fs-6 text-gray-400'>
@@ -157,7 +157,7 @@ const Interaction = () => {
                       onClick={() => handleChangeSelectInteractionType('myDislike')}
                     >
                       <div className='d-flex align-items-center'>
-                        <div className='fw-bold fs-3 text-black me-2'>DisLike</div>
+                        <div className='fw-bold fs-3 text-black me-2 pointer'>DisLike</div>
                       </div>
 
                       <div className='fw-bold fs-6 text-gray-400'>
@@ -170,7 +170,7 @@ const Interaction = () => {
                       onClick={() => handleChangeSelectInteractionType('myUndoProfile')}
                     >
                       <div className='d-flex align-items-center'>
-                        <div className=' fw-bold fs-3 text-black me-2'>Undo Profile</div>
+                        <div className=' fw-bold fs-3 text-black me-2 pointer'>Undo Profile</div>
                       </div>
 
                       <div className='fw-bold fs-6 text-gray-400'>

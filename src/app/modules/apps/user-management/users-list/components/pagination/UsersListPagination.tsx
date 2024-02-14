@@ -4,8 +4,10 @@ import {useQueryResponseLoading, useQueryResponsePagination} from '../../core/Qu
 import {useQueryRequest} from '../../core/QueryRequestProvider'
 import {useEffect, useState} from 'react'
 import ReactPaginate from 'react-paginate'
+import {useListView} from '../../core/ListViewProvider'
 
 const UsersListPagination = () => {
+  let {clearSelected} = useListView()
   const pagination = useQueryResponsePagination()
   const isLoading = useQueryResponseLoading()
   const {updateState} = useQueryRequest()
@@ -34,6 +36,7 @@ const UsersListPagination = () => {
       return
     }
     setActivePage(selectedPage)
+    clearSelected()
     let page = selectedPage
     updateState({page, items_per_page: pageSize})
   }

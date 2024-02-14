@@ -182,7 +182,7 @@ const PluginData = [
   {
     pluginId: 20,
     icon: '/media/plugins/jstree/folder.webp',
-    name: 'Fake User Interaction',
+    name: 'Anonymous User Interaction',
     type: 'Software',
     description: 'customize Interaction System',
     status: 'Active',

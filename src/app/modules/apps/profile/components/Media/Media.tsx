@@ -256,7 +256,7 @@ const Media = (props: any) => {
                           >
                             {!userMedia.isProfileImage && (
                               <div
-                                className='px-3'
+                                className='px-3 pointer'
                                 onClick={() => ActionsOnMedia('profile', userMedia.id)}
                               >
                                 <p className='px-3'>Set profile</p>
@@ -264,20 +264,23 @@ const Media = (props: any) => {
                             )}
                             {!userMedia.isProfileImage && (
                               <div
-                                className=' px-3'
+                                className=' px-3 pointer'
                                 onClick={() => ActionsOnMedia('private', userMedia.id)}
                               >
                                 <p className=' px-3'>Set private</p>
                               </div>
                             )}
 
-                            <div className=' px-3'>
+                            <div className=' px-3 pointer'>
                               <p className='px-3' onClick={() => uploadMediaAsAStory(userMedia.id)}>
                                 Upload to story
                               </p>
                             </div>
                             {!userMedia.isProfileImage && (
-                              <div className=' px-3' onClick={() => removeMedia(userMedia.id)}>
+                              <div
+                                className=' px-3 pointer'
+                                onClick={() => removeMedia(userMedia.id)}
+                              >
                                 <p className=' px-3' data-kt-users-table-filter='delete_row'>
                                   Delete Media
                                 </p>
